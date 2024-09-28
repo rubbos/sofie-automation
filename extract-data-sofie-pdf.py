@@ -84,3 +84,5 @@ check_if_found(arrival_date, keyword_arrival_date)
 keyword_working_date = "working day"
 working_date = extract_date_after_keyword(text, keyword_working_date)
 check_if_found(working_date, keyword_working_date)
+
+#testing git mail
