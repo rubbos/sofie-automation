@@ -8,8 +8,8 @@ import time
 # Calc runtime
 start_time = time.time()
 
-# Load file
-file_path = "pdf_examples/sofie_form_date.pdf"
+file = ["clean", "img", "date"]
+file_path = f"pdf_examples/sofie_form_{file[2]}.pdf"
 doc = convert_from_path(file_path)
 path, file_name = os.path.split(file_path)
 file_base_name, file_extension = os.path.splitext(file_name)
@@ -23,7 +23,6 @@ if not os.path.isfile(f"{path}/extracted_{file_base_name}.txt"):
         # Psm 12 extracts the data better, but takes more time than others
         text += pytesseract.image_to_string(page_data, config="--psm 12")
 
-    # Cleanup the string for easier extracting
     text = text.replace("\n", " ")
 
     # Save string to .txt for testing purposes
@@ -36,25 +35,35 @@ else:
         text = text_file.read()
 
 
-# Extract the data between 2 keywords if it exists
-def extract_text_between_keywords(text, start_keyword, end_keyword):
-    try:
-        start_index = text.index(start_keyword) + len(start_keyword)
-        end_index = text.find(end_keyword, start_index)
-    except ValueError:
-        return None
+def extract_between_keywords(text, start_keyword, end_keyword, find_all=False):
+    """Extract data between 2 keywords in a string"""
+    results = []
+    start = 0
 
-    return text[start_index:end_index].strip()
+    while True:
+        start_index = text.find(start_keyword, start)
+        if start_index == -1:
+            break
+
+        end_index = text.find(end_keyword, start_index + len(start_keyword))
+        if end_index == -1:
+            substring = text[start_index + len(start_keyword) :]
+            results.append(substring.strip())
+            break
+
+        if end_index > start_index:
+            substring = text[start_index + len(start_keyword) : end_index]
+            results.append(substring.strip())
+
+        if not find_all:
+            return " ".join(results)
+
+        start = end_index + len(end_keyword)
+    return results
 
 
-def extract_multiple_text_between_keywords(text, start_keyword, end_keyword):
-    pattern = rf"{re.escape(start_keyword)}(.*?){re.escape(end_keyword)}"
-    matches = re.findall(pattern, text, re.DOTALL)
-    return matches
-
-
-# Testing purpose
 def check_if_found(extracted_data, start_keyword):
+    """Testing purpose"""
     if extracted_data:
         print(f"Found keyword '{start_keyword}': {extracted_data}")
     else:
@@ -62,14 +71,15 @@ def check_if_found(extracted_data, start_keyword):
 
 
 def find_date(text):
+    """Find any kind of dates formats in a string"""
     date_pattern = r"\b\d{1,2}[-/.]\d{1,2}[-/.]\d{2,4}\b|\b\d{1,2}[-\s](?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[-\s]\d{2,4}\b|\b\d{1,2}[-\s](?:January|February|March|April|May|June|July|August|September|October|November|December)[-\s]\d{2,4}\b"
     pattern = re.compile(date_pattern)
     matches = pattern.findall(text)
     return matches
 
 
-# Function to convert date formats to dd-mm-yyyy
 def transform_date(date):
+    """Convert different date formats into dd-mm-yyyy"""
     date_formats = [
         "%d-%m-%Y",
         "%d/%m/%Y",
@@ -91,53 +101,67 @@ def transform_date(date):
             return parsed_date.strftime("%d-%m-%Y")
         except ValueError:
             pass
-    # If no format matched, return original string
     return date
 
 
-# Extract name from initials
-keyword_name = "Initials"
-initials_name = extract_text_between_keywords(text, keyword_name, "Has agreed")
-check_if_found(initials_name, keyword_name)
+def clean_locations(dates, locations):
+    """
+    Every location has a start date and end date.
+    This cleans up the excess locations list.
+    """
+    if len(dates) % 2 == 0:
+        if len(dates) <= 2:
+            return locations[:1]
+        return locations[: -len(dates) // 2]
 
-# Extract name from signature
-keyword_signature_name = "Name:"
-signature_name = extract_text_between_keywords(text, keyword_signature_name, "Date")
-check_if_found(signature_name, keyword_signature_name)
 
-# Extract arrival date
-keyword_arrival_date = "Date of arrival"
-arrival_date = extract_text_between_keywords(text, keyword_arrival_date, "My address")
-arrival_date = find_date(arrival_date)
-arrival_date = [transform_date(date) for date in arrival_date]
-check_if_found(arrival_date, keyword_arrival_date)
+def extract_string(string, start_keyword, end_keyword):
+    extracted_data = extract_between_keywords(string, start_keyword, end_keyword)
+    check_if_found(extracted_data, start_keyword)
+    return extracted_data
 
-# Extract first working date
-keyword_working_date = "working day"
-working_date = extract_text_between_keywords(text, keyword_working_date, "Place")
-working_date = find_date(working_date)
-working_date = [transform_date(date) for date in working_date]
-check_if_found(working_date, keyword_working_date)
 
-# Extract place date(s)
-keyword_place_date = "Date from"
-place_date = extract_text_between_keywords(text, keyword_place_date, "Have you")
-place_date = find_date(place_date)
-place_date = [transform_date(date) for date in place_date]
-check_if_found(place_date, keyword_place_date)
+def extract_nested_string(string, keywords_dict):
+    keywords = keywords_dict.values()
+    for keyword in keywords:
+        if keyword == list(keywords)[-1]:
+            string = extract_between_keywords(
+                str(string), keyword[0], keyword[1], find_all=True
+            )
+        else:
+            string = extract_between_keywords(str(string), keyword[0], keyword[1])
+    check_if_found(string, list(keywords)[0])
+    return string
 
-# Extract location(s)
-keyword_place_location = "upload it again"
-keyword_place_location_specified = "Place:"
-place_location = extract_text_between_keywords(text, keyword_place_location, "Have you")
 
-place_location = place_location.replace(" ", "")
-place_location = place_location.replace(":", "")
-place_location = place_location.replace("Country", ", ")
+def extract_dates(string, start_keyword, end_keyword):
+    extracted_data = extract_between_keywords(string, start_keyword, end_keyword)
+    extracted_data = find_date(extracted_data)
+    extracted_data = [transform_date(date) for date in extracted_data]
+    check_if_found(extracted_data, start_keyword)
+    return extracted_data
 
-place_location = extract_multiple_text_between_keywords(place_location, "Place", "Date")
 
-check_if_found(place_location, keyword_place_location)
+full_name = extract_string(text, "Initials", "Has agreed")
+signature_name = extract_string(text, "Name:", "Date")
+arrival_date = extract_dates(text, "Date of arrival", "My address")
+working_date = extract_dates(text, "working day", "Place")
+place_date = extract_dates(text, "Date from", "Have you")
+
+location_dict = {1: ["upload it again", "Have you"], 2: ["Place", "Date"]}
+place_location = extract_nested_string(text, location_dict)
+place_location = clean_locations(place_date, place_location)
+
+# Temp cleaning
+place_location = [item.replace(":", "") for item in place_location]
+place_location = [item.replace("Country", "") for item in place_location]
+place_location = [" ".join(item.split()) for item in place_location]
+check_if_found(place_location, "test")
+
+
+def cleaning_data():
+    pass
+
 
 # Runtime
 print("--- %s seconds ---" % (time.time() - start_time))
