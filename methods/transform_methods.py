@@ -1,6 +1,7 @@
 from datetime import datetime
 
-def transform_date(date):
+
+def transform_date(date: str) -> str:
     """Convert different date formats into dd-mm-yyyy"""
     date_formats = [
         "%d-%m-%Y",
@@ -26,10 +27,10 @@ def transform_date(date):
     return date
 
 
-def clean_locations(dates, locations):
+def clean_locations(dates: list[str], locations: list[str]) -> list[str]:
     """
     Every location has a start date and end date.
-    This cleans up the excess locations list.
+    This cleans up the excess locations list while extracting.
     """
     if len(dates) % 2 == 0:
         if len(dates) <= 2:

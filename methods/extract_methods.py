@@ -1,64 +1,80 @@
 import re
+import os
+from pytesseract import image_to_string
+from pdf2image import convert_from_path
 from methods import transform_methods as tm
 
 
-def extract_between_keywords(text, start_keyword, end_keyword, find_all=False):
-    """
-    Extract data between 2 keywords in a string,
-    if find_all=True then return all found data
-    """
-    results = []
-    start = 0
+# TODO split up this function into smaller ones
+def file_to_raw_data(file_path: str) -> str:
+    """Locate the file and convert it to string, and save it as raw data"""
+    doc = convert_from_path(file_path)
+    path, file_name = os.path.split(file_path)
+    file_base_name, file_extension = os.path.splitext(file_name)
 
-    while True:
-        start_index = text.find(start_keyword, start)
-        if start_index == -1:
-            break
+    text = ""
 
-        end_index = text.find(end_keyword, start_index + len(start_keyword))
-        if end_index == -1:
-            substring = text[start_index + len(start_keyword) :]
-            results.append(substring.strip())
-            break
+    # Check if file is extracted already to speedup testing
+    if os.path.isfile(f"{path}/raw_{file_base_name}.txt"):
+        with open(f"{path}/raw_{file_base_name}.txt", "r") as text_file:
+            text = text_file.read()
+            return text
 
-        if end_index > start_index:
-            substring = text[start_index + len(start_keyword) : end_index]
-            results.append(substring.strip())
+    # Convert doc to string with OCR, since users often upload a img of the original pdf.
+    # Psm 12 extracts the data better, but takes more time
+    for page_number, page_data in enumerate(doc):
+        text += image_to_string(page_data, config="--psm 12")
 
-        if not find_all:
-            return " ".join(results)
-
-        start = end_index + len(end_keyword)
-    return results
+    # Save string to .txt for testing purposes
+    with open(f"{path}/raw_{file_base_name}.txt", "w") as text_file:
+        text_file.write(text)
+        return text
 
 
-def find_date(text):
-    """Find any kind of dates formats in a string"""
+def extract_after_keyword(text: str, start_keyword: str) -> str:
+    """Extract string after keyword till end of text"""
+    start_index = text.find(start_keyword)
+    if start_index == -1:
+        return None
+    return text[start_index + len(start_keyword) :]
+
+
+def extract_between_keywords(text: str, start_keyword: str, end_keyword: str) -> str:
+    """Extract string between 2 keywords"""
+    start_index = text.find(start_keyword)
+    end_index = text.find(end_keyword, start_index + len(start_keyword))
+    if (start_index == -1 or end_index == -1) and end_index > start_index:
+        return None
+    return text[start_index + len(start_keyword) : end_index]
+
+
+def extract_multiple_between_keywords(
+    text: str,
+    start_keyword: str,
+    end_keyword: str,
+    split_keyword: str,
+    multiple_keyword: str,
+) -> list[str]:
+    """Extract multiple repeating strings between 2 keywords from part of text"""
+    strings = extract_between_keywords(text, start_keyword, end_keyword)
+    strings = strings.split(split_keyword)
+    strings = [" ".join(item.split()) for item in strings]
+    strings.pop(0)
+    strings = [extract_after_keyword(item, multiple_keyword) for item in strings]
+    return strings
+
+
+def find_all_dates(text: str) -> list[str]:
+    """Find any kind of date format in string"""
     date_pattern = r"\b\d{1,2}[-/.]\d{1,2}[-/.]\d{2,4}\b|\b\d{1,2}[-\s](?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[-\s]\d{2,4}\b|\b\d{1,2}[-\s](?:January|February|March|April|May|June|July|August|September|October|November|December)[-\s]\d{2,4}\b"
     pattern = re.compile(date_pattern)
     matches = pattern.findall(text)
     return matches
 
 
-def extract_string(string, start_keyword, end_keyword):
+def extract_dates(string: str, start_keyword: str, end_keyword: str) -> list[str]:
+    """Extract all dates in string and transform to dd-mm-yyyy"""
     extracted_data = extract_between_keywords(string, start_keyword, end_keyword)
-    return extracted_data
-
-
-def extract_nested_string(string, keywords_dict):
-    keywords = keywords_dict.values()
-    for keyword in keywords:
-        if keyword == list(keywords)[-1]:
-            string = extract_between_keywords(
-                str(string), keyword[0], keyword[1], find_all=True
-            )
-        else:
-            string = extract_between_keywords(str(string), keyword[0], keyword[1])
-    return string
-
-
-def extract_dates(string, start_keyword, end_keyword):
-    extracted_data = extract_between_keywords(string, start_keyword, end_keyword)
-    extracted_data = find_date(extracted_data)
+    extracted_data = find_all_dates(extracted_data)
     extracted_data = [tm.transform_date(date) for date in extracted_data]
     return extracted_data
