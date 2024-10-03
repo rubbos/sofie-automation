@@ -31,7 +31,7 @@ def file_to_raw_data(file_path: str) -> str:
         return text
 
 
-def extract_after_keyword(text: str, start_keyword: str) -> str:
+def extract_after_keyword(text: str, start_keyword: str) -> str | None:
     """Extract string after keyword till end of text"""
     start_index = text.find(start_keyword)
     if start_index == -1:
@@ -39,11 +39,13 @@ def extract_after_keyword(text: str, start_keyword: str) -> str:
     return text[start_index + len(start_keyword) :]
 
 
-def extract_between_keywords(text: str, start_keyword: str, end_keyword: str) -> str:
+def extract_between_keywords(
+    text: str, start_keyword: str, end_keyword: str
+) -> str | None:
     """Extract string between 2 keywords"""
     start_index = text.find(start_keyword)
     end_index = text.find(end_keyword, start_index + len(start_keyword))
-    if (start_index == -1 or end_index == -1) and end_index > start_index:
+    if (start_index == -1 or end_index == -1) or end_index < start_index:
         return None
     return text[start_index + len(start_keyword) : end_index]
 
@@ -54,9 +56,11 @@ def extract_multiple_between_keywords(
     end_keyword: str,
     split_keyword: str,
     multiple_keyword: str,
-) -> list[str]:
+) -> list[str] | None:
     """Extract multiple repeating strings between 2 keywords from part of text"""
     strings = extract_between_keywords(text, start_keyword, end_keyword)
+    if not strings:
+        return None
     strings = strings.split(split_keyword)
     strings = [" ".join(item.split()) for item in strings]
     strings.pop(0)
@@ -72,9 +76,13 @@ def find_all_dates(text: str) -> list[str]:
     return matches
 
 
-def extract_dates(string: str, start_keyword: str, end_keyword: str) -> list[str]:
+def extract_dates(
+    string: str, start_keyword: str, end_keyword: str
+) -> list[str] | None:
     """Extract all dates in string and transform to dd-mm-yyyy"""
     extracted_data = extract_between_keywords(string, start_keyword, end_keyword)
+    if not extracted_data:
+        return None
     extracted_data = find_all_dates(extracted_data)
     extracted_data = [tm.transform_date(date) for date in extracted_data]
     return extracted_data

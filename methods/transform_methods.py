@@ -1,4 +1,19 @@
 from datetime import datetime
+import pandas as pd
+
+
+def dict_to_table(data: dict):
+    df = pd.DataFrame(
+        {
+            "KEY": list(data.keys()),
+            "TYPE": [item[0] if len(item[0]) > 0 else None for item in data.values()],
+            "VALUE": [
+                item[1] if item[1] is not None and len(item[1]) > 0 else None
+                for item in data.values()
+            ],
+        }
+    )
+    return df
 
 
 def transform_date(date: str) -> str:
