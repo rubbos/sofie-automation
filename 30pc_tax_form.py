@@ -6,7 +6,7 @@ from methods import transform_methods as tm
 
 def get_raw_data() -> str:
     files = ["clean", "img", "date", "4", "5"]
-    file_path = f"pdf_examples/sofie_form_{files[3]}.pdf"
+    file_path = f"pdf_examples/sofie_form_{files[4]}.pdf"
     return em.file_to_raw_data(file_path)
 
 
@@ -69,18 +69,18 @@ def extract(text: str) -> dict:
     return extracted_data
 
 
-def transform(extracted_data: dict):
+def transform(extracted_data: dict) -> pd.DataFrame:
     df = tm.dict_to_table(extracted_data)
 
-    # Clean excess \n from type str
+    # Clean excess \n where type str
     df.loc[df["TYPE"] == "str", "VALUE"] = df.loc[df["TYPE"] == "str", "VALUE"].replace(
         "\n", "", regex=True
     )
+
     # Clean list to string where type date
     df.loc[df["TYPE"] == "date", "VALUE"] = df.loc[df["TYPE"] == "date", "VALUE"].apply(
         lambda x: x[0] if x else None
     )
-    # Residence dates grouping up per period
 
     # Clean locations and group
     try:
@@ -91,39 +91,48 @@ def transform(extracted_data: dict):
         df.at[4, "VALUE"] = [item for item in df.at[4, "VALUE"] if item]
     except TypeError:
         pass
+
+    # TODO fix this garbage
+    # Make new df with all list[date] to transform to amount of months:
+    df_list_dates = df[(df["TYPE"] == "list[date]")]
+    df_list_dates = df_list_dates.dropna(subset="VALUE")
+
+    for row_index, row in df_list_dates.iterrows():
+        durations = []
+        for index, date in enumerate(row["VALUE"]):
+            if index % 2 == 0:
+                first_date = date
+            else:
+                last_date = date
+                if row_index == 3:
+                    durations.append(
+                        df.at[4, "VALUE"][index // 2]
+                        + " "
+                        + tm.months_and_days_between_dates(first_date, last_date, False)
+                    )
+                else:
+                    durations.append(
+                        tm.months_and_days_between_dates(first_date, last_date)
+                    )
+
+        print(durations)
     return df
 
 
-def load(transformed_data: dict):
+def load(transformed_data: dict) -> None:
     print(transformed_data)
 
 
 def main() -> None:
+    start_time = time.time()
+
     raw_data = get_raw_data()
     extracted_data = extract(raw_data)
     clean_data = transform(extracted_data)
     load(clean_data)
 
-
-def show_data(data: dict) -> None:
-    df = pd.DataFrame(
-        {
-            "Key": list(data.keys()),
-            "Type": [
-                item[0] if len(item[0]) > 0 else None for item in data.values()
-            ],  # First value from the list
-            "Value": [
-                item[1] if len(item[1]) > 0 else None for item in data.values()
-            ],  # First value from the list
-        }
-    )
-    return df
+    print("--- %s seconds ---" % round(time.time() - start_time, 2))
 
 
 if __name__ == "__main__":
-    # Calc runtime
-    start_time = time.time()
-
     main()
-
-    print("--- %s seconds ---" % round(time.time() - start_time, 2))

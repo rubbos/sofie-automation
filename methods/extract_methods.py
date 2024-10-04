@@ -50,6 +50,20 @@ def extract_between_keywords(
     return text[start_index + len(start_keyword) : end_index]
 
 
+def extract_specific_words(
+    text: str, start_keyword: str, end_keyword: str, words_list: list[str]
+) -> str | None:
+    text = extract_between_keywords(text, start_keyword, end_keyword)
+
+    if not text:
+        return None
+
+    for word in words_list:
+        if word in text:
+            return word
+    return "Not found"
+
+
 def extract_multiple_between_keywords(
     text: str,
     start_keyword: str,
