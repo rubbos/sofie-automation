@@ -1,34 +1,22 @@
 import re
 import os
 from pytesseract import image_to_string
-from pdf2image import convert_from_path
-from methods import transform_methods as tm
+from pdf2image import convert_from_bytes
+from extractors.methods import transform_methods as tm
 
 
 # TODO split up this function into smaller ones
-def file_to_raw_data(file_path: str) -> str:
+def file_to_raw_data(pdf_bytes: str) -> str:
     """Locate the file and convert it to string, and save it as raw data"""
-    doc = convert_from_path(file_path)
-    path, file_name = os.path.split(file_path)
+    doc = convert_from_bytes(pdf_bytes)
+    path, file_name = os.path.split(pdf_bytes)
     file_base_name, file_extension = os.path.splitext(file_name)
-
     text = ""
-
-    # Check if file is extracted already to speedup testing
-    if os.path.isfile(f"{path}/raw_{file_base_name}.txt"):
-        with open(f"{path}/raw_{file_base_name}.txt", "r") as text_file:
-            text = text_file.read()
-            return text
-
     # Convert doc to string with OCR, since users often upload a img of the original pdf.
     # Psm 12 extracts the data better, but takes more time
     for page_number, page_data in enumerate(doc):
         text += image_to_string(page_data, config="--psm 12")
-
-    # Save string to .txt for testing purposes
-    with open(f"{path}/raw_{file_base_name}.txt", "w") as text_file:
-        text_file.write(text)
-        return text
+    return text
 
 
 def extract_after_keyword(text: str, start_keyword: str) -> str | None:

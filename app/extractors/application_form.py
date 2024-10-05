@@ -1,14 +1,11 @@
-import time
 import pandas as pd
-from methods import extract_methods as em
-from methods import transform_methods as tm
+from extractors.methods import extract_methods as em
+from extractors.methods import transform_methods as tm
 
 
 # TODO Change parsing to something more efficient since its always a pdf
-def get_raw_data() -> str:
-    files = [0]
-    file_path = f"pdf_examples/Oorspronkelijke aanvraag {files[0]}.pdf"
-    return em.file_to_raw_data(file_path)
+def get_raw_data(pdf_path) -> str:
+    return em.file_to_raw_data(pdf_path)
 
 
 def extract(text: str) -> dict:
@@ -108,19 +105,11 @@ def transform(extracted_data: dict) -> pd.DataFrame:
     return df
 
 
-def load(transformed_data: dict) -> None:
-    print(transformed_data)
-
-
-def main() -> None:
-    start_time = time.time()
-
-    raw_data = get_raw_data()
+def main(pdf_path) -> pd.DataFrame:
+    raw_data = get_raw_data(pdf_path)
     extracted_data = extract(raw_data)
     clean_data = transform(extracted_data)
-    load(clean_data)
-
-    print("--- %s seconds ---" % round(time.time() - start_time, 2))
+    return clean_data
 
 
 if __name__ == "__main__":
