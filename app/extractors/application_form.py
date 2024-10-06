@@ -3,9 +3,8 @@ from extractors.methods import extract_methods as em
 from extractors.methods import transform_methods as tm
 
 
-# TODO Change parsing to something more efficient since its always a pdf
 def get_raw_data(pdf_path) -> str:
-    return em.file_to_raw_data(pdf_path)
+    return em.file_to_raw_data(pdf_path, 4)
 
 
 def extract(text: str) -> dict:
@@ -15,31 +14,31 @@ def extract(text: str) -> dict:
     extracted_data = {
         "Name employer": [
             type_data[0],
-            em.extract_between_keywords(text, "Name of employer", "LH number"),
+            em.extract_between_keywords(text, "Name of employer", "\n"),
         ],
         "Loonheffing number": [
             type_data[0],
-            em.extract_between_keywords(text, "LH number", "Employee"),
+            em.extract_between_keywords(text, "LH number", "\n"),
         ],
         "Last name, Initials": [
             type_data[0],
-            em.extract_between_keywords(text, "Initials", "Date"),
+            em.extract_between_keywords(text, "Initials", "\n"),
         ],
         "Date of birth": [
             type_data[2],
-            em.extract_dates(text, "Birth", "BSN"),
+            em.extract_dates(text, "Birth", "\n"),
         ],
         "BSN number": [
             type_data[0],
-            em.extract_between_keywords(text, "BSN Number", "Job"),
+            em.extract_between_keywords(text, "BSN Number", "\n"),
         ],
         "Job title": [
             type_data[0],
-            em.extract_between_keywords(text, "Job Title", "Date of entry"),
+            em.extract_between_keywords(text, "Job Title", "\n"),
         ],
         "Date of entry into service": [
             type_data[2],
-            em.extract_dates(text, "into service", "PDF"),
+            em.extract_dates(text, "into service", "\n"),
         ],
         "Returning expat": [
             type_data[0],
@@ -73,11 +72,13 @@ def extract(text: str) -> dict:
         ],
         "UFO code": [
             type_data[0],
-            em.extract_between_keywords(text, "UFO code", "Upload"),
+            em.extract_between_keywords(text, "UFO code", "\n"),
         ],
         "Application tax": [
             type_data[0],
-            em.extract_specific_words(text, "to employment contract", "Note", yes_no),
+            em.extract_specific_words(
+                text, "Did employer and employee", "Note", yes_no
+            ),
         ],
         "Agreement": [
             type_data[0],
@@ -105,8 +106,13 @@ def transform(extracted_data: dict) -> pd.DataFrame:
     return df
 
 
-def main(pdf_path) -> pd.DataFrame:
+def main(pdf_path, dev_mode=False) -> pd.DataFrame:
+    if dev_mode:
+        extracted_data = extract(pdf_path)
+        clean_data = transform(extracted_data)
+        return clean_data
     raw_data = get_raw_data(pdf_path)
+    em.save_text(raw_data, "application_form")
     extracted_data = extract(raw_data)
     clean_data = transform(extracted_data)
     return clean_data

@@ -4,7 +4,7 @@ from extractors.methods import transform_methods as tm
 
 
 def get_raw_data(pdf_path) -> str:
-    return em.file_to_raw_data(pdf_path)
+    return em.file_to_raw_data(pdf_path, 11)
 
 
 def extract(text: str) -> dict:
@@ -61,6 +61,10 @@ def extract(text: str) -> dict:
             type_data[2],
             em.extract_dates(text, "undersigned", "Signature"),
         ],
+        "Signature": [
+            type_data[0],
+            em.extract_after_keyword(text, "Signature:"),
+        ],
     }
 
     return extracted_data
@@ -89,14 +93,16 @@ def transform(extracted_data: dict) -> pd.DataFrame:
     except TypeError:
         pass
 
-    # TODO fix this garbage
     # Make new df with all list[date] to transform to amount of months:
     df_list_dates = df[(df["TYPE"] == "list[date]")]
     df_list_dates = df_list_dates.dropna(subset="VALUE")
 
+    # Get all rows with list[date]
+    durations = []
     for row_index, row in df_list_dates.iterrows():
-        durations = []
+        # Get all the values from the list[date]
         for index, date in enumerate(row["VALUE"]):
+            print(index)
             if index % 2 == 0:
                 first_date = date
             else:
@@ -111,13 +117,17 @@ def transform(extracted_data: dict) -> pd.DataFrame:
                     durations.append(
                         tm.months_and_days_between_dates(first_date, last_date)
                     )
+    df2 = pd.DataFrame(durations, columns=["Values"])
+    return df, df2
 
-        print(durations)
-    return df
 
-
-def main(pdf_path) -> (pd.DataFrame, str):
+def main(pdf_path, dev_mode=False) -> (pd.DataFrame, str):
+    if dev_mode:
+        extracted_data = extract(pdf_path)
+        clean_data = transform(extracted_data)
+        return clean_data
     raw_data = get_raw_data(pdf_path)
+    em.save_text(raw_data, "tax_form")
     extracted_data = extract(raw_data)
     clean_data = transform(extracted_data)
     return clean_data

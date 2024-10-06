@@ -56,8 +56,11 @@ def clean_locations(dates: list[str], locations: list[str]) -> list[str]:
 
 def months_and_days_between_dates(first_date: str, last_date: str, round=False) -> str:
     date_format = "%d-%m-%Y"
-    date1 = datetime.strptime(first_date, date_format)
-    date2 = datetime.strptime(last_date, date_format)
+    try:
+        date1 = datetime.strptime(first_date, date_format)
+        date2 = datetime.strptime(last_date, date_format)
+    except ValueError:
+        return "{date1}, {date2}: Error"
     months = (date2.year - date1.year) * 12 + (date2.month - date1.month)
 
     # If date2's day is less than date1's day, we subtract one month and calculate the day difference
