@@ -5,6 +5,8 @@ from extractors.application_form import main as application_form_main
 
 app = Flask(__name__)
 
+# Skip the upload with DEV_MODE
+# Make sure you run DEV_MODE=False once for the temp files
 DEV_MODE = True
 LOCAL_FILE1 = "extractors/data/tax_form.txt"
 LOCAL_FILE2 = "extractors/data/application_form.txt"
@@ -14,7 +16,7 @@ LOCAL_FILE2 = "extractors/data/application_form.txt"
 def upload_files():
     if request.method == "POST" or DEV_MODE:
         if DEV_MODE:
-            with open(LOCAL_FILE1, "rb") as f1, open(LOCAL_FILE2, "rb") as f2:
+            with open(LOCAL_FILE1, "r") as f1, open(LOCAL_FILE2, "r") as f2:
                 pdf_text1 = f1.read()
                 pdf_text2 = f2.read()
 
@@ -35,7 +37,6 @@ def upload_files():
             if isinstance(data1, pd.DataFrame)
             else data1
         )
-        print(data11)
         data11_dict = (
             data11.to_dict(orient="records")
             if isinstance(data11, pd.DataFrame)
@@ -56,4 +57,3 @@ def upload_files():
 
 if __name__ == "__main__":
     app.run(debug=True)
-

@@ -102,7 +102,6 @@ def transform(extracted_data: dict) -> pd.DataFrame:
     for row_index, row in df_list_dates.iterrows():
         # Get all the values from the list[date]
         for index, date in enumerate(row["VALUE"]):
-            print(index)
             if index % 2 == 0:
                 first_date = date
             else:
@@ -121,13 +120,10 @@ def transform(extracted_data: dict) -> pd.DataFrame:
     return df, df2
 
 
-def main(pdf_path, dev_mode=False) -> (pd.DataFrame, str):
-    if dev_mode:
-        extracted_data = extract(pdf_path)
-        clean_data = transform(extracted_data)
-        return clean_data
-    raw_data = get_raw_data(pdf_path)
-    em.save_text(raw_data, "tax_form")
+def main(raw_data, dev_mode=False) -> (pd.DataFrame, str):
+    if not dev_mode:
+        raw_data = get_raw_data(raw_data)
+        em.save_text(raw_data, "tax_form")
     extracted_data = extract(raw_data)
     clean_data = transform(extracted_data)
     return clean_data

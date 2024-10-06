@@ -106,13 +106,10 @@ def transform(extracted_data: dict) -> pd.DataFrame:
     return df
 
 
-def main(pdf_path, dev_mode=False) -> pd.DataFrame:
-    if dev_mode:
-        extracted_data = extract(pdf_path)
-        clean_data = transform(extracted_data)
-        return clean_data
-    raw_data = get_raw_data(pdf_path)
-    em.save_text(raw_data, "application_form")
+def main(raw_data, dev_mode=False) -> pd.DataFrame:
+    if not dev_mode:
+        raw_data = get_raw_data(raw_data)
+        em.save_text(raw_data, "application_form")
     extracted_data = extract(raw_data)
     clean_data = transform(extracted_data)
     return clean_data
