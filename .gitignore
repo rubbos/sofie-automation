@@ -1,0 +1,10 @@
+__pycache__,
+app/extractors/__pycache__,
+app/extractors/methods/__pycache__,
+venv,
+pdf_examples,
+*.
+
+__pycache__
+pdf_examples
+dependency_tree.txt
