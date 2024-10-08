@@ -9,8 +9,11 @@ import os
 
 def save_text(text: str, name: str) -> None:
     """Save the extracted text from pytesseract in a folder"""
-    directory = os.path.join(os.path.dirname(__file__), "..", "data")
-    file_path = os.path.join(directory, f"{name}.txt")
+    folder_path = "temp_files"
+    if not os.path.exists(folder_path):
+        os.makedirs(folder_path)
+
+    file_path = os.path.join(folder_path, f"{name}.txt")
     with open(file_path, "w") as text_file:
         text_file.write(text)
 

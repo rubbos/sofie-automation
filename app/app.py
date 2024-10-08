@@ -8,8 +8,8 @@ app = Flask(__name__)
 # Skip the upload with DEV_MODE
 # Make sure you run DEV_MODE=False once for the temp files
 DEV_MODE = True
-LOCAL_FILE1 = "extractors/data/tax_form.txt"
-LOCAL_FILE2 = "extractors/data/application_form.txt"
+LOCAL_FILE1 = "temp_files/tax_form.txt"
+LOCAL_FILE2 = "temp_files/application_form.txt"
 
 
 @app.route("/", methods=["GET", "POST"])
