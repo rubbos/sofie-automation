@@ -20,8 +20,12 @@ def upload_files():
                 pdf_text1 = f1.read()
                 pdf_text2 = f2.read()
 
-                data1, data11 = tax_form_main(str(pdf_text1), dev_mode=True)
-                data2 = application_form_main(str(pdf_text2), dev_mode=True)
+                tax_form_data, tax_form_data_special = tax_form_main(
+                    str(pdf_text1), dev_mode=True
+                )
+                application_form_data = application_form_main(
+                    str(pdf_text2), dev_mode=True
+                )
         else:
             file1 = request.files["file1"]
             file2 = request.files["file2"]
@@ -29,27 +33,30 @@ def upload_files():
             pdf_bytes1 = file1.read()
             pdf_bytes2 = file2.read()
 
-            data1, data11 = tax_form_main(pdf_bytes1)
-            data2 = application_form_main(pdf_bytes2)
+            tax_form_data, tax_form_data_special = tax_form_main(pdf_bytes1)
+            application_form_data = application_form_main(pdf_bytes2)
 
-        data1_dict = (
-            data1.to_dict(orient="records")
-            if isinstance(data1, pd.DataFrame)
-            else data1
+        tax_form_dict = (
+            tax_form_data.to_dict(orient="records")
+            if isinstance(tax_form_data, pd.DataFrame)
+            else tax_form_data
         )
-        data11_dict = (
-            data11.to_dict(orient="records")
-            if isinstance(data11, pd.DataFrame)
-            else data11
+        tax_form_dict_special = (
+            tax_form_data_special.to_dict(orient="records")
+            if isinstance(tax_form_data_special, pd.DataFrame)
+            else tax_form_data_special
         )
-        data2_dict = (
-            data2.to_dict(orient="records")
-            if isinstance(data2, pd.DataFrame)
-            else data2
+        application_form_dict = (
+            application_form_data.to_dict(orient="records")
+            if isinstance(application_form_data, pd.DataFrame)
+            else application_form_data
         )
 
         return render_template(
-            "results.html", data1=data1_dict, data11=data11_dict, data2=data2_dict
+            "results.html",
+            tax_form_data=tax_form_dict,
+            tax_form_data_special=tax_form_dict_special,
+            application_form_data=application_form_dict,
         )
 
     return render_template("upload.html")
