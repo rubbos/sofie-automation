@@ -62,9 +62,7 @@ def extract(text: str) -> dict:
         ],
         "Promovendus exception": [
             type_data[0],
-            em.extract_specific_words(
-                text, "Did the employee live or stay", "PhD", yes_no
-            ),
+            em.extract_specific_words(text, "Did the employee live", "PhD", yes_no),
         ],
         "UFO 01 type": [
             type_data[0],

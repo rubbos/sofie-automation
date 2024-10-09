@@ -2,6 +2,7 @@ from flask import Flask, render_template, request
 import pandas as pd
 from extractors.tax_form import main as tax_form_main
 from extractors.application_form import main as application_form_main
+from utils.validation import validate_df
 
 app = Flask(__name__)
 
@@ -36,6 +37,8 @@ def upload_files():
             tax_form_data, tax_form_data_special = tax_form_main(pdf_bytes1)
             application_form_data = application_form_main(pdf_bytes2)
 
+        checks = validate_df(tax_form_data, application_form_data)
+
         tax_form_dict = (
             tax_form_data.to_dict(orient="records")
             if isinstance(tax_form_data, pd.DataFrame)
@@ -46,6 +49,11 @@ def upload_files():
             if isinstance(tax_form_data_special, pd.DataFrame)
             else tax_form_data_special
         )
+        checks = (
+            checks.to_dict(orient="records")
+            if isinstance(checks, pd.DataFrame)
+            else checks
+        )
         application_form_dict = (
             application_form_data.to_dict(orient="records")
             if isinstance(application_form_data, pd.DataFrame)
@@ -54,6 +62,7 @@ def upload_files():
 
         return render_template(
             "results.html",
+            checks=checks,
             tax_form_data=tax_form_dict,
             tax_form_data_special=tax_form_dict_special,
             application_form_data=application_form_dict,
