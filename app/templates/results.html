@@ -12,13 +12,6 @@
     <div class="w-full max-w-4xl px-4 mb-8">
         <h2 class="text-2xl mb-4">Checks</h2>
         <table class="min-w-full bg-gray-800 border border-gray-700">
-            <thead>
-                <tr>
-                    {% for key in checks[0].keys() %}
-                    <th class="py-2 px-4 border-b border-gray-700">{{ key }}</th>
-                    {% endfor %}
-                </tr>
-            </thead>
             <tbody>
                 {% for row in checks %}
                 <tr>
@@ -34,13 +27,6 @@
         <h2 class="text-2xl mb-4">Calculations</h2>
         {% if tax_form_data_special and tax_form_data_special|length > 0 %}
         <table class="min-w-full bg-gray-800 border border-gray-700">
-            <thead>
-                <tr>
-                    {% for key in tax_form_data_special[0].keys() %}
-                    <th class="py-2 px-4 border-b border-gray-700">{{ key }}</th>
-                    {% endfor %}
-                </tr>
-            </thead>
             <tbody>
                 {% for row in tax_form_data_special %}
                 <tr>

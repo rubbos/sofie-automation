@@ -8,7 +8,7 @@ app = Flask(__name__)
 
 # Skip the upload with DEV_MODE
 # Make sure you run DEV_MODE=False once for the temp files
-DEV_MODE = True
+DEV_MODE = False
 LOCAL_FILE1 = "temp_files/tax_form.txt"
 LOCAL_FILE2 = "temp_files/application_form.txt"
 
