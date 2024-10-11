@@ -3,94 +3,132 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Results</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
+    <title>Form Results</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.0.3/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body class="bg-gray-900 text-white flex flex-col items-center min-h-screen">
-    <h1 class="text-4xl mb-6 mt-6">Results</h1>
-    <div class="w-full max-w-4xl px-4 mb-8">
-        <h2 class="text-2xl mb-4">Checks</h2>
-        <table class="min-w-full bg-gray-800 border border-gray-700">
-            <tbody>
-                {% for row in checks %}
-                <tr>
-                    {% for key in row.keys() %}
-                    <td class="py-2 px-4 border-b border-gray-700">{{ row[key] }}</td>
-                    {% endfor %}
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>    
-    <div class="w-full max-w-4xl px-4 mb-8">
-        <h2 class="text-2xl mb-4">Calculations</h2>
-        {% if tax_form_data_special and tax_form_data_special|length > 0 %}
-        <table class="min-w-full bg-gray-800 border border-gray-700">
-            <tbody>
-                {% for row in tax_form_data_special %}
-                <tr>
-                    {% for key in row.keys() %}
-                    <td class="py-2 px-4 border-b border-gray-700">{{ row[key] }}</td>
-                    {% endfor %}
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        {% else %}
-        <p>No data available</p>
-        {% endif %}
-    </div>
-    <div class="w-full max-w-4xl px-4 mb-8">
-        <h2 class="text-2xl mb-4">Tax Form 30%:</h2>
-        <table class="min-w-full bg-gray-800 border border-gray-700">
-            <thead>
-                <tr>
-                    {% for key in tax_form_data[0].keys() %}
-                    <th class="py-2 px-4 border-b border-gray-700">{{ key }}</th>
-                    {% endfor %}
-                </tr>
-            </thead>
-            <tbody>
+<body class="bg-gray-900 text-white">
+    <div class="container mx-auto p-6">
+        <h1 class="text-3xl font-bold mb-6 text-center">Check values</h1>
+        <p class="mb-3 p-3"> Please go over the values inserted by SOFIEbot. There might be small mistakes from extracting the pdf's. 
+        SOFIEbot only works for standard requests. The best way to check these values is using keys: [TAB], [ENTER] and [<-][->].</p>           
+        <div class="mb-12 text-center">
+                <button type="button" data-modal-target="guide-modal" data-modal-toggle="guide-modal" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition-all duration-300">
+                    See example guide
+                </button>
+            </div>
+        <div id="guide-modal" data-modal-backdrop="static" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+        <div class="relative p-4 w-full max-w-2xl max-h-full">
+            <!-- Modal content -->
+            <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+                <!-- Modal header -->
+                <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
+                    <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
+                        Static modal
+                    </h3>
+                    <button type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="static-modal">
+                        <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                        </svg>
+                        <span class="sr-only">Close modal</span>
+                    </button>
+                </div>
+                <!-- Modal body -->
+                <div class="p-4 md:p-5 space-y-4">
+                    <p class="text-base leading-relaxed text-gray-500 dark:text-gray-400">
+                        With less than a month to go before the European Union enacts new consumer privacy laws for its citizens, companies around the world are updating their terms of service agreements to comply.
+                    </p>
+                    <p class="text-base leading-relaxed text-gray-500 dark:text-gray-400">
+                        The European Union’s General Data Protection Regulation (G.D.P.R.) goes into effect on May 25 and is meant to ensure a common set of data rights in the European Union. It requires organizations to notify users as soon as possible of high-risk data breaches that could personally affect them.
+                    </p>
+                </div>
+                <!-- Modal footer -->
+                <div class="flex items-center p-4 md:p-5 border-t border-gray-200 rounded-b dark:border-gray-600">
+                    <button data-modal-hide="static-modal" type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">I accept</button>
+                    <button data-modal-hide="static-modal" type="button" class="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">Decline</button>
+                </div>
+            </div>
+        </div>
+    </div> 
+        <form method="POST" action="{{ url_for('submit_results') }}">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 {% for row in tax_form_data %}
-            <tr>
-                {% for key in row.keys() %}
-                {% if loop.last %}
-                <td class="py-2 px-4 border-b border-gray-800 bg-gray-700" contenteditable="true">{{ row[key] }}</td>
-                {% else %}
-                <td class="py-2 px-4 border-b border-gray-700">{{ row[key] }}</td>
-                {% endif %}
-                {% endfor %}
-            </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-    <div class="w-full max-w-4xl px-4 mb-8">
-        <h2 class="text-2xl mb-4">Application Form:</h2>
-        <table class="min-w-full bg-gray-800 border border-gray-700">
-            <thead>
-                <tr>
-                    {% for key in application_form_data[0].keys() %}
-                    <th class="py-2 px-4 border-b border-gray-700">{{ key }}</th>
-                    {% endfor %}
-                </tr>
-            </thead>
-            <tbody>
+                <div class="min-w-full bg-gray-800 border border-gray-700 p-6 shadow-lg rounded-lg">
+                    <label class="block mb-2" for="data_tax_{{ loop.index0 }}_VALUE">
+                        Tax Form 30% ({{ loop.index }}) - {{ row.KEY }}:
+                    </label>
+                    <label class="block font-semibold mb-2" for="data_tax_{{ loop.index0 }}_VALUE">
+                        {{ row.VALUE }}
+                    </label>
+                    <input class="border border-gray-300 text-black p-3 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" 
+                           type="text" 
+                           id="data_tax_{{ loop.index0 }}_VALUE" 
+                           name="data_tax_{{ loop.index0 }}_VALUE" 
+                           value="{{ row.VALUE }}"
+                           autocomplete="off">
+                </div>
+                {% endfor %} 
                 {% for row in application_form_data %}
-            <tr>
-                {% for key in row.keys() %}
-                {% if loop.last %}
-                <td class="py-2 px-4 border-b border-gray-800 bg-gray-700" contenteditable="true">{{ row[key] }}</td>
-                {% else %}
-                <td class="py-2 px-4 border-b border-gray-700">{{ row[key] }}</td>
-                {% endif %}
-                {% endfor %}
-            </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                <div class="min-w-full bg-gray-800 border border-gray-700 p-6 shadow-lg rounded-lg">
+                    <label class="block mb-2" for="data_tax_{{ loop.index0 }}_VALUE">
+                        Oorspronkelijke aanvraag ({{ loop.index }}) - {{ row.KEY }}:
+                    </label>
+                    <label class="block font-semibold mb-2" for="data_tax_{{ loop.index0 }}_VALUE">
+                        {{ row.VALUE }}
+                    </label>
+                    <input class="border border-gray-300 text-black p-3 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" 
+                           type="text" 
+                           id="data_app_{{ loop.index0 }}_VALUE" 
+                           name="data_app_{{ loop.index0 }}_VALUE" 
+                           value="{{ row.VALUE }}"
+                           autocomplete="off">
+                </div>
+                {% endfor %} 
+            </div>
+            <div class="mt-8 text-center">
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition-all duration-300">
+                    Submit Changes
+                </button>
+            </div>
+        </form>
     </div>
+        <script>
+        // Get modal elements
+        const modal = document.getElementById('guide-modal');
+        const openModalButtons = document.querySelectorAll('[data-modal-toggle]');
+        const closeModalButtons = document.querySelectorAll('[data-modal-hide]');
+
+        // Function to open the modal
+        openModalButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                modal.classList.remove('hidden');
+            });
+        });
+
+        // Function to close the modal
+        closeModalButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                modal.classList.add('hidden');
+            });
+        });
+
+        // Close the modal when clicking outside of it
+        modal.addEventListener('click', (event) => {
+            if (event.target === modal) {
+                modal.classList.add('hidden');
+            }
+        });
+    </script>
+    <script>
+    // Prevent form submission on Enter key press for input fields
+    const inputs = document.querySelectorAll('input[type="text"]');
+    inputs.forEach(input => {
+        input.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault(); // Prevent form submission on Enter key
+            }
+        });
+    });
+</script>
 </body>
 </html>
 
