@@ -1,134 +1,212 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Form Results</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.0.3/dist/tailwind.min.css" rel="stylesheet">
-</head>
-<body class="bg-gray-900 text-white">
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.0.3/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="bg-gray-900 text-white">
     <div class="container mx-auto p-6">
-        <h1 class="text-3xl font-bold mb-6 text-center">Check values</h1>
-        <p class="mb-3 p-3"> Please go over the values inserted by SOFIEbot. There might be small mistakes from extracting the pdf's. 
-        SOFIEbot only works for standard requests. The best way to check these values is using keys: [TAB], [ENTER] and [<-][->].</p>           
-        <div class="mb-12 text-center">
-                <button type="button" data-modal-target="guide-modal" data-modal-toggle="guide-modal" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition-all duration-300">
-                    See example guide
-                </button>
-            </div>
-        <div id="guide-modal" data-modal-backdrop="static" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
-        <div class="relative p-4 w-full max-w-2xl max-h-full">
-            <!-- Modal content -->
-            <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
-                <!-- Modal header -->
-                <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
-                    <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
-                        Static modal
-                    </h3>
-                    <button type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="static-modal">
-                        <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
-                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
-                        </svg>
-                        <span class="sr-only">Close modal</span>
-                    </button>
-                </div>
-                <!-- Modal body -->
-                <div class="p-4 md:p-5 space-y-4">
-                    <p class="text-base leading-relaxed text-gray-500 dark:text-gray-400">
-                        With less than a month to go before the European Union enacts new consumer privacy laws for its citizens, companies around the world are updating their terms of service agreements to comply.
-                    </p>
-                    <p class="text-base leading-relaxed text-gray-500 dark:text-gray-400">
-                        The European Union’s General Data Protection Regulation (G.D.P.R.) goes into effect on May 25 and is meant to ensure a common set of data rights in the European Union. It requires organizations to notify users as soon as possible of high-risk data breaches that could personally affect them.
-                    </p>
-                </div>
-                <!-- Modal footer -->
-                <div class="flex items-center p-4 md:p-5 border-t border-gray-200 rounded-b dark:border-gray-600">
-                    <button data-modal-hide="static-modal" type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">I accept</button>
-                    <button data-modal-hide="static-modal" type="button" class="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">Decline</button>
-                </div>
-            </div>
+      <h1 class="text-3xl font-bold mb-6 text-center">Check values</h1>
+      <p class="mb-3 p-3">
+        Please go over the values inserted by SOFIEbot. There might be small
+        mistakes from extracting the PDFs. SOFIEbot only works for standard
+        requests. The best way to check these values is using keys: [TAB],
+        [ENTER] and [←][→].
+      </p>
+      <div class="mb-12 text-center">
+        <button
+          type="button"
+          id="open-guide-modal"
+          class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition-all duration-300"
+        >
+          See example guide
+        </button>
+      </div>
+      <div
+        id="guide-modal"
+        tabindex="-1"
+        aria-hidden="true"
+        class="hidden fixed inset-0 z-50 overflow-auto bg-black bg-opacity-50 flex justify-center items-center"
+      >
+        <div class="relative bg-gray-700 rounded-lg shadow-xl max-w-2xl w-full m-4">
+          <div class="flex items-center justify-between p-4 border-b border-gray-600">
+            <h3 class="text-xl font-semibold text-white">
+              Guide
+            </h3>
+            <button
+              type="button"
+              id="close-guide-modal"
+              class="text-gray-400 bg-transparent hover:bg-gray-600 hover:text-white rounded-lg text-sm p-1.5 ml-auto inline-flex items-center"
+            >
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+              </svg>
+            </button>
+          </div>
+          <div class="p-6 space-y-6">
+            <p class="text-base leading-relaxed text-gray-400">
+              This guide will help you understand how to use the form effectively.
+            </p>
+            <p class="text-base leading-relaxed text-gray-400">
+              1. Review each field carefully.<br>
+              2. Click the "edit" button to make changes.<br>
+              3. Press Enter to save your changes.<br>
+              4. Use Tab to move between fields.<br>
+              5. Submit the form when you're done.
+            </p>
+          </div>
+          <div class="flex items-center p-6 space-x-2 border-t border-gray-600">
+            <button
+              id="close-guide-modal-button"
+              type="button"
+              class="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+            >
+              I understand
+            </button>
+          </div>
         </div>
-    </div> 
-        <form method="POST" action="{{ url_for('submit_results') }}">
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                {% for row in tax_form_data %}
-                <div class="min-w-full bg-gray-800 border border-gray-700 p-6 shadow-lg rounded-lg">
-                    <label class="block mb-2" for="data_tax_{{ loop.index0 }}_VALUE">
-                        Tax Form 30% ({{ loop.index }}) - {{ row.KEY }}:
-                    </label>
-                    <label class="block font-semibold mb-2" for="data_tax_{{ loop.index0 }}_VALUE">
-                        {{ row.VALUE }}
-                    </label>
-                    <input class="border border-gray-300 text-black p-3 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" 
-                           type="text" 
-                           id="data_tax_{{ loop.index0 }}_VALUE" 
-                           name="data_tax_{{ loop.index0 }}_VALUE" 
-                           value="{{ row.VALUE }}"
-                           autocomplete="off">
-                </div>
-                {% endfor %} 
-                {% for row in application_form_data %}
-                <div class="min-w-full bg-gray-800 border border-gray-700 p-6 shadow-lg rounded-lg">
-                    <label class="block mb-2" for="data_tax_{{ loop.index0 }}_VALUE">
-                        Oorspronkelijke aanvraag ({{ loop.index }}) - {{ row.KEY }}:
-                    </label>
-                    <label class="block font-semibold mb-2" for="data_tax_{{ loop.index0 }}_VALUE">
-                        {{ row.VALUE }}
-                    </label>
-                    <input class="border border-gray-300 text-black p-3 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" 
-                           type="text" 
-                           id="data_app_{{ loop.index0 }}_VALUE" 
-                           name="data_app_{{ loop.index0 }}_VALUE" 
-                           value="{{ row.VALUE }}"
-                           autocomplete="off">
-                </div>
-                {% endfor %} 
+      </div>
+      <form method="POST" action="{{ url_for('submit_results') }}">
+        <div class="grid grid-cols-1 gap-6">
+          {% for row in tax_form_data %}
+          <div
+            class="bg-gray-800 border border-gray-700 p-6 shadow-lg rounded-lg"
+          >
+            <label class="block mb-2" for="data_tax_{{ loop.index0 }}_VALUE">
+              TF30% {{ row.KEY }}:
+            </label>
+            <div class="flex justify-between items-center">
+              <div class="space-y-2 flex-grow mr-4">
+                <label
+                  class="block font-semibold mb-2 break-words text-2xl"
+                  id="label_tax_{{ loop.index0 }}"
+                >
+                  {{ row.VALUE }}
+                </label>
+                <input
+                  class="border border-gray-300 text-black p-3 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 hidden text-2xl"
+                  type="text"
+                  id="input_tax_{{ loop.index0 }}"
+                  name="data_tax_{{ loop.index0 }}_VALUE"
+                  value="{{ row.VALUE }}"
+                  autocomplete="off"
+                />
+              </div>
+              <button
+                type="button"
+                class="text-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition-all duration-300"
+                onclick="toggleEdit('tax', {{ loop.index0 }})"
+              >
+                edit
+              </button>
             </div>
-            <div class="mt-8 text-center">
-                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition-all duration-300">
-                    Submit Changes
-                </button>
+          </div>
+          {% endfor %}
+          {% for row in application_form_data %}
+          <div
+            class="bg-gray-800 border border-gray-700 p-6 shadow-lg rounded-lg"
+          >
+            <label class="block mb-2" for="data_app_{{ loop.index0 }}_VALUE">
+              Oorspronkelijke aanvraag {{ row.KEY }}:
+            </label>
+            <div class="flex justify-between items-center">
+              <div class="space-y-2 flex-grow mr-4">
+                <label
+                  class="block font-semibold mb-2 break-words text-2xl"
+                  id="label_app_{{ loop.index0 }}"
+                >
+                  {{ row.VALUE }}
+                </label>
+                <input
+                  class="border border-gray-300 text-black p-3 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 hidden text-2xl"
+                  type="text"
+                  id="input_app_{{ loop.index0 }}"
+                  name="data_app_{{ loop.index0 }}_VALUE"
+                  value="{{ row.VALUE }}"
+                  autocomplete="off"
+                />
+              </div>
+              <button
+                type="button"
+                class="text-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition-all duration-300"
+                onclick="toggleEdit('app', {{ loop.index0 }})"
+              >
+                edit
+              </button>
             </div>
-        </form>
+          </div>
+          {% endfor %}
+        </div>
+        <div class="mt-8 text-center">
+          <button
+            type="submit"
+            class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition-all duration-300"
+          >
+            Submit Changes
+          </button>
+        </div>
+      </form>
     </div>
-        <script>
-        // Get modal elements
-        const modal = document.getElementById('guide-modal');
-        const openModalButtons = document.querySelectorAll('[data-modal-toggle]');
-        const closeModalButtons = document.querySelectorAll('[data-modal-hide]');
-
-        // Function to open the modal
-        openModalButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                modal.classList.remove('hidden');
-            });
-        });
-
-        // Function to close the modal
-        closeModalButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                modal.classList.add('hidden');
-            });
-        });
-
-        // Close the modal when clicking outside of it
-        modal.addEventListener('click', (event) => {
-            if (event.target === modal) {
-                modal.classList.add('hidden');
-            }
-        });
-    </script>
     <script>
-    // Prevent form submission on Enter key press for input fields
-    const inputs = document.querySelectorAll('input[type="text"]');
-    inputs.forEach(input => {
-        input.addEventListener('keydown', function(event) {
-            if (event.key === 'Enter') {
-                event.preventDefault(); // Prevent form submission on Enter key
-            }
-        });
-    });
-</script>
-</body>
-</html>
+      // Modal functionality
+      const modal = document.getElementById("guide-modal");
+      const openModalButton = document.getElementById("open-guide-modal");
+      const closeModalButtons = document.querySelectorAll("#close-guide-modal, #close-guide-modal-button");
 
+      openModalButton.addEventListener("click", () => {
+        modal.classList.remove("hidden");
+      });
+
+      closeModalButtons.forEach(button => {
+        button.addEventListener("click", () => {
+          modal.classList.add("hidden");
+        });
+      });
+
+      modal.addEventListener("click", (event) => {
+        if (event.target === modal) {
+          modal.classList.add("hidden");
+        }
+      });
+
+      // Form functionality
+      function toggleEdit(type, index) {
+        const label = document.getElementById(`label_${type}_${index}`);
+        const input = document.getElementById(`input_${type}_${index}`);
+        
+        if (label.classList.contains("hidden")) {
+          label.classList.remove("hidden");
+          input.classList.add("hidden");
+          label.textContent = input.value;
+        } else {
+          label.classList.add("hidden");
+          input.classList.remove("hidden");
+          input.focus();
+        }
+      }
+
+      document.querySelectorAll('input[type="text"]').forEach((input) => {
+        input.addEventListener("keydown", function(event) {
+          if (event.key === "Enter") {
+            event.preventDefault();
+            const [_, type, index] = this.id.split("_");
+            toggleEdit(type, index);
+          }
+        });
+      });
+
+      document.querySelector("form").addEventListener("submit", function(event) {
+        document.querySelectorAll('input[type="text"]').forEach((input) => {
+          const [_, type, index] = input.id.split("_");
+          const label = document.getElementById(`label_${type}_${index}`);
+          label.textContent = input.value;
+        });
+      });
+    </script>
+  </body>
+</html>

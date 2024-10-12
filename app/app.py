@@ -54,30 +54,17 @@ def upload_files():
 
 @app.route("/submit-results", methods=["POST"])
 def submit_results():
-    logging.debug(f"Received form data: {request.form.keys()}")
-
-    # Update the last column of tax_form_data
     for i in range(len(tax_form_data)):
         key = f"data_tax_{i}_VALUE"
         if key in request.form:
-            old_value = tax_form_data.at[i, "VALUE"]
             new_value = request.form[key].strip()
             tax_form_data.at[i, "VALUE"] = new_value
-            logging.debug(f"Updating tax form row {i}: {old_value} -> {new_value}")
 
-    # Update the last column of application_form_data
     for i in range(len(application_form_data)):
         key = f"data_app_{i}_VALUE"
         if key in request.form:
-            old_value = application_form_data.at[i, "VALUE"]
             new_value = request.form[key].strip()
             application_form_data.at[i, "VALUE"] = new_value
-            logging.debug(
-                f"Updating application form row {i}: {old_value} -> {new_value}"
-            )
-
-    logging.debug(f"Final tax form data: {tax_form_data}")
-    logging.debug(f"Final application form data: {application_form_data}")
 
     return render_template(
         "final.html",
