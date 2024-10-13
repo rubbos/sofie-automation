@@ -1,53 +1,112 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Final Results</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-</head>
-<body class="bg-gray-900 text-white flex flex-col items-center min-h-screen">
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="bg-gray-900 text-white flex flex-col items-center min-h-screen">
     <div class="w-full max-w-4xl px-4 mb-8">
-        <h1 class="text-4xl mb-6 mt-6">Final Results</h1>
-        <h2 class="text-2xl mb-4 mt-8">Tax Form 30%:</h2>
-        <table class="min-w-full bg-gray-800 border border-gray-700">
-            <thead>
-                <tr>
-                    {% for key in tax_form_data[0].keys() %}
-                    <th class="py-2 px-4 border-b border-gray-700">{{ key }}</th>
-                    {% endfor %}
-                </tr>
-            </thead>
-            <tbody>
-                {% for row in tax_form_data %}
-                <tr>
-                    {% for key, value in row.items() %}
-                    <td class="py-2 px-4 border-b border-gray-700">{{ value }}</td>
-                    {% endfor %}
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        <h2 class="text-2xl mb-4 mt-8">Application Form:</h2>
-        <table class="min-w-full bg-gray-800 border border-gray-700">
-            <thead>
-                <tr>
-                    {% for key in application_form_data[0].keys() %}
-                    <th class="py-2 px-4 border-b border-gray-700">{{ key }}</th>
-                    {% endfor %}
-                </tr>
-            </thead>
-            <tbody>
-                {% for row in application_form_data %}
-                <tr>
-                    {% for key, value in row.items() %}
-                    <td class="py-2 px-4 border-b border-gray-700">{{ value }}</td>
-                    {% endfor %}
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-</body>
-</html>
+      <div class="grid grid-cols-1 gap-6">
+        <div
+          class="bg-gray-800 border border-gray-700 p-6 shadow-lg rounded-lg text_base"
+        >
+          <div class="flex justify-between mb-2">
+            <h2 class="text-3xl mb-4">Main report</h2>
+            <button
+              onclick="copyToClipboard('hiddenText1')"
+              class="text-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition-all duration-300"
+            >
+              Copy text
+            </button>
+          </div>
+          <div class="space-y-2 flex-grow mr-4">
+            {{ main_report|safe }}
+            <div id="hiddenText1" class="hidden">{{ main_report }}</div>
+          </div>
+        </div>
+        <div
+          class="bg-gray-800 border border-gray-700 p-6 shadow-lg rounded-lg text_base"
+        >
+          <div class="flex justify-between mb-2">
+            <h2 class="text-3xl mb-4">Email report</h2>
+            <button
+              onclick="copyToClipboard('hiddenText2')"
+              class="text-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition-all duration-300"
+            >
+              Copy text
+            </button>
+          </div>
+          <div class="space-y-2 flex-grow mr-4">
+            {{ email_report|safe }}
+            <div id="hiddenText2" class="hidden">{{ email_report }}</div>
+          </div>
+        </div>
+      </div>
 
+      <h2 class="text-2xl mb-4 mt-8">Tax Form 30%:</h2>
+      <table class="min-w-full bg-gray-800 border border-gray-700">
+        <thead>
+          <tr>
+            {% for key in tax_form_data[0].keys() %}
+            <th class="py-2 px-4 border-b border-gray-700">{{ key }}</th>
+            {% endfor %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in tax_form_data %}
+          <tr>
+            {% for key, value in row.items() %}
+            <td class="py-2 px-4 border-b border-gray-700">{{ value }}</td>
+            {% endfor %}
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <h2 class="text-2xl mb-4 mt-8">Application Form:</h2>
+      <table class="min-w-full bg-gray-800 border border-gray-700">
+        <thead>
+          <tr>
+            {% for key in application_form_data[0].keys() %}
+            <th class="py-2 px-4 border-b border-gray-700">{{ key }}</th>
+            {% endfor %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in application_form_data %}
+          <tr>
+            {% for key, value in row.items() %}
+            <td class="py-2 px-4 border-b border-gray-700">{{ value }}</td>
+            {% endfor %}
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <script>
+      function copyToClipboard(divId) {
+        // Get the hidden text from the specified div ID
+        var hiddenTextDiv = document.getElementById(divId);
+        var tempTextArea = document.createElement("textarea");
+
+        // Set the value of the textarea to the hidden text
+        tempTextArea.value = hiddenTextDiv.textContent;
+
+        // Append the textarea to the body
+        document.body.appendChild(tempTextArea);
+
+        // Select and copy the text
+        tempTextArea.select();
+        tempTextArea.setSelectionRange(0, 99999); // For mobile devices
+        document.execCommand("copy");
+
+        // Remove the temporary textarea from the DOM
+        document.body.removeChild(tempTextArea);
+      }
+    </script>
+  </body>
+</html>

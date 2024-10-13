@@ -30,7 +30,7 @@ def file_to_raw_data(pdf_bytes, config_psm: int) -> str:
     doc = convert_from_bytes(pdf_bytes)
 
     text = ""
-    for page_number, page_data in enumerate(doc):
+    for page_data in doc:
         processed_data = preprocess_image(page_data)
         text += image_to_string(processed_data, config=f"--psm {config_psm}")
     return text

@@ -120,7 +120,7 @@ def transform(extracted_data: dict) -> pd.DataFrame:
     return df, df2
 
 
-def main(raw_data, dev_mode=False) -> (pd.DataFrame, str):
+def main(raw_data, dev_mode=False) -> pd.DataFrame:
     if not dev_mode:
         raw_data = get_raw_data(raw_data)
         em.save_text(raw_data, "tax_form")

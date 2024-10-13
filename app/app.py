@@ -3,6 +3,7 @@ import pandas as pd
 from extractors.tax_form import main as tax_form_main
 from extractors.application_form import main as application_form_main
 from utils.validation import validate_df
+from utils.reports import create_main_report, create_email_report
 import logging
 
 app = Flask(__name__)
@@ -66,10 +67,15 @@ def submit_results():
             new_value = request.form[key].strip()
             application_form_data.at[i, "VALUE"] = new_value
 
+    main_report = create_main_report(tax_form_data, application_form_data)
+    email_report = create_email_report(tax_form_data, application_form_data)
+
     return render_template(
         "final.html",
         tax_form_data=tax_form_data.to_dict(orient="records"),
         application_form_data=application_form_data.to_dict(orient="records"),
+        main_report=main_report,
+        email_report=email_report,
     )
 
 

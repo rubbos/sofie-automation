@@ -13,72 +13,18 @@
     <div class="container mx-auto p-6">
       <h1 class="text-3xl font-bold mb-6 text-center">Check values</h1>
       <p class="mb-3 p-3">
-        Please go over the values inserted by SOFIEbot. There might be small
-        mistakes from extracting the PDFs. SOFIEbot only works for standard
-        requests. The best way to check these values is using keys: [TAB],
-        [ENTER] and [←][→].
+        Please check the following values. There might be mistakes from
+        extracting. <b>SOFIEbot only works for standard requests!</b>
       </p>
-      <div class="mb-12 text-center">
-        <button
-          type="button"
-          id="open-guide-modal"
-          class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition-all duration-300"
-        >
-          See example guide
-        </button>
-      </div>
-      <div
-        id="guide-modal"
-        tabindex="-1"
-        aria-hidden="true"
-        class="hidden fixed inset-0 z-50 overflow-auto bg-black bg-opacity-50 flex justify-center items-center"
-      >
-        <div class="relative bg-gray-700 rounded-lg shadow-xl max-w-2xl w-full m-4">
-          <div class="flex items-center justify-between p-4 border-b border-gray-600">
-            <h3 class="text-xl font-semibold text-white">
-              Guide
-            </h3>
-            <button
-              type="button"
-              id="close-guide-modal"
-              class="text-gray-400 bg-transparent hover:bg-gray-600 hover:text-white rounded-lg text-sm p-1.5 ml-auto inline-flex items-center"
-            >
-              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
-              </svg>
-            </button>
-          </div>
-          <div class="p-6 space-y-6">
-            <p class="text-base leading-relaxed text-gray-400">
-              This guide will help you understand how to use the form effectively.
-            </p>
-            <p class="text-base leading-relaxed text-gray-400">
-              1. Review each field carefully.<br>
-              2. Click the "edit" button to make changes.<br>
-              3. Press Enter to save your changes.<br>
-              4. Use Tab to move between fields.<br>
-              5. Submit the form when you're done.
-            </p>
-          </div>
-          <div class="flex items-center p-6 space-x-2 border-t border-gray-600">
-            <button
-              id="close-guide-modal-button"
-              type="button"
-              class="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
-            >
-              I understand
-            </button>
-          </div>
-        </div>
-      </div>
       <form method="POST" action="{{ url_for('submit_results') }}">
         <div class="grid grid-cols-1 gap-6">
           {% for row in tax_form_data %}
           <div
-            class="bg-gray-800 border border-gray-700 p-6 shadow-lg rounded-lg"
+            class="bg-gray-800 border border-gray-700 p-6 shadow-lg rounded-lg text_base"
           >
+            30% Tax Form
             <label class="block mb-2" for="data_tax_{{ loop.index0 }}_VALUE">
-              TF30% {{ row.KEY }}:
+              {{ row.KEY }}
             </label>
             <div class="flex justify-between items-center">
               <div class="space-y-2 flex-grow mr-4">
@@ -106,13 +52,13 @@
               </button>
             </div>
           </div>
-          {% endfor %}
-          {% for row in application_form_data %}
+          {% endfor %} {% for row in application_form_data %}
           <div
             class="bg-gray-800 border border-gray-700 p-6 shadow-lg rounded-lg"
           >
+            Original request
             <label class="block mb-2" for="data_app_{{ loop.index0 }}_VALUE">
-              Oorspronkelijke aanvraag {{ row.KEY }}:
+              {{ row.KEY }}
             </label>
             <div class="flex justify-between items-center">
               <div class="space-y-2 flex-grow mr-4">
@@ -145,7 +91,7 @@
         <div class="mt-8 text-center">
           <button
             type="submit"
-            class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition-all duration-300"
+            class="bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition-all duration-300"
           >
             Submit Changes
           </button>
@@ -153,32 +99,11 @@
       </form>
     </div>
     <script>
-      // Modal functionality
-      const modal = document.getElementById("guide-modal");
-      const openModalButton = document.getElementById("open-guide-modal");
-      const closeModalButtons = document.querySelectorAll("#close-guide-modal, #close-guide-modal-button");
-
-      openModalButton.addEventListener("click", () => {
-        modal.classList.remove("hidden");
-      });
-
-      closeModalButtons.forEach(button => {
-        button.addEventListener("click", () => {
-          modal.classList.add("hidden");
-        });
-      });
-
-      modal.addEventListener("click", (event) => {
-        if (event.target === modal) {
-          modal.classList.add("hidden");
-        }
-      });
-
       // Form functionality
       function toggleEdit(type, index) {
         const label = document.getElementById(`label_${type}_${index}`);
         const input = document.getElementById(`input_${type}_${index}`);
-        
+
         if (label.classList.contains("hidden")) {
           label.classList.remove("hidden");
           input.classList.add("hidden");
@@ -191,7 +116,7 @@
       }
 
       document.querySelectorAll('input[type="text"]').forEach((input) => {
-        input.addEventListener("keydown", function(event) {
+        input.addEventListener("keydown", function (event) {
           if (event.key === "Enter") {
             event.preventDefault();
             const [_, type, index] = this.id.split("_");
@@ -200,13 +125,15 @@
         });
       });
 
-      document.querySelector("form").addEventListener("submit", function(event) {
-        document.querySelectorAll('input[type="text"]').forEach((input) => {
-          const [_, type, index] = input.id.split("_");
-          const label = document.getElementById(`label_${type}_${index}`);
-          label.textContent = input.value;
+      document
+        .querySelector("form")
+        .addEventListener("submit", function (event) {
+          document.querySelectorAll('input[type="text"]').forEach((input) => {
+            const [_, type, index] = input.id.split("_");
+            const label = document.getElementById(`label_${type}_${index}`);
+            label.textContent = input.value;
+          });
         });
-      });
     </script>
   </body>
 </html>
