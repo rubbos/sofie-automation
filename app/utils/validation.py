@@ -14,6 +14,7 @@
 # if promovendus, returning, changing dutch employer skip.
 # add calc for income
 import pandas as pd
+from utils.university import find_university
 
 
 def validate_df(df, df2):
@@ -63,3 +64,12 @@ def check_standard_request(df):
     ):
         return "This is a normal request"
     return "This request might be an exception"
+
+
+def validate_uni(df):
+    """Validate found university and update the values from a csv"""
+    uni = find_university(df)
+    df.loc[df["KEY"] == "Name employer", "VALUE"] = uni[0]
+    df.loc[df["KEY"] == "Loonheffing number", "VALUE"] = uni[1]
+    df.loc[df["KEY"] == "University type", "VALUE"] = uni[2].capitalize()
+    return df

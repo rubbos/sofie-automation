@@ -9,8 +9,8 @@
       rel="stylesheet"
     />
   </head>
-  <body class="bg-gray-900 text-white flex flex-col min-h-screen">
-    <div class="container mx-auto mb-12 mt-12">
+  <body class="bg-gray-900 text-white flex flex-col min-h-screen p-6">
+    <div class="container mx-auto mb-12 mt-6">
       <h1 class="text-3xl font-bold mb-6 text-center">Check values</h1>
       <p class="mb-6">
         Please check the following values. There might be mistakes from
@@ -20,10 +20,13 @@
         <div class="grid grid-cols-1 gap-6">
           {% for row in tax_form_data %}
           <div
-            class="bg-gray-800 border border-gray-700 p-6 shadow-lg rounded-lg text_base"
+            class="bg-gray-800 border border-gray-700 p-6 shadow-lg rounded-lg"
           >
-            30% Tax Form
-            <label class="block mb-2" for="data_tax_{{ loop.index0 }}_VALUE">
+            <p class="text-xs mb-1">30% Tax Form</p>
+            <label
+              class="block mb-2 text-lg"
+              for="data_tax_{{ loop.index0 }}_VALUE"
+            >
               {{ row.KEY }}
             </label>
             <div class="flex justify-between items-center">
@@ -56,8 +59,11 @@
           <div
             class="bg-gray-800 border border-gray-700 p-6 shadow-lg rounded-lg"
           >
-            Original request
-            <label class="block mb-2" for="data_app_{{ loop.index0 }}_VALUE">
+            <p class="text-xs mb-1">Oorspronkelijke aanvraag</p>
+            <label
+              class="block text-lg mb-2"
+              for="data_app_{{ loop.index0 }}_VALUE"
+            >
               {{ row.KEY }}
             </label>
             <div class="flex justify-between items-center">

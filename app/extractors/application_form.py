@@ -1,6 +1,7 @@
 import pandas as pd
 from extractors.methods import extract_methods as em
 from extractors.methods import transform_methods as tm
+from utils.validation import validate_uni
 
 
 def get_raw_data(pdf_path) -> str:
@@ -20,6 +21,7 @@ def extract(text: str) -> dict:
             type_data[0],
             em.extract_between_keywords(text, "LH number", "\n"),
         ],
+        "University type": [type_data[0], "None"],
         "Last name, Initials": [
             type_data[0],
             em.extract_between_keywords(text, "Initials", "\n"),
@@ -104,12 +106,18 @@ def transform(extracted_data: dict) -> pd.DataFrame:
     return df
 
 
+def validate(transformed_data):
+    transformed_data = validate_uni(transformed_data)  # validates uni, lhn and uni type
+    return transformed_data
+
+
 def main(raw_data, dev_mode=False) -> pd.DataFrame:
     if not dev_mode:
         raw_data = get_raw_data(raw_data)
         em.save_text(raw_data, "application_form")
     extracted_data = extract(raw_data)
-    clean_data = transform(extracted_data)
+    transformed_data = transform(extracted_data)
+    clean_data = validate(transformed_data)
     return clean_data
 
 

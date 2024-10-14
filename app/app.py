@@ -4,6 +4,7 @@ from extractors.tax_form import main as tax_form_main
 from extractors.application_form import main as application_form_main
 from utils.validation import validate_df
 from utils.reports import create_main_report, create_email_report
+from utils.calculations import create_special_values
 import logging
 
 app = Flask(__name__)
@@ -66,6 +67,9 @@ def submit_results():
         if key in request.form:
             new_value = request.form[key].strip()
             application_form_data.at[i, "VALUE"] = new_value
+
+    calculations = create_special_values(tax_form_data, application_form_data)
+    print(calculations)
 
     main_report = create_main_report(tax_form_data, application_form_data)
     email_report = create_email_report(tax_form_data, application_form_data)
