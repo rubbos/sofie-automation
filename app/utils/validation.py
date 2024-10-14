@@ -3,7 +3,6 @@
 # check for valid location
 # check for 24m before starting date
 # check if less than 6 weeks in a year
-# check if name employer exists in list
 # signed date must be before arrival date
 # check for valid date of birth
 # valid bsn number
@@ -67,9 +66,9 @@ def check_standard_request(df):
 
 
 def validate_uni(df):
-    """Validate found university and update the values from a csv"""
+    """Validate university and update the values from a csv"""
     uni = find_university(df)
     df.loc[df["KEY"] == "Name employer", "VALUE"] = uni[0]
     df.loc[df["KEY"] == "Loonheffing number", "VALUE"] = uni[1]
-    df.loc[df["KEY"] == "University type", "VALUE"] = uni[2].capitalize()
+    df.loc[df["KEY"] == "University type", "VALUE"] = uni[2]
     return df
