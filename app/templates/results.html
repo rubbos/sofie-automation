@@ -18,7 +18,45 @@
       </p>
       <form method="POST" action="{{ url_for('submit_results') }}">
         <div class="grid grid-cols-1 gap-6">
-          {% for row in tax_form_data %}
+          {% for row in extra_info_data %}
+          <div
+            class="bg-gray-800 border border-gray-700 p-6 shadow-lg rounded-lg"
+          >
+            <p class="text-xs mb-1">Arbeidsovereenkomst</p>
+            <label
+              class="block mb-2 text-lg"
+              for="data_extra_{{ loop.index0 }}_VALUE"
+            >
+              {{ row.KEY }}
+            </label>
+            <div class="flex justify-between items-center">
+              <div class="space-y-2 flex-grow mr-4">
+                <label
+                  class="block font-semibold mb-2 break-words text-2xl"
+                  id="label_extra_{{ loop.index0 }}"
+                >
+                  {% if row.VALUE is not none %} {{ row.VALUE }} {% else %} {%
+                  endif %}
+                </label>
+                <input
+                  class="border border-gray-300 text-black p-3 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 hidden text-2xl"
+                  type="text"
+                  id="input_extra_{{ loop.index0 }}"
+                  name="data_extra_{{ loop.index0 }}_VALUE"
+                  value="{{ row.VALUE }}"
+                  autocomplete="off"
+                />
+              </div>
+              <button
+                type="button"
+                class="text-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition-all duration-300"
+                onclick="toggleEdit('extra', {{ loop.index0 }})"
+              >
+                edit
+              </button>
+            </div>
+          </div>
+          {% endfor %}{% for row in tax_form_data %}
           <div
             class="bg-gray-800 border border-gray-700 p-6 shadow-lg rounded-lg"
           >
@@ -35,7 +73,8 @@
                   class="block font-semibold mb-2 break-words text-2xl"
                   id="label_tax_{{ loop.index0 }}"
                 >
-                  {{ row.VALUE }}
+                  {% if row.VALUE is not none %} {{ row.VALUE }} {% else %} {%
+                  endif %}
                 </label>
                 <input
                   class="border border-gray-300 text-black p-3 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 hidden text-2xl"
@@ -72,7 +111,8 @@
                   class="block font-semibold mb-2 break-words text-2xl"
                   id="label_app_{{ loop.index0 }}"
                 >
-                  {{ row.VALUE }}
+                  {% if row.VALUE is not none %} {{ row.VALUE }} {% else %} {%
+                  endif %}
                 </label>
                 <input
                   class="border border-gray-300 text-black p-3 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 hidden text-2xl"
@@ -105,7 +145,6 @@
       </form>
     </div>
     <script>
-      // Form functionality
       function toggleEdit(type, index) {
         const label = document.getElementById(`label_${type}_${index}`);
         const input = document.getElementById(`input_${type}_${index}`);
@@ -118,6 +157,7 @@
           label.classList.add("hidden");
           input.classList.remove("hidden");
           input.focus();
+          input.select();
         }
       }
 

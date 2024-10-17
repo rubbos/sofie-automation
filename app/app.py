@@ -2,6 +2,7 @@ from flask import Flask, render_template, request
 import pandas as pd
 from extractors.tax_form import main as tax_form_main
 from extractors.application_form import main as application_form_main
+from extractors.extra_info import main as extra_info_main
 from utils.validation import validate_df
 from utils.reports import create_main_report, create_email_report
 from utils.calculations import create_special_values
@@ -42,11 +43,15 @@ def upload_files():
             tax_form_data, tax_form_data_special = tax_form_main(pdf_bytes1)
             application_form_data = application_form_main(pdf_bytes2)
 
+        extra_info = extra_info_main()
+
+        extra_info_dict = extra_info.to_dict(orient="records")
         tax_form_dict = tax_form_data.to_dict(orient="records")
         application_form_dict = application_form_data.to_dict(orient="records")
 
         return render_template(
             "results.html",
+            extra_info_data=extra_info_dict,
             tax_form_data=tax_form_dict,
             application_form_data=application_form_dict,
         )
@@ -67,9 +72,6 @@ def submit_results():
         if key in request.form:
             new_value = request.form[key].strip()
             application_form_data.at[i, "VALUE"] = new_value
-
-    calculations = create_special_values(tax_form_data, application_form_data)
-    print(calculations)
 
     main_report = create_main_report(tax_form_data, application_form_data)
     email_report = create_email_report(tax_form_data, application_form_data)
