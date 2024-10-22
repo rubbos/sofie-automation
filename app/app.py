@@ -73,7 +73,9 @@ def submit_results():
             new_value = request.form[key].strip()
             application_form_data.at[i, "VALUE"] = new_value
 
-    main_report = create_main_report(tax_form_data, application_form_data)
+    main_report = create_main_report(
+        tax_form_data, application_form_data, extra_info_data
+    )
     email_report = create_email_report(tax_form_data, application_form_data)
 
     return render_template(
