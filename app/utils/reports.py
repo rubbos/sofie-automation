@@ -1,10 +1,17 @@
 import pandas as pd
-
+from extractors.methods import extract_methods as em
 
 def create_main_report(tax_form: pd.DataFrame, application_form: pd.DataFrame, employment_contract: pd.DataFrame) -> str:
     with open("temp_files/report.txt", "r") as file:
         report = file.read()
-    
+
+    if get_value(application_form, "University type") != "Publiek":
+        report = em.remove_text_around_keywords(report, "[Publiek]", "[Publiek]")
+        report = report.replace("[Privaat]", "")
+    else:
+        report = em.remove_text_around_keywords(report, "[Privaat]", "[Privaat]")
+        report = report.replace("[Publiek]", "")
+
     replacements = {
         "[naam werkgever]": get_value(application_form, "Name employer"),
         "&lt;naam werkgever&gt;": get_value(application_form, "Name employer"),

@@ -55,6 +55,20 @@ def extract_between_keywords(
     return text[start_index + len(start_keyword) : end_index]
 
 
+def extract_around_keywords(text: str, start_keyword: str, end_keyword: str):
+    """Extract string between and including 2 keywords"""
+    start_index = text.find(start_keyword)
+    end_index = text.find(end_keyword, start_index + len(start_keyword))
+    if start_index == -1 or end_index == -1 or end_index < start_index:
+        return None
+    return text[start_index : end_index + len(end_keyword)]
+
+
+def remove_text_around_keywords(text: str, start_keyword: str, end_keyword: str):
+    text_to_remove = extract_around_keywords(text, start_keyword, end_keyword)
+    return text.replace(text_to_remove, "")
+
+
 def extract_specific_words(
     text: str, start_keyword: str, end_keyword: str, words_list: list[str]
 ) -> str | None:
