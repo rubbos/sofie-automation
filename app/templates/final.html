@@ -52,6 +52,25 @@
           </div>
         </div>
       </div>
+      <h2 class="text-2xl mb-4 mt-8">Extra info:</h2>
+      <table class="min-w-full bg-gray-800 border border-gray-700">
+        <thead>
+          <tr>
+            {% for key in extra_info_data[0].keys() %}
+            <th class="py-2 px-4 border-b border-gray-700">{{ key }}</th>
+            {% endfor %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in extra_info_data %}
+          <tr>
+            {% for key, value in row.items() %}
+            <td class="py-2 px-4 border-b border-gray-700">{{ value }}</td>
+            {% endfor %}
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
 
       <h2 class="text-2xl mb-4 mt-8">Tax Form 30%:</h2>
       <table class="min-w-full bg-gray-800 border border-gray-700">

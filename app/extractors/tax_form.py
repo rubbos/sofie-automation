@@ -97,6 +97,7 @@ def transform(extracted_data: dict) -> pd.DataFrame:
     df_list_dates = df[(df["TYPE"] == "list[date]")]
     df_list_dates = df_list_dates.dropna(subset="VALUE")
 
+    # TODO: add this somehwere else
     # Get all rows with list[date]
     durations = []
     for row_index, row in df_list_dates.iterrows():
@@ -116,8 +117,7 @@ def transform(extracted_data: dict) -> pd.DataFrame:
                     durations.append(
                         tm.months_and_days_between_dates(first_date, last_date)
                     )
-    df2 = pd.DataFrame(durations, columns=["Values"])
-    return df, df2
+    return df
 
 
 def main(raw_data, dev_mode=False) -> pd.DataFrame:

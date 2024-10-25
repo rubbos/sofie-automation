@@ -9,7 +9,7 @@ def empty_info():
     extracted_data = {
         "Getekend": [type_data[0], ""],
         "Datum getekend": [type_data[2], ""],
-        "Wilsovereenkomst getekend": [type_data[2], ""],
+        "Wilsovereenkomst getekend": [type_data[0], ""],
         "Wilsovereenkomst datum getekend": [type_data[2], ""],
     }
 

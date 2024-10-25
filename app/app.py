@@ -1,18 +1,14 @@
-from os import getpid
 from flask import Flask, render_template, request
 import pandas as pd
 from extractors.tax_form import main as tax_form_main
 from extractors.application_form import main as application_form_main
 from extractors.extra_info import main as extra_info_main
-from utils.validation import validate_df
 from utils.reports import create_main_report, create_email_report
-from utils.calculations import create_special_values
 import logging
 
 app = Flask(__name__)
 logging.basicConfig(level=logging.DEBUG)
 
-# Global variables to store dataframes
 tax_form_data = pd.DataFrame()
 application_form_data = pd.DataFrame()
 
@@ -27,22 +23,16 @@ def upload_files():
     global tax_form_data, application_form_data, extra_info_data
     if request.method == "POST" or DEV_MODE:
         if DEV_MODE:
-            with open(LOCAL_FILE1, "r") as f1, open(LOCAL_FILE2, "r") as f2:
-                pdf_text1 = f1.read()
-                pdf_text2 = f2.read()
-                tax_form_data, tax_form_data_special = tax_form_main(
-                    str(pdf_text1), dev_mode=True
-                )
+            with open(LOCAL_FILE1, "r") as file1, open(LOCAL_FILE2, "r") as file2:
+                tax_form_data = tax_form_main(str(file1.read()), dev_mode=True)
                 application_form_data = application_form_main(
-                    str(pdf_text2), dev_mode=True
+                    str(file2.read()), dev_mode=True
                 )
         else:
-            file1 = request.files["file1"]
-            file2 = request.files["file2"]
-            pdf_bytes1 = file1.read()
-            pdf_bytes2 = file2.read()
-            tax_form_data, tax_form_data_special = tax_form_main(pdf_bytes1)
-            application_form_data = application_form_main(pdf_bytes2)
+            file1 = request.files["file1"].read()
+            file2 = request.files["file2"].read()
+            tax_form_data = tax_form_main(file1)
+            application_form_data = application_form_main(file2)
 
         extra_info_data = extra_info_main()
 
@@ -62,19 +52,20 @@ def upload_files():
 
 @app.route("/submit-results", methods=["POST"])
 def submit_results():
-    tax_from_edited = get_edited_values(tax_form_data, "data_tax")
+    tax_form_edited = get_edited_values(tax_form_data, "data_tax")
     application_form_edited = get_edited_values(application_form_data, "data_app")
     extra_info_edited = get_edited_values(extra_info_data, "data_extra")
 
     main_report = create_main_report(
-        tax_from_edited, application_form_edited, extra_info_edited
+        tax_form_edited, application_form_edited, extra_info_edited
     )
-    email_report = create_email_report(tax_from_edited, application_form_edited)
+    email_report = create_email_report(tax_form_edited, application_form_edited)
 
     return render_template(
         "final.html",
-        tax_form_data=tax_form_data.to_dict(orient="records"),
-        application_form_data=application_form_data.to_dict(orient="records"),
+        extra_info_data=extra_info_edited.to_dict(orient="records"),
+        tax_form_data=tax_form_edited.to_dict(orient="records"),
+        application_form_data=application_form_edited.to_dict(orient="records"),
         main_report=main_report,
         email_report=email_report,
     )
