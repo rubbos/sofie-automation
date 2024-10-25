@@ -1,3 +1,4 @@
+from os import getpid
 from flask import Flask, render_template, request
 import pandas as pd
 from extractors.tax_form import main as tax_form_main
@@ -23,7 +24,7 @@ LOCAL_FILE2 = "temp_files/application_form.txt"
 
 @app.route("/", methods=["GET", "POST"])
 def upload_files():
-    global tax_form_data, application_form_data
+    global tax_form_data, application_form_data, extra_info_data
     if request.method == "POST" or DEV_MODE:
         if DEV_MODE:
             with open(LOCAL_FILE1, "r") as f1, open(LOCAL_FILE2, "r") as f2:
@@ -43,9 +44,9 @@ def upload_files():
             tax_form_data, tax_form_data_special = tax_form_main(pdf_bytes1)
             application_form_data = application_form_main(pdf_bytes2)
 
-        extra_info = extra_info_main()
+        extra_info_data = extra_info_main()
 
-        extra_info_dict = extra_info.to_dict(orient="records")
+        extra_info_dict = extra_info_data.to_dict(orient="records")
         tax_form_dict = tax_form_data.to_dict(orient="records")
         application_form_dict = application_form_data.to_dict(orient="records")
 
@@ -61,22 +62,14 @@ def upload_files():
 
 @app.route("/submit-results", methods=["POST"])
 def submit_results():
-    for i in range(len(tax_form_data)):
-        key = f"data_tax_{i}_VALUE"
-        if key in request.form:
-            new_value = request.form[key].strip()
-            tax_form_data.at[i, "VALUE"] = new_value
-
-    for i in range(len(application_form_data)):
-        key = f"data_app_{i}_VALUE"
-        if key in request.form:
-            new_value = request.form[key].strip()
-            application_form_data.at[i, "VALUE"] = new_value
+    tax_from_edited = get_edited_values(tax_form_data, "data_tax")
+    application_form_edited = get_edited_values(application_form_data, "data_app")
+    extra_info_edited = get_edited_values(extra_info_data, "data_extra")
 
     main_report = create_main_report(
-        tax_form_data, application_form_data, extra_info_data
+        tax_from_edited, application_form_edited, extra_info_edited
     )
-    email_report = create_email_report(tax_form_data, application_form_data)
+    email_report = create_email_report(tax_from_edited, application_form_edited)
 
     return render_template(
         "final.html",
@@ -85,6 +78,16 @@ def submit_results():
         main_report=main_report,
         email_report=email_report,
     )
+
+
+def get_edited_values(data: pd.DataFrame, key_name: str):
+    """Refreshes the edited values by the user in the form."""
+    for i in range(len(data)):
+        key = f"{key_name}_{i}_VALUE"
+        if key in request.form:
+            new_value = request.form[key].strip()
+            data.at[i, "VALUE"] = new_value
+    return data
 
 
 if __name__ == "__main__":
