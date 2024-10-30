@@ -4,6 +4,7 @@ from extractors.tax_form import main as tax_form_main
 from extractors.application_form import main as application_form_main
 from extractors.extra_info import main as extra_info_main
 from utils.reports import create_main_report, create_email_report
+from extractors.methods import extract_methods as em
 import logging
 
 app = Flask(__name__)

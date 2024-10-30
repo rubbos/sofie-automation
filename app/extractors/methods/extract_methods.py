@@ -132,6 +132,6 @@ def create_dates_and_locations_table(text: str) -> pd.DataFrame:
     end_dates = dates[1::2]
 
     df = pd.DataFrame(
-        {"start_date": start_dates, "end_date": end_dates, "location": locations}
+        {"start date": start_dates, "end date": end_dates, "location": locations}
     )
     return df
