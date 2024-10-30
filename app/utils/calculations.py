@@ -1,23 +1,17 @@
-import pandas as pd
-import difflib
-
-# if werkgever == privaat, return privaat, anders publiek
-# get list of werkgevers to check.
-#
-# if niet getekend in buitenland. return wilsovereenkomst nodig.
-#
-# if ufo code 01 return specific job
-#
-# if verzoek < 4 maanden, return if not okay
-#
-# calc startdatum
-#
-# calc enddate
-#
-# calc korting
-#
-# calc which salary norm
+from datetime import datetime
 
 
-def create_special_values(df, df2):
-    pass
+def signed_outside_nl(signed_date: str, arrival_date: str) -> bool:
+    date_format = "%d-%m-%Y"
+    date1 = datetime.strptime(signed_date, date_format)
+    date2 = datetime.strptime(arrival_date, date_format)
+
+    if date1 >= date2:
+        return False
+    return True
+
+
+def salarynorm(ufo_code: str) -> str:
+    if ufo_code.startswith("01"):
+        return "Wetenschappelijk O&O"
+    return "Regulier"

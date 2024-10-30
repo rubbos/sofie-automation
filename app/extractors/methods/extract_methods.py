@@ -1,4 +1,5 @@
 import re
+import pandas as pd
 from pytesseract import image_to_string
 from pdf2image import convert_from_bytes
 from extractors.methods import transform_methods as tm
@@ -119,3 +120,18 @@ def extract_dates(
     dates = find_all_dates(text)
     cleaned_dates = [tm.transform_date(date) for date in dates]
     return cleaned_dates
+
+
+def create_dates_and_locations_table(text: str) -> pd.DataFrame:
+    dates = extract_dates(text, "Date from", "Have you")
+    locations = extract_multiple_between_keywords(
+        text, "upload it again.", "Have you", "Date from", "Place"
+    )
+
+    start_dates = dates[::2]
+    end_dates = dates[1::2]
+
+    df = pd.DataFrame(
+        {"start_date": start_dates, "end_date": end_dates, "location": locations}
+    )
+    return df
