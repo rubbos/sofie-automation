@@ -24,6 +24,7 @@ def validate_df(df, df2):
     validations.append(check_missing_fields(df2, df2_name))
     validations.append(check_missing_dates(df, df_name))
     validations = [item for item in validations if item is not None]
+    pd.set_option("display.max_colwidth", None)
     return pd.DataFrame(validations, columns=["VALUE"])
 
 
