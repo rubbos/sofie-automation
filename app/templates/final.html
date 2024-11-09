@@ -56,59 +56,60 @@
       <table class="min-w-full bg-gray-800 border border-gray-700">
         <thead>
           <tr>
-            {% for key in extra_info_data[0].keys() %}
-            <th class="py-2 px-4 border-b border-gray-700">{{ key }}</th>
+            {% for column in extra_info_data.columns %}
+            <th class="py-2 px-4 border-b border-gray-700">{{ column }}</th>
             {% endfor %}
           </tr>
         </thead>
-        <tbody>
-          {% for row in extra_info_data %}
-          <tr>
-            {% for key, value in row.items() %}
+    <tbody>
+        {% for _, row in extra_info_data.iterrows() %}
+        <tr>
+            {% for value in row %}
             <td class="py-2 px-4 border-b border-gray-700">{{ value }}</td>
             {% endfor %}
-          </tr>
-          {% endfor %}
-        </tbody>
+        </tr>
+        {% endfor %}
+    </tbody>
       </table>
+
 
       <h2 class="text-2xl mb-4 mt-8">Tax Form 30%:</h2>
       <table class="min-w-full bg-gray-800 border border-gray-700">
         <thead>
           <tr>
-            {% for key in tax_form_data[0].keys() %}
-            <th class="py-2 px-4 border-b border-gray-700">{{ key }}</th>
+            {% for column in tax_form_data.columns %}
+            <th class="py-2 px-4 border-b border-gray-700">{{ column }}</th>
             {% endfor %}
           </tr>
         </thead>
-        <tbody>
-          {% for row in tax_form_data %}
-          <tr>
-            {% for key, value in row.items() %}
+    <tbody>
+        {% for _, row in tax_form_data.iterrows() %}
+        <tr>
+            {% for value in row %}
             <td class="py-2 px-4 border-b border-gray-700">{{ value }}</td>
             {% endfor %}
-          </tr>
-          {% endfor %}
-        </tbody>
+        </tr>
+        {% endfor %}
+    </tbody>
       </table>
       <h2 class="text-2xl mb-4 mt-8">Application Form:</h2>
       <table class="min-w-full bg-gray-800 border border-gray-700">
         <thead>
           <tr>
-            {% for key in application_form_data[0].keys() %}
-            <th class="py-2 px-4 border-b border-gray-700">{{ key }}</th>
+            {% for column in application_form_data.columns %}
+            <th class="py-2 px-4 border-b border-gray-700">{{ column }}</th>
             {% endfor %}
           </tr>
         </thead>
-        <tbody>
-          {% for row in application_form_data %}
-          <tr>
-            {% for key, value in row.items() %}
+    <tbody>
+        {% for _, row in application_form_data.iterrows() %}
+        <tr>
+            {% for value in row %}
             <td class="py-2 px-4 border-b border-gray-700">{{ value }}</td>
             {% endfor %}
-          </tr>
-          {% endfor %}
-        </tbody>
+        </tr>
+        {% endfor %}
+    </tbody>
       </table>
     </div>
     <script>

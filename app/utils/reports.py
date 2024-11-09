@@ -18,11 +18,11 @@ def create_main_report(tax_form: pd.DataFrame, application_form: pd.DataFrame, e
         report = report.replace("[Publiek]", "")
     
     # NOTE: Check for wilsovereenkomst
-    if calc.signed_outside_nl(get_value(employment_contract, "Datum getekend"),get_value(tax_form, "Arrival date")):
-        report = em.remove_text_around_keywords(report, "[wilsovereenkomst]", "[wilsovereenkomst]")
-    else:
-        report = report.replace("[wilsovereenkomst]", "")
-    
+    # if calc.signed_outside_nl(get_value(employment_contract, "Datum getekend"),get_value(tax_form, "Arrival date")):
+    #     report = em.remove_text_around_keywords(report, "[wilsovereenkomst]", "[wilsovereenkomst]")
+    # else:
+    #     report = report.replace("[wilsovereenkomst]", "")
+    #
     replacements = {
         "[naam werkgever]": get_value(application_form, "Name employer"),
         "&lt;naam werkgever&gt;": get_value(application_form, "Name employer"),

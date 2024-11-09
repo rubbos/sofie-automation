@@ -5,6 +5,7 @@ from extractors.application_form import main as application_form_main
 from extractors.extra_info import main as extra_info_main
 from utils.reports import create_main_report, create_email_report
 from extractors.methods import extract_methods as em
+import utils.validation
 import logging
 
 app = Flask(__name__)
@@ -17,6 +18,12 @@ application_form_data = pd.DataFrame()
 DEV_MODE = True
 LOCAL_FILE1 = "temp_files/tax_form.txt"
 LOCAL_FILE2 = "temp_files/application_form.txt"
+
+# Register all functions from validation as globals
+for func_name in dir(utils.validation):
+    func = getattr(utils.validation, func_name)
+    if callable(func):
+        app.jinja_env.globals[func_name] = func
 
 
 @app.route("/", methods=["GET", "POST"])
@@ -36,16 +43,11 @@ def upload_files():
             application_form_data = application_form_main(file2)
 
         extra_info_data = extra_info_main()
-
-        extra_info_dict = extra_info_data.to_dict(orient="records")
-        tax_form_dict = tax_form_data.to_dict(orient="records")
-        application_form_dict = application_form_data.to_dict(orient="records")
-
         return render_template(
             "results.html",
-            extra_info_data=extra_info_dict,
-            tax_form_data=tax_form_dict,
-            application_form_data=application_form_dict,
+            extra_info_data=extra_info_data,
+            tax_form_data=tax_form_data,
+            application_form_data=application_form_data,
         )
 
     return render_template("upload.html")
@@ -64,9 +66,9 @@ def submit_results():
 
     return render_template(
         "final.html",
-        extra_info_data=extra_info_edited.to_dict(orient="records"),
-        tax_form_data=tax_form_edited.to_dict(orient="records"),
-        application_form_data=application_form_edited.to_dict(orient="records"),
+        extra_info_data=extra_info_edited,
+        tax_form_data=tax_form_edited,
+        application_form_data=application_form_edited,
         main_report=main_report,
         email_report=email_report,
     )

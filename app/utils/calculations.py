@@ -4,6 +4,7 @@ from datetime import datetime
 def signed_outside_nl(signed_date: str, arrival_date: str) -> bool:
     """If user signed the contract in the Netherlands, a wilsovereenkomst is needed"""
     date_format = "%d-%m-%Y"
+    print(arrival_date)
     date1 = datetime.strptime(signed_date, date_format)
     date2 = datetime.strptime(arrival_date, date_format)
 
