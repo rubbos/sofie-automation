@@ -94,3 +94,11 @@ def round_months(months: int, days: int) -> int:
     if days > 0:
         return months + 1
     return months
+
+
+def clean_text(text: str) -> str:
+    """Removes unnessesary characters"""
+    characters_to_remove = [":", "\n"]
+    for char in characters_to_remove:
+        text = text.replace(char, "")
+    return text

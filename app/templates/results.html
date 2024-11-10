@@ -16,18 +16,23 @@
         Please check the following values. There might be mistakes from
         extracting. <b>SOFIEbot only works for standard requests!</b>
       </p>
-      <table class="mb-6 min-w-full bg-red-900 border border-red-700 text-color-black">
-            <tbody>
-                {% for item in validate_df(tax_form_data, application_form_data).iterrows() %}
-                <tr>
-            <td class="py-2 px-4 border-b border-red-700">{{ item[1]["VALUE"] }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+      <table
+        class="mb-6 min-w-full bg-red-900 border border-red-700 text-color-black"
+      >
+        <tbody>
+          {% for item in validate_df(tax_form_data,
+          application_form_data).iterrows() %}
+          <tr>
+            <td class="py-2 px-4 border-b border-red-700">
+              {{ item[1]["VALUE"] }}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
       <form method="POST" action="{{ url_for('submit_results') }}">
         <div class="grid grid-cols-1 gap-6">
-          {% for row in tax_form_data.iterrows() %} 
+          {% for row in tax_form_data.iterrows() %}
           <div
             class="bg-gray-800 border border-gray-700 p-6 shadow-lg rounded-lg"
           >
@@ -44,8 +49,8 @@
                   class="block font-semibold mb-2 break-words text-2xl"
                   id="label_tax_{{ loop.index0 }}"
                 >
-                  {% if row[1]['VALUE'] is not none %} {{ row[1]["VALUE"] }} {% else %} {%
-                  endif %}
+                  {% if row[1]['VALUE'] is not none %} {{ row[1]["VALUE"] }} {%
+                  else %} {% endif %}
                 </label>
                 <input
                   class="border border-gray-300 text-black p-3 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 hidden text-2xl"
@@ -82,8 +87,8 @@
                   class="block font-semibold mb-2 break-words text-2xl"
                   id="label_app_{{ loop.index0 }}"
                 >
-                  {% if row[1]['VALUE'] is not none %} {{ row[1]["VALUE"] }} {% else %} {%
-                  endif %}
+                  {% if row[1]['VALUE'] is not none %} {{ row[1]["VALUE"] }} {%
+                  else %} {% endif %}
                 </label>
                 <input
                   class="border border-gray-300 text-black p-3 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 hidden text-2xl"
@@ -120,8 +125,8 @@
                   class="block font-semibold mb-2 break-words text-2xl"
                   id="label_extra_{{ loop.index0 }}"
                 >
-                  {% if row[1]['VALUE'] is not none %} {{ row[1]["VALUE"] }} {% else %} {%
-                  endif %}
+                  {% if row[1]['VALUE'] is not none %} {{ row[1]["VALUE"] }} {%
+                  else %} {% endif %}
                 </label>
                 <input
                   class="border border-gray-300 text-black p-3 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 hidden text-2xl"

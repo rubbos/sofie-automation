@@ -28,7 +28,7 @@ def validate_df(df, df2):
     return pd.DataFrame(validations, columns=["VALUE"])
 
 
-def check_missing_fields(df, df_name: str, ignore_index=[]) -> list:
+def check_missing_fields(df, df_name: str, ignore_index=[]) -> str:
     """Return keys of missing values in df and ignore specific optional values"""
     errors = [
         row["KEY"]

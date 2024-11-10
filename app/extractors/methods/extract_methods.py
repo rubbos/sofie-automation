@@ -6,6 +6,7 @@ from extractors.methods import transform_methods as tm
 import cv2
 import numpy as np
 import os
+from datetime import datetime
 
 
 def save_text(text: str, name: str) -> None:
@@ -122,16 +123,32 @@ def extract_dates(
     return cleaned_dates
 
 
-def create_dates_and_locations_table(text: str) -> pd.DataFrame:
-    dates = extract_dates(text, "Date from", "Have you")
-    locations = extract_multiple_between_keywords(
-        text, "upload it again.", "Have you", "Date from", "Place"
-    )
+def extract_place_of_residences(text: str):
+    data = []
 
-    start_dates = dates[::2]
-    end_dates = dates[1::2]
+    # Extract only the places of residence from the full text
+    text = extract_between_keywords(text, "upload it again.", "Have you")
 
-    df = pd.DataFrame(
-        {"start date": start_dates, "end date": end_dates, "location": locations}
-    )
-    return df
+    # Extracts dates, place and location
+    dates = extract_between_keywords(text, "Date from", "Address")
+    dates = find_all_dates(dates)
+    place = extract_between_keywords(text, "Place", "Country")
+    location = extract_between_keywords(text, "Country", "Date from")
+
+    # Cleaning data
+    cleaned_dates = []
+    for date in dates:
+        cleaned_dates.append(tm.transform_date(date))
+    cleaned_place = tm.clean_text(place)
+    cleaned_location = tm.clean_text(location)
+
+    # Sorts dates in list
+    dates = [datetime.strptime(date, "%d-%m-%Y") for date in cleaned_dates]
+    sorted_dates = sorted(dates)
+
+    # Add cleaned_data to list
+    [data.append(date.strftime("%d-%m-%Y")) for date in sorted_dates]
+    data.append(cleaned_place)
+    data.append(cleaned_location)
+
+    return data

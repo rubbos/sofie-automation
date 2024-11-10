@@ -33,9 +33,9 @@ def extract(text: str) -> dict:
                 text, "upload it again.", "Have you", "Date from", "Place"
             ),
         ],
-        "Dates and locations": [
+        "Place of residence": [
             type_data[1],
-            em.create_dates_and_locations_table(text),
+            em.extract_place_of_residences(text),
         ],
         "NL lived dates": [
             type_data[3],
