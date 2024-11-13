@@ -23,16 +23,6 @@ def extract(text: str) -> dict:
             type_data[2],
             em.extract_dates(text, "working day", "Place"),
         ],
-        "Residence dates": [
-            type_data[3],
-            em.extract_dates(text, "Date from", "Have you"),
-        ],
-        "Residence locations": [
-            type_data[1],
-            em.extract_multiple_between_keywords(
-                text, "upload it again.", "Have you", "Date from", "Place"
-            ),
-        ],
         "Place of residence": [
             type_data[1],
             em.extract_place_of_residences(text),

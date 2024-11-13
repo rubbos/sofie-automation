@@ -124,31 +124,53 @@ def extract_dates(
 
 
 def extract_place_of_residences(text: str):
-    data = []
+    """Extract the complete data of places and dates from user and return it in a list"""
+    all_data = []
 
-    # Extract only the places of residence from the full text
-    text = extract_between_keywords(text, "upload it again.", "Have you")
+    # Extract only the places of residence section from the full text
+    text_section = extract_between_keywords(text, "Date from", "Have you")
+    if not text_section:
+        return all_data
 
-    # Extracts dates, place and location
-    dates = extract_between_keywords(text, "Date from", "Address")
-    dates = find_all_dates(dates)
-    place = extract_between_keywords(text, "Place", "Country")
-    location = extract_between_keywords(text, "Country", "Date from")
+    # Split by "Date from" except for the first section
+    residence_sections = text_section.split("Date from")
 
-    # Cleaning data
-    cleaned_dates = []
-    for date in dates:
-        cleaned_dates.append(tm.transform_date(date))
-    cleaned_place = tm.clean_text(place)
-    cleaned_location = tm.clean_text(location)
+    # Loop through each section after the first entry point
+    for i, section in enumerate(residence_sections):
+        data = []
 
-    # Sorts dates in list
-    dates = [datetime.strptime(date, "%d-%m-%Y") for date in cleaned_dates]
-    sorted_dates = sorted(dates)
+        # If it's the first entry, we don't need "Date from" prepended
+        if i == 0:
+            dates_text = section
+        else:
+            dates_text = "Date from" + section
 
-    # Add cleaned_data to list
-    [data.append(date.strftime("%d-%m-%Y")) for date in sorted_dates]
-    data.append(cleaned_place)
-    data.append(cleaned_location)
+        # Extract dates, place, and location for each residence block
+        dates = find_all_dates(dates_text) if dates_text else []
+        place = extract_between_keywords(section, "Place", "Country") or ""
+        location = extract_after_keyword(section, "Country") or ""
 
-    return data
+        # Clean and process data
+        cleaned_dates = [tm.transform_date(date) for date in dates if date]
+        cleaned_place = tm.clean_text(place)
+        cleaned_location = tm.clean_text(location)
+
+        # Convert and sort dates
+        try:
+            date_objects = [
+                datetime.strptime(date, "%d-%m-%Y") for date in cleaned_dates
+            ]
+            sorted_dates = sorted(date_objects)
+        except ValueError:
+            sorted_dates = []
+
+        # Add cleaned data to list for this residence section
+        data.extend(date.strftime("%d-%m-%Y") for date in sorted_dates)
+        data.append(cleaned_place)
+        data.append(cleaned_location)
+
+        # Append this residence's data to the main list if it's not empty
+        if data:
+            all_data.append(data)
+
+    return all_data
