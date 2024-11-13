@@ -13,6 +13,7 @@ logging.basicConfig(level=logging.DEBUG)
 
 tax_form_data = pd.DataFrame()
 application_form_data = pd.DataFrame()
+extra_info_data = pd.DataFrame()
 
 # Skip the upload with DEV_MODE
 DEV_MODE = True
