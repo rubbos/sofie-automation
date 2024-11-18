@@ -7,9 +7,9 @@ def empty_info():
     type_data = ["str", "list[str]", "date", "list[date]"]
 
     extracted_data = {
-        "Getekend": [type_data[0], ""],
-        "Datum getekend": [type_data[2], ""],
-        "Wilsovereenkomst getekend": [type_data[0], ""],
+        # "Getekend": [type_data[0], ""],
+        "Arbeidsovereenkomst datum getekend": [type_data[2], ""],
+        # "Wilsovereenkomst getekend": [type_data[0], ""],
         "Wilsovereenkomst datum getekend": [type_data[2], ""],
     }
 
