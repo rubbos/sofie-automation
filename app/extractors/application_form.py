@@ -22,10 +22,10 @@ def extract(text: str) -> dict:
             em.extract_between_keywords(text, "LH number", "\n"),
         ],
         "University type": [type_data[0], "None"],
-        "Last name, Initials": [
-            type_data[0],
-            em.extract_between_keywords(text, "Initials", "\n"),
-        ],
+        # "Last name, Initials": [
+        #     type_data[0],
+        #     em.extract_between_keywords(text, "Initials", "\n"),
+        # ],
         "Date of birth": [
             type_data[2],
             em.extract_dates(text, "Birth", "\n"),

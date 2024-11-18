@@ -8,8 +8,6 @@ def create_main_report(tax_form: pd.DataFrame, application_form: pd.DataFrame, e
         report = file.read()
 
     # Remove either public or private text. 
-    # FIX: else needs something better
-    # FIX: private still needs some more editing
     if get_value(application_form, "University type") == "Privaat":
         report = em.remove_text_around_keywords(report, "[Publiek]", "[Publiek]")
         report = report.replace("[Privaat]", "")
@@ -29,6 +27,16 @@ def create_main_report(tax_form: pd.DataFrame, application_form: pd.DataFrame, e
     # UFO job
     report = em.remove_text_around_keywords(report, "[Indien schaarse deskundigheid op basis van inkomen]" , "[Indien schaarse deskundigheid op basis van inkomen]")
 
+    # Start date
+    if calc.is_within_4_months(get_value(tax_form, "Start work date"),get_value(application_form, "Application upload date")):
+        report = report.replace("&lt;niet&gt;", "")
+        report = report.replace("&lt;buiten&gt;", "")
+        report = report.replace("&lt;ingangsdatum&gt;", get_value(tax_form, "Start work date"))
+    else:
+        report = report.replace("&lt;niet&gt;", "niet")
+        report = report.replace("binnen &lt;buiten&gt;", "buiten")
+        report = report.replace("&lt;ingangsdatum&gt;", calc.next_first_of_month()) 
+
     replacements = {
         "[naam werkgever]": get_value(application_form, "Name employer"),
         "&lt;naam werkgever&gt;": get_value(application_form, "Name employer"),
@@ -43,6 +51,7 @@ def create_main_report(tax_form: pd.DataFrame, application_form: pd.DataFrame, e
         "&lt;eventueel functiecode vermelden&gt;": f"({get_value(application_form, "UFO code")})",
         "&lt;datum ondertekening werknemer&gt;": get_value(employment_contract, "Arbeidsovereenkomst datum getekend"),
         "&lt;datum ontstaan wilsovereenkomst&gt;": get_value(employment_contract, "Wilsovereenkomst datum getekend"),
+        "&lt;datum melding SOFI-expertise&gt;": get_value(application_form, "Application upload date"),
     }
 
     report = replace_values(replacements, report)
@@ -60,7 +69,7 @@ def create_email_report(tax_form: pd.DataFrame, application_form: pd.DataFrame) 
         "{birth}": get_value(application_form, "Date of birth"),
         "{employer}": get_value(application_form, "Name employer"),
         "{lhm}": get_value(application_form, "Loonheffing number"),
-        # "{start_date}": get_value(df, ""),
+        "{start_date}": calc.start_date(get_value(application_form, "Application upload date"), get_value(tax_form, "Start work date")),
         # "{end_date}": get_value(df, ""),
         "{job_name}": get_value(application_form, "Job title"),
         "{salarynorm}": salarynorm,

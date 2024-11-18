@@ -1,4 +1,5 @@
 from datetime import datetime
+from dateutil.relativedelta import relativedelta
 
 
 def signed_outside_nl(signed_date: str, arrival_date: str) -> bool:
@@ -20,6 +21,31 @@ def salarynorm(ufo_code: str) -> str:
     return "Regulier"
 
 
-def start_date(application_upload_date: str, start_date, str) -> bool:
-    """If the difference between dates is less than 4 months, its an exception"""
-    ...
+def is_within_4_months(date1_str, date2_str, date_format="%d-%m-%Y") -> bool:
+    """Compare 2 dates and see if the time between is less than 4 months"""
+    date1 = datetime.strptime(date1_str, date_format)
+    date2 = datetime.strptime(date2_str, date_format)
+
+    # Calculate the exact cutoff date
+    four_months_later = date1 + relativedelta(months=4)
+    cutoff_date = four_months_later - relativedelta(days=1)
+
+    # Check if date2 is within the 4-month range
+    return date2 <= cutoff_date
+
+
+def next_first_of_month() -> str:
+    """Gets the first date of the next month"""
+    today = datetime.today()
+    if today.month == 12:
+        next_month = datetime(today.year + 1, 1, 1)
+    else:
+        next_month = datetime(today.year, today.month + 1, 1)
+    return next_month.strftime("%d-%m-%Y")
+
+
+def start_date(application_upload_date: str, start_date: str) -> str:
+    """If the difference between dates is more than 4 months, we return the first of the next mont h"""
+    if is_within_4_months(start_date, application_upload_date):
+        return start_date
+    return next_first_of_month()
