@@ -47,18 +47,18 @@ def extract(text: str) -> dict:
             type_data[3],
             em.extract_dates(text, "outside", "undersigned"),
         ],
-        "Signature name": [
-            type_data[0],
-            em.extract_between_keywords(text, "Name:", "Date"),
-        ],
-        "Signature date": [
-            type_data[2],
-            em.extract_dates(text, "undersigned", "Signature"),
-        ],
-        "Signature": [
-            type_data[0],
-            em.extract_after_keyword(text, "Signature:"),
-        ],
+        # "Signature name": [
+        #     type_data[0],
+        #     em.extract_between_keywords(text, "Name:", "Date"),
+        # ],
+        # "Signature date": [
+        #     type_data[2],
+        #     em.extract_dates(text, "undersigned", "Signature"),
+        # ],
+        # "Signature": [
+        #     type_data[0],
+        # em.extract_after_keyword(text, "Signature:"),
+        # ],
     }
 
     return extracted_data

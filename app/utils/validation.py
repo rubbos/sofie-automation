@@ -53,17 +53,16 @@ def check_missing_dates(df, df_name: str):
 
 
 def check_standard_request(df):
-    """Return if its a standard request"""
+    """Return warning if not a standard request"""
     if (
         df.loc[df["KEY"] == "Returning expat", "VALUE"].values == "No"
         and df.loc[df["KEY"] == "Changing Dutch employer", "VALUE"].values == "No"
         and df.loc[df["KEY"] == "Contract signed outside NL", "VALUE"].values == "Yes"
         and df.loc[df["KEY"] == "16/24 Months outside NL", "VALUE"].values == "Yes"
-        and df.loc[df["KEY"] == "Promovendus exception", "VALUE"].values == "No"
         and df.loc[df["KEY"] == "UFO 01 type", "VALUE"].values == "Yes"
     ):
-        return "This is a normal request"
-    return "This request might be an exception"
+        return
+    return "This request might be an exception!"
 
 
 def validate_uni(df):

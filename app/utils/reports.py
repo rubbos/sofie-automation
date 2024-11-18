@@ -7,7 +7,7 @@ def create_main_report(tax_form: pd.DataFrame, application_form: pd.DataFrame, e
     with open("temp_files/report.txt", "r") as file:
         report = file.read()
 
-    # NOTE: Remove either public or private text. 
+    # Remove either public or private text. 
     # FIX: else needs something better
     # FIX: private still needs some more editing
     if get_value(application_form, "University type") == "Privaat":
@@ -17,18 +17,25 @@ def create_main_report(tax_form: pd.DataFrame, application_form: pd.DataFrame, e
         report = em.remove_text_around_keywords(report, "[Privaat]", "[Privaat]")
         report = report.replace("[Publiek]", "")
     
-    # NOTE: Check for wilsovereenkomst
-    # if calc.signed_outside_nl(get_value(employment_contract, "Datum getekend"),get_value(tax_form, "Arrival date")):
-    #     report = em.remove_text_around_keywords(report, "[wilsovereenkomst]", "[wilsovereenkomst]")
-    # else:
-    #     report = report.replace("[wilsovereenkomst]", "")
-    #
+    # Check for wilsovereenkomst
+    if calc.signed_outside_nl(get_value(employment_contract, "Datum getekend"),get_value(tax_form, "Arrival date")):
+         report = em.remove_text_around_keywords(report, "[wilsovereenkomst]", "[wilsovereenkomst]")
+    else:
+         report = report.replace("[wilsovereenkomst]", "")
+
+    # More needed evidence
+    report = em.remove_text_around_keywords(report, "[Aanvullend bewijs]", "[Aanvullend bewijs]")
+
+    # UFO job
+    report = em.remove_text_around_keywords(report, "[Indien schaarse deskundigheid op basis van inkomen]" , "[Indien schaarse deskundigheid op basis van inkomen]")
+
     replacements = {
         "[naam werkgever]": get_value(application_form, "Name employer"),
         "&lt;naam werkgever&gt;": get_value(application_form, "Name employer"),
         "&lt;datum aanvang dienstbetrekking&gt;": get_value(application_form, "Date of entry into service"),
         "&lt;datum indiensttreding&gt;": get_value(application_form, "Date of entry into service"),
         "&lt;datum aanvang tewerkstelling&gt;": get_value(application_form, "Date of entry into service"),
+        "&lt;datum start kwalificatie als werknemer art. 2 Wet LB 1964&gt;": get_value(application_form, "Date of entry into service"),
         "&lt;datum aankomst NL&gt;": get_value(tax_form, "Arrival date"),
         "&lt;datum kwalificatie als werknemer&gt;": get_value(tax_form, "Arrival date"),
         "&lt;datum eerste werkdag in Nederland&gt;": get_value(tax_form, "Arrival date"),

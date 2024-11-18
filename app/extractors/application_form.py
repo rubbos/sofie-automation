@@ -36,7 +36,7 @@ def extract(text: str) -> dict:
         ],
         "Job title": [
             type_data[0],
-            em.extract_between_keywords(text, "Job Title", "\n"),
+            em.extract_between_keywords(text, "Title", "\n"),
         ],
         "Date of entry into service": [
             type_data[2],
@@ -85,6 +85,10 @@ def extract(text: str) -> dict:
             em.extract_specific_words(
                 text, "On behalf of the employer", "confirm that", yes_no
             ),
+        ],
+        "Application upload date": [
+            type_data[2],
+            em.extract_dates(text, "Created at", "by"),
         ],
     }
 
