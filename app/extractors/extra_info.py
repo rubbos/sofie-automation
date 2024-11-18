@@ -11,6 +11,7 @@ def empty_info():
         "Arbeidsovereenkomst datum getekend": [type_data[2], ""],
         # "Wilsovereenkomst getekend": [type_data[0], ""],
         "Wilsovereenkomst datum getekend": [type_data[2], ""],
+        "Volgens het cv werkte/studeerde werknemer als ...": [type_data[0], ""],
     }
 
     return extracted_data
