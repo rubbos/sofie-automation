@@ -14,51 +14,48 @@ def extract(text: str) -> dict:
         "Full name": [
             type_data[0],
             em.extract_between_keywords(text, "Initials", "Has agreed"),
+            "full_name",
         ],
         "Arrival date": [
             type_data[2],
             em.extract_dates(text, "Date of arrival", "My address"),
+            "arrival_date",
         ],
         "Start work date": [
             type_data[2],
             em.extract_dates(text, "working day", "Place"),
+            "first_work_date",
         ],
         "Place of residence": [
             type_data[1],
             em.extract_place_of_residences(text),
+            "place_of_residence",
         ],
         "NL lived dates": [
             type_data[3],
             em.extract_dates(text, "in the Netherlands?", "Were you registered"),
+            "nl_residence_dates",
         ],
         "NL deregister date": [
             type_data[2],
             em.extract_dates(text, "deregister", "Have you"),
+            "nl_deregister_date",
         ],
         "NL worked dates": [
             type_data[3],
             em.extract_dates(text, "Have you previously worked", "private"),
+            "nl_worked_dates",
         ],
         "NL private dates": [
             type_data[3],
             em.extract_dates(text, "holiday", "outside"),
+            "nl_private_visit_dates",
         ],
         "NL dutch employer dates": [
             type_data[3],
             em.extract_dates(text, "outside", "undersigned"),
+            "nl_worked_dutch_employer_dates",
         ],
-        # "Signature name": [
-        #     type_data[0],
-        #     em.extract_between_keywords(text, "Name:", "Date"),
-        # ],
-        # "Signature date": [
-        #     type_data[2],
-        #     em.extract_dates(text, "undersigned", "Signature"),
-        # ],
-        # "Signature": [
-        #     type_data[0],
-        # em.extract_after_keyword(text, "Signature:"),
-        # ],
     }
 
     return extracted_data
@@ -87,30 +84,6 @@ def transform(extracted_data: dict) -> pd.DataFrame:
     except TypeError:
         pass
 
-    # Make new df with all list[date] to transform to amount of months:
-    df_list_dates = df[(df["TYPE"] == "list[date]")]
-    df_list_dates = df_list_dates.dropna(subset="VALUE")
-
-    # TODO: add this somehwere else
-    # Get all rows with list[date]
-    durations = []
-    for row_index, row in df_list_dates.iterrows():
-        # Get all the values from the list[date]
-        for index, date in enumerate(row["VALUE"]):
-            if index % 2 == 0:
-                first_date = date
-            else:
-                last_date = date
-                if row_index == 3:
-                    durations.append(
-                        df.at[4, "VALUE"][index // 2]
-                        + " "
-                        + tm.months_and_days_between_dates(first_date, last_date, False)
-                    )
-                else:
-                    durations.append(
-                        tm.months_and_days_between_dates(first_date, last_date)
-                    )
     return df
 
 
@@ -121,7 +94,3 @@ def main(raw_data, dev_mode=False) -> pd.DataFrame:
     extracted_data = extract(raw_data)
     clean_data = transform(extracted_data)
     return clean_data
-
-
-if __name__ == "__main__":
-    main()

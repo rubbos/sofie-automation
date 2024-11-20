@@ -12,6 +12,7 @@ def dict_to_table(data: dict):
                 item[1] if item[1] is not None and len(item[1]) > 0 else None
                 for item in data.values()
             ],
+            "VAR": [item[2] if len(item[2]) > 0 else None for item in data.values()],
         }
     )
     return df

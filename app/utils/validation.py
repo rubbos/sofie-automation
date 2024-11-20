@@ -1,17 +1,3 @@
-# check for name
-# check for date
-# check for valid location
-# check for 24m before starting date
-# check if less than 6 weeks in a year
-# signed date must be before arrival date
-# check for valid date of birth
-# valid bsn number
-# valid 01 ufo code
-# check for yes, no values
-# check for 16/24 months
-# check job title with ufo code
-# if promovendus, returning, changing dutch employer skip.
-# add calc for income
 import pandas as pd
 from utils.university import find_university
 

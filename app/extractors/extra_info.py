@@ -1,5 +1,4 @@
 import pandas as pd
-from extractors.methods import extract_methods as em
 from extractors.methods import transform_methods as tm
 
 
@@ -8,10 +7,18 @@ def empty_info():
 
     extracted_data = {
         # "Getekend": [type_data[0], ""],
-        "Arbeidsovereenkomst datum getekend": [type_data[2], ""],
+        "Arbeidsovereenkomst datum getekend": [
+            type_data[2],
+            "01-01-2024",
+            "ao_signed_date",
+        ],
         # "Wilsovereenkomst getekend": [type_data[0], ""],
-        "Wilsovereenkomst datum getekend": [type_data[2], ""],
-        "Volgens het cv werkte/studeerde werknemer als ...": [type_data[0], ""],
+        "Wilsovereenkomst datum getekend": [type_data[2], "", "wo_signed_date"],
+        "Volgens het cv werkte/studeerde werknemer als ...": [
+            type_data[0],
+            "",
+            "previous_jobs",
+        ],
     }
 
     return extracted_data
@@ -26,7 +33,3 @@ def main() -> pd.DataFrame:
     extracted_data = empty_info()
     clean_data = transform(extracted_data)
     return clean_data
-
-
-if __name__ == "__main__":
-    main()

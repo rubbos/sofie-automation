@@ -16,79 +16,91 @@ def extract(text: str) -> dict:
         "Name employer": [
             type_data[0],
             em.extract_between_keywords(text, "Name of employer", "\n"),
+            "employer",
         ],
         "Loonheffing number": [
             type_data[0],
             em.extract_between_keywords(text, "LH number", "\n"),
+            "lhn",
         ],
-        "University type": [type_data[0], "None"],
-        # "Last name, Initials": [
-        #     type_data[0],
-        #     em.extract_between_keywords(text, "Initials", "\n"),
-        # ],
+        "University type": [type_data[0], "None", "employer_type"],
         "Date of birth": [
             type_data[2],
             em.extract_dates(text, "Birth", "\n"),
+            "date_of_birth",
         ],
         "BSN number": [
             type_data[0],
             em.extract_between_keywords(text, "BSN Number", "\n"),
+            "bsn",
         ],
         "Job title": [
             type_data[0],
             em.extract_between_keywords(text, "Title", "\n"),
+            "job_title",
         ],
         "Date of entry into service": [
             type_data[2],
             em.extract_dates(text, "into service", "\n"),
+            "ao_start_date",
         ],
         "Returning expat": [
             type_data[0],
             em.extract_specific_words(text, "Expat", "employment?", yes_no),
+            "returning_expat",
         ],
         "Changing Dutch employer": [
             type_data[0],
             em.extract_specific_words(text, "employee eligible for", "the 30%", yes_no),
+            "change_of_employer",
         ],
         "Contract signed outside NL": [
             type_data[0],
             em.extract_specific_words(
                 text, "Was the employee living outside", "the Netherlands", yes_no
             ),
+            "ao_signed_outside_nl",
         ],
         "16/24 Months outside NL": [
             type_data[0],
             em.extract_specific_words(
                 text, "employee living outside", "the Netherlands", yes_no
             ),
+            "living_outside_nl",
         ],
         "Promovendus exception": [
             type_data[0],
             em.extract_specific_words(text, "Did the employee live", "PhD", yes_no),
+            "promovendus_exception",
         ],
         "UFO 01 type": [
             type_data[0],
             em.extract_specific_words(text, "Specific Expertise", "UFO", yes_no),
+            "ufo_01_type",
         ],
         "UFO code": [
             type_data[0],
             em.extract_between_keywords(text, "UFO code", "\n"),
+            "ufo_code",
         ],
         "Application tax": [
             type_data[0],
             em.extract_specific_words(
                 text, "Did employer and employee", "Note", yes_no
             ),
+            "application_tax",
         ],
         "Agreement": [
             type_data[0],
             em.extract_specific_words(
                 text, "On behalf of the employer", "confirm that", yes_no
             ),
+            "agreement_signed",
         ],
         "Application upload date": [
             type_data[2],
             em.extract_dates(text, "Created at", "by"),
+            "application_date",
         ],
     }
 
@@ -123,7 +135,3 @@ def main(raw_data, dev_mode=False) -> pd.DataFrame:
     transformed_data = transform(extracted_data)
     clean_data = validate(transformed_data)
     return clean_data
-
-
-if __name__ == "__main__":
-    main()
