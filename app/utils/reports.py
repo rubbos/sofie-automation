@@ -3,33 +3,81 @@ import pandas as pd
 from extractors.methods import extract_methods as em
 
 
-def check_application_type():
-    """Figure out what type of report we are dealing with"""
-    ...
+def check_application_type(tax_form, application_form, employment_contract):
+    """Figure out what type of report we are dealing with. There are only 4 options: regular, change of employer, returning expat or promovendus exception"""
+    return regular_application(tax_form, application_form, employment_contract)
 
 
-def regular_application(): ...
+def regular_application(tax_form, application_form, employment_contract):
+    employer = get_valuex(application_form, "employer")
+    ao_start_date = get_valuex(application_form, "ao_start_date")
+    employer_type = get_valuex(application_form, "employer_type")
+    first_work_date = get_valuex(tax_form, "first_work_date")
+
+    text1 = verslag_werknemer(employer, ao_start_date, employer_type, first_work_date)
+    text2 = verslag_aanwerving(
+        ao_start_date=ao_start_date,
+        ao_signed_date=get_valuex(employment_contract, "ao_signed_date"),
+        recent_location="abc",
+        arrival_date=get_valuex(tax_form, "arrival_date"),
+        wo_signed_date=get_valuex(employment_contract, "wo_signed_date"),
+        explain_wo="need text",
+    )
+    return text1 + text2
 
 
 def exception_change_of_employer(): ...
 
 
+def exception_returning_expat(): ...
+
+
 def exception_promovendus(): ...
 
 
-def verslag_werknemer(): ...
+# FIX optional text
+def verslag_werknemer(employer, ao_start_date, employer_type, start_work_date=False):
+    title = "Verslag werknemer"
+    if employer_type == "Publiek":
+        main_text = f"De werkgever {employer} is een publiekrechtelijk lichaam. Aangezien de werkgever een publiekrechtelijk lichaam is en de werknemer in dienstbetrekking staat tot deze werkgever per {ao_start_date}, kwalificeert werknemer vanaf die datum ook als werknemer in de zin van artikel 2 Wet LB 1964."
+    else:
+        private_text_optional = f"Werknemer is per {first_work_date} (deels) werkzaam vanuit Nederland of in ieder geval voor meer dan 10% van de werktijd. Daarmee kwalificeert werknemer als werknemer in de zin van artikel 2 van de wet op de Loonbelasting 1964 per {first_work_date}."
+        main_text = f"De werkgever is {employer}. Dit is een privaatrechtelijke werkgever. Werknemer staat in dienstbetrekking tot werkgever per {ao_start_date} en verricht de werkzaamheden ook vanuit Nederland (of in ieder geval meer dan 10%). Vanaf die datum kwalificeert werknemer als werknemer in de zin van artikel 2 van de Wet op de loonbelasting 1964."
+    return formatting_text(title, main_text)
 
 
-def verslag_aanwerving(): ...
+# FIX optional text
+def verslag_aanwerving(
+    ao_start_date,
+    ao_signed_date,
+    recent_location,
+    arrival_date,
+    wo_signed_date=False,
+    explain_wo=False,
+):
+    title = "Verslag aanwerving"
+    optional_text = f"Eerder is er al een wilsovereenkomst tot stand gekomen op {wo_signed_date}. Dit blijkt uit: {explain_wo}."
+    main_text = f"Het betreft een dienstverband met een startdatum van {ao_start_date}. De arbeidsovereenkomst is door de werknemer getekend op {ao_signed_date}. {optional_text} Op dat moment woonde de werknemer, naar omstandigheden beoordeeld, in het buitenland in {recent_location}. Dit is aannemelijk o.a. op basis van het cv, de adressering op de arbeidsovereenkomst en de informatie in het werknemersformulier. Werknemer is op {arrival_date} Nederland ingereisd."
+    return formatting_text(title, main_text)
 
 
-def verslag_buitenland(): ...
+def verslag_buitenland():
+    title = ""
+    text = f""
 
 
-def verslag_deskundigheid(): ...
+def verslag_deskundigheid():
+    title = ""
+    text = f""
 
 
-def verslag_looptijd(): ...
+def verslag_looptijd():
+    title = ""
+    text = f""
+
+
+def formatting_text(title, text):
+    return title + "<br>" + text + "<br><br>"
 
 
 def create_main_report(
@@ -37,6 +85,10 @@ def create_main_report(
     application_form: pd.DataFrame,
     employment_contract: pd.DataFrame,
 ) -> str:
+
+    new_text = check_application_type(tax_form, application_form, employment_contract)
+    return new_text
+
     with open("temp_files/report.txt", "r") as file:
         report = file.read()
 
@@ -150,6 +202,11 @@ def create_email_report(tax_form: pd.DataFrame, application_form: pd.DataFrame) 
 def get_value(df: pd.DataFrame, key: str) -> str:
     """Retrieve a value from the DataFrame based on the given key."""
     return df.loc[df["KEY"] == key, "VALUE"].values[0]
+
+
+def get_valuex(df: pd.DataFrame, key: str) -> str:
+    """Retrieve a value from the DataFrame based on the given key."""
+    return df.loc[df["VAR"] == key, "VALUE"].values[0]
 
 
 def replace_values(replacements: dict, report: str):
