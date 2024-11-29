@@ -16,6 +16,8 @@ def regular_application(tax_form, application_form, employment_contract):
     ao_signed_date = get_valuex(employment_contract, "ao_signed_date")
     arrival_date = (get_valuex(tax_form, "arrival_date"),)
     wo_signed_date = get_valuex(employment_contract, "wo_signed_date")
+    job_name = (get_value(application_form, "Job title"),)
+    ufo_code = (get_value(application_form, "UFO code"),)
 
     recent_location = "need text"
     explain_wo = "need text"
@@ -35,7 +37,11 @@ def regular_application(tax_form, application_form, employment_contract):
     )
     buitenland = verslag_buitenland(recent_location, recent_location_months)
     woonplaats_radius = verslag_woonplaats_radius()
-    return title + werknemer + aanwerving + buitenland + woonplaats_radius
+    deskundigheid = verslag_deskundigheid(job_name, ufo_code, employer)
+
+    return (
+        title + werknemer + aanwerving + buitenland + woonplaats_radius + deskundigheid
+    )
 
 
 def exception_change_of_employer(): ...
@@ -87,13 +93,13 @@ def verslag_woonplaats_radius():
     return formatting_text(title)
 
 
-def verslag_deskundigheid():
-    title = ""
-    text = f""
+def verslag_deskundigheid(job_name, ufo_code, employer):
+    title = "Verslag specifieke deskundigheid"
+    text = f"De functie van {job_name} ({ufo_code}) is een functie binnen de UFO functiefamilie «onderzoek en onderwijs» en de werknemer is tewerkgesteld bij {employer} welke een werkgever is zoals bedoeld in artikel 1.11, onderdelen a, van het Vreemdelingenbesluit 2000. Daarmee kwalificeert de werknemer als schaars specifiek deskundig."
 
 
 def verslag_looptijd():
-    title = ""
+    title = "Verslag looptijd"
     text = f""
 
 
