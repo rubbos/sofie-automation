@@ -22,6 +22,10 @@ def regular_application(tax_form, application_form, employment_contract):
     recent_location = "need text"
     explain_wo = "need text"
     recent_location_months = "need text"
+    end_date = "need text"
+    nl_dates = "need text"
+    nl_reason = "need text"
+    nl_reason_doc = "need text"
 
     title = formatting_text("Verslag regulier")
     werknemer = verslag_werknemer(
@@ -42,10 +46,10 @@ def regular_application(tax_form, application_form, employment_contract):
         application_date,
         calc.is_within_4_months,
         calc.start_date,
-        end_date="asad",
-        nl_dates="b",
-        nl_reason="a",
-        nl_reason_doc="c",
+        end_date,
+        nl_dates,
+        nl_reason,
+        nl_reason_doc,
     )
 
     return (
@@ -124,7 +128,7 @@ def verslag_looptijd(
     end_date,
 ):
     title = "Verslag looptijd"
-    text = f"Het verzoek is tijdig ingediend op {application_date}. Dat is {is_within_4_months} de 4 maanden na de aanvang van de tewerkstelling op {start_date}.<br>- De startdatum is daarom {start_date}.<br>Er is eerder verblijf in NL wat gekort wordt op de looptijd. Betrokkene heeft in Nederland gewoond van {nl_dates} Dit verblijf was in het kader van {nl_reason}. Dit blijkt o.a. uit {nl_reason_doc}. Betrokkene geeft aan niet eerder in Nederland verblijf te hebben gehad wat in aanmerking genomen moet worden voor een korting. De regeling kan voor de maximale duur worden toegekend (5 jaar). De inhoud van het bijgevoegde cv en het aanvraagformulier, geven geen aanleiding om anders te concluderen. <br>- De einddatum van de looptijd is daarmee {end_date}."
+    text = f"Het verzoek is tijdig ingediend op {application_date}. Dat is {is_within_4_months} de 4 maanden na de aanvang van de tewerkstelling op {start_date}.<br><br>- De startdatum is daarom {start_date}.<br><br>Er is eerder verblijf in NL wat gekort wordt op de looptijd. Betrokkene heeft in Nederland gewoond van {nl_dates} Dit verblijf was in het kader van {nl_reason}. Dit blijkt o.a. uit {nl_reason_doc}. Betrokkene geeft aan niet eerder in Nederland verblijf te hebben gehad wat in aanmerking genomen moet worden voor een korting. De regeling kan voor de maximale duur worden toegekend (5 jaar). De inhoud van het bijgevoegde cv en het aanvraagformulier, geven geen aanleiding om anders te concluderen. <br><br>- De einddatum van de looptijd is daarmee {end_date}."
     return formatting_text(title, text)
 
 
