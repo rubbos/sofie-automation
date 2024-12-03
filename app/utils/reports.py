@@ -14,11 +14,11 @@ def regular_application(tax_form, application_form, employment_contract):
     employer_type = get_valuex(application_form, "employer_type")
     first_work_date = get_valuex(tax_form, "first_work_date")
     ao_signed_date = get_valuex(employment_contract, "ao_signed_date")
-    arrival_date = (get_valuex(tax_form, "arrival_date"),)
+    arrival_date = get_valuex(tax_form, "arrival_date")
     wo_signed_date = get_valuex(employment_contract, "wo_signed_date")
-    job_name = (get_value(application_form, "Job title"),)
-    ufo_code = (get_value(application_form, "UFO code"),)
-
+    job_name = get_valuex(application_form, "job_title")
+    ufo_code = get_valuex(application_form, "ufo_code")
+    application_date = get_valuex(application_form, "application_date")
     recent_location = "need text"
     explain_wo = "need text"
     recent_location_months = "need text"
@@ -38,9 +38,24 @@ def regular_application(tax_form, application_form, employment_contract):
     buitenland = verslag_buitenland(recent_location, recent_location_months)
     woonplaats_radius = verslag_woonplaats_radius()
     deskundigheid = verslag_deskundigheid(job_name, ufo_code, employer)
+    looptijd = verslag_looptijd(
+        application_date,
+        calc.is_within_4_months,
+        calc.start_date,
+        end_date="asad",
+        nl_dates="b",
+        nl_reason="a",
+        nl_reason_doc="c",
+    )
 
     return (
-        title + werknemer + aanwerving + buitenland + woonplaats_radius + deskundigheid
+        title
+        + werknemer
+        + aanwerving
+        + buitenland
+        + woonplaats_radius
+        + deskundigheid
+        + looptijd
     )
 
 
@@ -96,11 +111,21 @@ def verslag_woonplaats_radius():
 def verslag_deskundigheid(job_name, ufo_code, employer):
     title = "Verslag specifieke deskundigheid"
     text = f"De functie van {job_name} ({ufo_code}) is een functie binnen de UFO functiefamilie «onderzoek en onderwijs» en de werknemer is tewerkgesteld bij {employer} welke een werkgever is zoals bedoeld in artikel 1.11, onderdelen a, van het Vreemdelingenbesluit 2000. Daarmee kwalificeert de werknemer als schaars specifiek deskundig."
+    return formatting_text(title, text)
 
 
-def verslag_looptijd():
+def verslag_looptijd(
+    application_date,
+    is_within_4_months,
+    start_date,
+    nl_dates,
+    nl_reason,
+    nl_reason_doc,
+    end_date,
+):
     title = "Verslag looptijd"
-    text = f""
+    text = f"Het verzoek is tijdig ingediend op {application_date}. Dat is {is_within_4_months} de 4 maanden na de aanvang van de tewerkstelling op {start_date}.<br>- De startdatum is daarom {start_date}.<br>Er is eerder verblijf in NL wat gekort wordt op de looptijd. Betrokkene heeft in Nederland gewoond van {nl_dates} Dit verblijf was in het kader van {nl_reason}. Dit blijkt o.a. uit {nl_reason_doc}. Betrokkene geeft aan niet eerder in Nederland verblijf te hebben gehad wat in aanmerking genomen moet worden voor een korting. De regeling kan voor de maximale duur worden toegekend (5 jaar). De inhoud van het bijgevoegde cv en het aanvraagformulier, geven geen aanleiding om anders te concluderen. <br>- De einddatum van de looptijd is daarmee {end_date}."
+    return formatting_text(title, text)
 
 
 def formatting_text(title, text=False):
