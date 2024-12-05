@@ -27,7 +27,7 @@ def regular_application(tax_form, application_form, employment_contract):
     nl_reason = "need text"
     nl_reason_doc = "need text"
 
-    title = formatting_text("Verslag regulier")
+    title = formatting_text("Verslag regulier", "")
     werknemer = verslag_werknemer(
         employer, ao_start_date, employer_type, first_work_date
     )
@@ -73,14 +73,18 @@ def exception_promovendus(): ...
 
 
 # FIX optional text
-def verslag_werknemer(employer, ao_start_date, employer_type, start_work_date=False):
+def verslag_werknemer(employer, ao_start_date, employer_type, first_work_date):
     title = "Verslag werknemer"
+    # Check for public or private university
     if employer_type == "Publiek":
-        main_text = f"De werkgever {employer} is een publiekrechtelijk lichaam. Aangezien de werkgever een publiekrechtelijk lichaam is en de werknemer in dienstbetrekking staat tot deze werkgever per {ao_start_date}, kwalificeert werknemer vanaf die datum ook als werknemer in de zin van artikel 2 Wet LB 1964."
+        text = f"De werkgever {employer} is een publiekrechtelijk lichaam. Aangezien de werkgever een publiekrechtelijk lichaam is en de werknemer in dienstbetrekking staat tot deze werkgever per {ao_start_date}, kwalificeert werknemer vanaf die datum ook als werknemer in de zin van artikel 2 Wet LB 1964."
     else:
-        private_text_optional = f"Werknemer is per {first_work_date} (deels) werkzaam vanuit Nederland of in ieder geval voor meer dan 10% van de werktijd. Daarmee kwalificeert werknemer als werknemer in de zin van artikel 2 van de wet op de Loonbelasting 1964 per {first_work_date}."
-        main_text = f"De werkgever is {employer}. Dit is een privaatrechtelijke werkgever. Werknemer staat in dienstbetrekking tot werkgever per {ao_start_date} en verricht de werkzaamheden ook vanuit Nederland (of in ieder geval meer dan 10%). Vanaf die datum kwalificeert werknemer als werknemer in de zin van artikel 2 van de Wet op de loonbelasting 1964."
-    return formatting_text(title, main_text)
+        # Make sure to use the latest date for the form if its a private uni.
+        if calc.get_most_recent_date(ao_start_date, first_work_date) != ao_start_date:
+            text = f"De werkgever is {employer}. Dit is een privaatrechtelijke werkgever. Werknemer is per {first_work_date} (deels) werkzaam vanuit Nederland of in ieder geval voor meer dan 10% van de werktijd. Daarmee kwalificeert werknemer als werknemer in de zin van artikel 2 van de wet op de Loonbelasting 1964 per {first_work_date}."
+        else:
+            text = f"De werkgever is {employer}. Dit is een privaatrechtelijke werkgever. Werknemer staat in dienstbetrekking tot werkgever per {ao_start_date} en verricht de werkzaamheden ook vanuit Nederland (of in ieder geval meer dan 10%). Vanaf die datum kwalificeert werknemer als werknemer in de zin van artikel 2 van de Wet op de loonbelasting 1964."
+    return formatting_text(title, text)
 
 
 # FIX optional text
@@ -94,8 +98,8 @@ def verslag_aanwerving(
 ):
     title = "Verslag aanwerving"
     optional_text = f"Eerder is er al een wilsovereenkomst tot stand gekomen op {wo_signed_date}. Dit blijkt uit: {explain_wo}."
-    main_text = f"Het betreft een dienstverband met een startdatum van {ao_start_date}. De arbeidsovereenkomst is door de werknemer getekend op {ao_signed_date}. {optional_text} Op dat moment woonde de werknemer, naar omstandigheden beoordeeld, in het buitenland in {recent_location}. Dit is aannemelijk o.a. op basis van het cv, de adressering op de arbeidsovereenkomst en de informatie in het werknemersformulier. Werknemer is op {arrival_date} Nederland ingereisd."
-    return formatting_text(title, main_text)
+    text = f"Het betreft een dienstverband met een startdatum van {ao_start_date}. De arbeidsovereenkomst is door de werknemer getekend op {ao_signed_date}. {optional_text} Op dat moment woonde de werknemer, naar omstandigheden beoordeeld, in het buitenland in {recent_location}. Dit is aannemelijk o.a. op basis van het cv, de adressering op de arbeidsovereenkomst en de informatie in het werknemersformulier. Werknemer is op {arrival_date} Nederland ingereisd."
+    return formatting_text(title, text)
 
 
 def verslag_buitenland(recent_location, recent_location_months):
@@ -109,7 +113,8 @@ def verslag_buitenland(recent_location, recent_location_months):
 
 def verslag_woonplaats_radius():
     title = "Foto woonplaats radius 150km"
-    return formatting_text(title)
+    text = "Enter picture"
+    return formatting_text(title, text)
 
 
 def verslag_deskundigheid(job_name, ufo_code, employer):
@@ -132,10 +137,8 @@ def verslag_looptijd(
     return formatting_text(title, text)
 
 
-def formatting_text(title, text=False):
-    if text:
-        return title + "<br>" + text + "<br><br>"
-    return title + "<br><br>"
+def formatting_text(title: str, text: str) -> str:
+    return title + "<br>" + text + "<br><br>"
 
 
 def create_main_report(

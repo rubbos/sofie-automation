@@ -49,3 +49,21 @@ def start_date(application_upload_date: str, start_date: str) -> str:
     if is_within_4_months(start_date, application_upload_date):
         return start_date
     return next_first_of_month()
+
+
+def get_most_recent_date(date1: str, date2: str) -> str:
+    """
+    Returns the most recent date from two given dates.
+
+    Args:
+        date1 (str): First date in the format dd-mm-yyyy.
+        date2 (str): Second date in the format dd-mm-yyyy.
+
+    Returns:
+        str: The most recent date.
+    """
+    date_format = "%d-%m-%Y"
+    date1_parsed = datetime.strptime(date1, date_format)
+    date2_parsed = datetime.strptime(date2, date_format)
+
+    return date1 if date1_parsed > date2_parsed else date2

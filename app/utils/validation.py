@@ -52,9 +52,22 @@ def check_standard_request(df):
 
 
 def validate_uni(df):
-    """Validate university and update the values from a csv"""
+    """Validate university data and update the values in the DataFrame."""
     uni = find_university(df)
-    df.loc[df["KEY"] == "Name employer", "VALUE"] = uni[0]
-    df.loc[df["KEY"] == "Loonheffing number", "VALUE"] = uni[1]
-    df.loc[df["KEY"] == "University type", "VALUE"] = uni[2]
+
+    def update_value(key, value):
+        """Helper function to update a row in the DataFrame."""
+        df.loc[df["KEY"] == key, "VALUE"] = value
+
+    if isinstance(uni, (list, tuple)) and len(uni) >= 3:
+        # Update DataFrame with university data
+        update_value("Name employer", uni[0])
+        update_value("Loonheffing number", uni[1])
+        update_value("University type", uni[2])
+    else:
+        # Log error and set default values
+        print("Error: Invalid university data")
+        for key in ["Name employer", "Loonheffing number", "University type"]:
+            update_value(key, None)
+
     return df
