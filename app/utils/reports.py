@@ -180,6 +180,19 @@ def create_main_report(
 
 
 def create_email_report(tax_form: pd.DataFrame, application_form: pd.DataFrame) -> str:
+
+    # FIX: and make use of the variables from the regular one
+    text = f"Naam: {get_valuex(tax_form, "full_name")}<br>"
+    text += f"BSnr: {get_value(application_form, "BSN number")}<br>"
+    text += f"Geboortedatum: {get_value(application_form, "Date of birth")}<br>"
+    text += f"Werkgever: {get_value(application_form, "Name employer")}<br>"
+    text += f"Loonheffingsnummer: {get_value(application_form, "Loonheffing number")}<br>"
+    text += f"Gewenste ingangsdatum: {calc.start_date(get_value(application_form, "Application upload date"), get_value(tax_form, "Start work date")}<br>"
+    text += f"Looptijd tot en met: {"need data"}<br>"
+    text += f"Functienaam: {get_value(application_form, "Job title")}<br>"
+    text += f"Loonnorm: {calc.salarynorm(get_value(application_form, "UFO code"))}<br>"
+    text += "Sectorcode: 61"
+
     with open("temp_files/email.txt", "r") as file:
         report = file.read()
 
