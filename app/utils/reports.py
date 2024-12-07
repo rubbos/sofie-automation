@@ -22,10 +22,13 @@ def regular_application(tax_form, application_form, employment_contract):
     recent_location = "need text"
     explain_wo = "need text"
     recent_location_months = "need text"
+    start_date = "need text"
     end_date = "need text"
     nl_dates = "need text"
     nl_reason = "need text"
     nl_reason_doc = "need text"
+    cv_data = "need text"
+    income = "need text"
 
     title = formatting_text("Verslag regulier", "")
     werknemer = verslag_werknemer(
@@ -39,17 +42,17 @@ def regular_application(tax_form, application_form, employment_contract):
         wo_signed_date,
         explain_wo,
     )
-    buitenland = verslag_buitenland(recent_location, recent_location_months)
+    buitenland = verslag_buitenland(recent_location, recent_location_months, cv_data)
     woonplaats_radius = verslag_woonplaats_radius()
-    deskundigheid = verslag_deskundigheid(job_name, ufo_code, employer)
+    deskundigheid = verslag_deskundigheid(job_name, ufo_code, employer, income)
     looptijd = verslag_looptijd(
         application_date,
-        calc.is_within_4_months,
-        calc.start_date,
-        end_date,
+        ao_start_date,
         nl_dates,
         nl_reason,
         nl_reason_doc,
+        start_date,
+        end_date,
     )
 
     return (
@@ -87,7 +90,6 @@ def verslag_werknemer(employer, ao_start_date, employer_type, first_work_date):
     return formatting_text(title, text)
 
 
-# FIX: optional text
 def verslag_aanwerving(
     ao_start_date,
     ao_signed_date,
@@ -97,48 +99,72 @@ def verslag_aanwerving(
     explain_wo,
 ):
     title = "Verslag aanwerving"
-    optional_text = f"Eerder is er al een wilsovereenkomst tot stand gekomen op {wo_signed_date}. Dit blijkt uit: {explain_wo}."
-    text = f"Het betreft een dienstverband met een startdatum van {ao_start_date}. De arbeidsovereenkomst is door de werknemer getekend op {ao_signed_date}. {optional_text} Op dat moment woonde de werknemer, naar omstandigheden beoordeeld, in het buitenland in {recent_location}. Dit is aannemelijk o.a. op basis van het cv, de adressering op de arbeidsovereenkomst en de informatie in het werknemersformulier. Werknemer is op {arrival_date} Nederland ingereisd."
+    text = f"Het betreft een dienstverband met een startdatum van {ao_start_date}. De arbeidsovereenkomst is door de werknemer getekend op {ao_signed_date}. "
+    # Check if its signed outside NL
+    if calc.get_most_recent_date(ao_signed_date, arrival_date) != arrival_date:
+        text += f"Eerder is er al een wilsovereenkomst tot stand gekomen op {wo_signed_date}. Dit blijkt uit: {explain_wo}."
+    text += f"Op dat moment woonde de werknemer, naar omstandigheden beoordeeld, in het buitenland in {recent_location}. Dit is aannemelijk o.a. op basis van het cv, de adressering op de arbeidsovereenkomst en de informatie in het werknemersformulier. Werknemer is op {arrival_date} Nederland ingereisd."
     return formatting_text(title, text)
 
 
-def verslag_buitenland(recent_location, recent_location_months):
+def verslag_buitenland(recent_location, recent_location_months, cv_data):
     title = "Verslag 150 km criterium 16/24 maanden criterium"
-    text1 = f"Bij de aanwerving woonde werknemer in {recent_location}. De werknemer woonde daar ook gedurende {recent_location_months} van de 24 maanden voorafgaand aan de tewerkstelling. Deze woonplaats ligt op meer dan 150 km van de Nederlandse grens. Het CV en de informatie op het aanvraagformulier geven geen aanleiding om iets anders te concluderen."
-    text2 = f"Volgens het cv werkte/studeerde werknemer als ...&nbsp; in &lt;plaats/land&gt; voor de start van de tewerkstelling van &lt;datum&gt; tot &lt;datum&gt;. &lt;Geef indien mogelijk informatie over de activiteiten en plaats voor aankomst in Nederland"
-    text3 = f"Conclusie: het is aannemelijk dat werknemer op meer dan 150 km van de Nederlandse grens woonde gedurende meer dan 2/3 van de 24 maanden direct voorafgaand aan de eerste dag van tewerkstelling."
-    text = text1 + text2 + text3
+    text = f"Bij de aanwerving woonde werknemer in {recent_location}. De werknemer woonde daar ook gedurende {recent_location_months} van de 24 maanden voorafgaand aan de tewerkstelling. Deze woonplaats ligt op meer dan 150 km van de Nederlandse grens. Het CV en de informatie op het aanvraagformulier geven geen aanleiding om iets anders te concluderen.<br><br>"
+    text += f"Volgens het CV werkte/studeerde de werknemer als: {cv_data}<br><br>"
+    text += "Conclusie: het is aannemelijk dat werknemer op meer dan 150 km van de Nederlandse grens woonde gedurende meer dan 2/3 van de 24 maanden direct voorafgaand aan de eerste dag van tewerkstelling."
     return formatting_text(title, text)
 
 
+# NOTE: need to make something that makes a picture of the location on a map with a radius
 def verslag_woonplaats_radius():
     title = "Foto woonplaats radius 150km"
     text = "Enter picture"
     return formatting_text(title, text)
 
 
-def verslag_deskundigheid(job_name, ufo_code, employer):
+def verslag_deskundigheid(job_name, ufo_code, employer, income):
     title = "Verslag specifieke deskundigheid"
-    text = f"De functie van {job_name} ({ufo_code}) is een functie binnen de UFO functiefamilie «onderzoek en onderwijs» en de werknemer is tewerkgesteld bij {employer} welke een werkgever is zoals bedoeld in artikel 1.11, onderdelen a, van het Vreemdelingenbesluit 2000. Daarmee kwalificeert de werknemer als schaars specifiek deskundig."
+    # Regular academic position
+    if ufo_code.startswith("01"):
+        text = f"De functie van {job_name} ({ufo_code}) is een functie binnen de UFO functiefamilie «onderzoek en onderwijs» en de werknemer is tewerkgesteld bij {employer} welke een werkgever is zoals bedoeld in artikel 1.11, onderdelen a, van het Vreemdelingenbesluit 2000. Daarmee kwalificeert de werknemer als schaars specifiek deskundig."
+    # Non-academic position
+    else:
+        # High-income position
+        text = f"Uit de pro forma loonstrook, jaaropgaaf, salarisbedrag uit de arbeidsovereenkomst, addendum, blijkt dat voldaan wordt aan de loonnorm. Het loon omgerekend op jaarbasis bedraagt {income} EUR. <br><br>"
+        # High-income position and MSc
+        text += "In de Excel lijst staat de master genoemd van de specifieke onderwijsinstelling in het buitenland alsmede de studierichting.<br><br>"
+        # Not high enough income to receive the full 30%
+        text += "Omdat het salaris na toepassing van een korting van 30% van het loon onder de norm dreigt te komen, hebben we het belang van het addendum benadrukt.<br><br>"
+        # Special cases
+        text += "Er is een diplomawaardering opgevraagd bij Nuffic/IDW. Deze wijst uit dat de Master kwalificeert als: <naam kwalificatie>"
     return formatting_text(title, text)
 
 
 def verslag_looptijd(
     application_date,
-    is_within_4_months,
-    start_date,
+    ao_start_date,
     nl_dates,
     nl_reason,
     nl_reason_doc,
+    start_date,
     end_date,
 ):
     title = "Verslag looptijd"
-    text = f"Het verzoek is tijdig ingediend op {application_date}. Dat is {is_within_4_months} de 4 maanden na de aanvang van de tewerkstelling op {start_date}.<br><br>- De startdatum is daarom {start_date}.<br><br>Er is eerder verblijf in NL wat gekort wordt op de looptijd. Betrokkene heeft in Nederland gewoond van {nl_dates} Dit verblijf was in het kader van {nl_reason}. Dit blijkt o.a. uit {nl_reason_doc}. Betrokkene geeft aan niet eerder in Nederland verblijf te hebben gehad wat in aanmerking genomen moet worden voor een korting. De regeling kan voor de maximale duur worden toegekend (5 jaar). De inhoud van het bijgevoegde cv en het aanvraagformulier, geven geen aanleiding om anders te concluderen. <br><br>- De einddatum van de looptijd is daarmee {end_date}."
+
+    # Check if the difference between start_date and application_date is less than 4 months.
+    if calc.is_within_4_months(ao_start_date, application_date):
+        text = f"Het verzoek is tijdig ingediend op {application_date}. Dat is binnen de 4 maanden na de aanvang van de tewerkstelling op {start_date}.<br><br>"
+    else:
+        text = f"Het verzoek is niet tijdig ingediend op {application_date}. Dat is 4 maanden na de aanvang van de tewerkstelling op {start_date}.<br><br>"
+    text += f"- De startdatum is daarom {start_date}.<br><br>"
+
+    # If worker has been in NL before, we have to remove these months if its more than 6 weeks a year.
+    if nl_dates:
+        text += f"Er is eerder verblijf in NL wat gekort wordt op de looptijd. Betrokkene heeft in Nederland gewoond van {nl_dates} Dit verblijf was in het kader van {nl_reason}. Dit blijkt o.a. uit {nl_reason_doc}.<br><br>"
+    else:
+        text += "Betrokkene geeft aan niet eerder in Nederland verblijf te hebben gehad wat in aanmerking genomen moet worden voor een korting. De regeling kan voor de maximale duur worden toegekend (5 jaar). De inhoud van het bijgevoegde cv en het aanvraagformulier, geven geen aanleiding om anders te concluderen.<br><br>"
+    text += f"- De einddatum van de looptijd is daarmee {end_date}."
     return formatting_text(title, text)
-
-
-def formatting_text(title: str, text: str) -> str:
-    return title + "<br>" + text + "<br><br>"
 
 
 def create_main_report(
@@ -147,93 +173,10 @@ def create_main_report(
     employment_contract: pd.DataFrame,
 ) -> str:
 
-    new_text = check_application_type(tax_form, application_form, employment_contract)
-    return new_text
-
-    with open("temp_files/report.txt", "r") as file:
-        report = file.read()
-
-    # Remove either public or private text.
-    if get_value(application_form, "University type") == "Privaat":
-        report = em.remove_text_around_keywords(report, "[Publiek]", "[Publiek]")
-        report = report.replace("[Privaat]", "")
-    elif get_value(application_form, "University type") == "Publiek":
-        report = em.remove_text_around_keywords(report, "[Privaat]", "[Privaat]")
-        report = report.replace("[Publiek]", "")
-
-    # Check for wilsovereenkomst
-    if calc.signed_outside_nl(
-        get_value(employment_contract, "Arbeidsovereenkomst datum getekend"),
-        get_value(tax_form, "Arrival date"),
-    ):
-        report = em.remove_text_around_keywords(
-            report, "[wilsovereenkomst]", "[wilsovereenkomst]"
-        )
-    else:
-        report = report.replace("[wilsovereenkomst]", "")
-
-    # More needed evidence
-    report = em.remove_text_around_keywords(
-        report, "[Aanvullend bewijs]", "[Aanvullend bewijs]"
+    main_report = check_application_type(
+        tax_form, application_form, employment_contract
     )
-
-    # UFO job
-    report = em.remove_text_around_keywords(
-        report,
-        "[Indien schaarse deskundigheid op basis van inkomen]",
-        "[Indien schaarse deskundigheid op basis van inkomen]",
-    )
-
-    # Start date
-    if calc.is_within_4_months(
-        get_value(tax_form, "Start work date"),
-        get_value(application_form, "Application upload date"),
-    ):
-        report = report.replace("&lt;niet&gt;", "")
-        report = report.replace("&lt;buiten&gt;", "")
-        report = report.replace(
-            "&lt;ingangsdatum&gt;", get_value(tax_form, "Start work date")
-        )
-    else:
-        report = report.replace("&lt;niet&gt;", "niet")
-        report = report.replace("binnen &lt;buiten&gt;", "buiten")
-        report = report.replace("&lt;ingangsdatum&gt;", calc.next_first_of_month())
-
-    replacements = {
-        "[naam werkgever]": get_value(application_form, "Name employer"),
-        "&lt;naam werkgever&gt;": get_value(application_form, "Name employer"),
-        "&lt;datum aanvang dienstbetrekking&gt;": get_value(
-            application_form, "Date of entry into service"
-        ),
-        "&lt;datum indiensttreding&gt;": get_value(
-            application_form, "Date of entry into service"
-        ),
-        "&lt;datum aanvang tewerkstelling&gt;": get_value(
-            application_form, "Date of entry into service"
-        ),
-        "&lt;datum start kwalificatie als werknemer art. 2 Wet LB 1964&gt;": get_value(
-            application_form, "Date of entry into service"
-        ),
-        "&lt;datum aankomst NL&gt;": get_value(tax_form, "Arrival date"),
-        "&lt;datum kwalificatie als werknemer&gt;": get_value(tax_form, "Arrival date"),
-        "&lt;datum eerste werkdag in Nederland&gt;": get_value(
-            tax_form, "Arrival date"
-        ),
-        "&lt;naam functie&gt;": get_value(application_form, "Job title"),
-        "&lt;eventueel functiecode vermelden&gt;": f"({get_value(application_form, "UFO code")})",
-        "&lt;datum ondertekening werknemer&gt;": get_value(
-            employment_contract, "Arbeidsovereenkomst datum getekend"
-        ),
-        "&lt;datum ontstaan wilsovereenkomst&gt;": get_value(
-            employment_contract, "Wilsovereenkomst datum getekend"
-        ),
-        "&lt;datum melding SOFI-expertise&gt;": get_value(
-            application_form, "Application upload date"
-        ),
-    }
-
-    report = replace_values(replacements, report)
-    return report
+    return main_report
 
 
 def create_email_report(tax_form: pd.DataFrame, application_form: pd.DataFrame) -> str:
@@ -268,6 +211,10 @@ def get_value(df: pd.DataFrame, key: str) -> str:
 def get_valuex(df: pd.DataFrame, key: str) -> str:
     """Retrieve a value from the DataFrame based on the given key."""
     return df.loc[df["VAR"] == key, "VALUE"].values[0]
+
+
+def formatting_text(title: str, text: str) -> str:
+    return title + "<br>" + text + "<br><br>"
 
 
 def replace_values(replacements: dict, report: str):

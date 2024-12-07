@@ -45,7 +45,7 @@ def next_first_of_month() -> str:
 
 
 def start_date(application_upload_date: str, start_date: str) -> str:
-    """If the difference between dates is more than 4 months, we return the first of the next mont h"""
+    """If the difference between dates is more than 4 months, we return the first of the next month"""
     if is_within_4_months(start_date, application_upload_date):
         return start_date
     return next_first_of_month()
