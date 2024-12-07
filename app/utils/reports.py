@@ -180,45 +180,26 @@ def create_main_report(
 
 
 def create_email_report(tax_form: pd.DataFrame, application_form: pd.DataFrame) -> str:
-
     # FIX: and make use of the variables from the regular one
-    text = f"Naam: {get_valuex(tax_form, "full_name")}<br>"
-    text += f"BSnr: {get_value(application_form, "BSN number")}<br>"
-    text += f"Geboortedatum: {get_value(application_form, "Date of birth")}<br>"
-    text += f"Werkgever: {get_value(application_form, "Name employer")}<br>"
-    text += f"Loonheffingsnummer: {get_value(application_form, "Loonheffing number")}<br>"
-    text += f"Gewenste ingangsdatum: {calc.start_date(get_value(application_form, "Application upload date"), get_value(tax_form, "Start work date")}<br>"
-    text += f"Looptijd tot en met: {"need data"}<br>"
-    text += f"Functienaam: {get_value(application_form, "Job title")}<br>"
-    text += f"Loonnorm: {calc.salarynorm(get_value(application_form, "UFO code"))}<br>"
-    text += "Sectorcode: 61"
-
-    with open("temp_files/email.txt", "r") as file:
-        report = file.read()
-
-    salarynorm = calc.salarynorm(get_value(application_form, "UFO code"))
-
-    replacements = {
-        "{name}": get_value(tax_form, "Full name"),
-        "{bsn}": get_value(application_form, "BSN number"),
-        "{birth}": get_value(application_form, "Date of birth"),
-        "{employer}": get_value(application_form, "Name employer"),
-        "{lhm}": get_value(application_form, "Loonheffing number"),
-        "{start_date}": calc.start_date(
-            get_value(application_form, "Application upload date"),
-            get_value(tax_form, "Start work date"),
+    data = {
+        "Naam": get_valuex(tax_form, "full_name"),
+        "BSnr": get_valuex(application_form, "bsn"),
+        "Geboortedatum": get_valuex(application_form, "date_of_birth"),
+        "Werkgever": get_valuex(application_form, "employer"),
+        "Loonheffingsnummer": get_valuex(application_form, "lhn"),
+        "Gewenste ingangsdatum": calc.start_date(
+            get_valuex(application_form, "application_date"),
+            get_valuex(application_form, "ao_start_date"),
         ),
-        # "{end_date}": get_value(df, ""),
-        "{job_name}": get_value(application_form, "Job title"),
-        "{salarynorm}": salarynorm,
+        "Looptijd tot en met": "need data",
+        "Functienaam": get_valuex(application_form, "job_title"),
+        "Loonnorm": calc.salarynorm(get_valuex(application_form, "ufo_code")),
+        "Sectorcode": "61",
     }
-    report = replace_values(replacements, report)
+
+    # Build the HTML using a list comprehension
+    report = "<br>".join(f"{key}: {value}" for key, value in data.items())
     return report
-
-
-def get_value(df: pd.DataFrame, key: str) -> str:
-    """Retrieve a value from the DataFrame based on the given key."""
-    return df.loc[df["KEY"] == key, "VALUE"].values[0]
 
 
 def get_valuex(df: pd.DataFrame, key: str) -> str:
