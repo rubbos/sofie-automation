@@ -1,6 +1,103 @@
 from utils import calculations as calc
 import pandas as pd
-from extractors.methods import extract_methods as em
+from dataclasses import dataclass
+from typing import Optional
+
+
+@dataclass
+class TravelData:
+    """Represents travel and residency information."""
+
+    arrival_date: str
+    recent_location: str
+    months_at_recent_location: str
+    nl_dates: Optional[str] = None
+    nl_reason: Optional[str] = None
+    nl_reason_doc: Optional[str] = None
+
+
+@dataclass
+class WorkerData:
+    """Represents data related to the worker."""
+
+    first_work_date: str
+    travel: TravelData
+    cv_data: Optional[str] = None
+
+
+@dataclass
+class EmployerData:
+    """Represents data related to the employer."""
+
+    employer: str
+    employer_type: str
+    ufo_code: str
+
+
+@dataclass
+class ContractData:
+    """Represents contract-specific data."""
+
+    job_name: str
+    ao_start_date: str
+    ao_signed_date: str
+    application_date: str
+    wo_signed_date: Optional[str] = None
+    explain_wo: Optional[str] = None
+    income: Optional[str] = None
+
+    def __post_init__(self):
+        if self.income and not self.income.isdigit():
+            raise ValueError("Income must be numeric.")
+
+
+@dataclass
+class CalculationData:
+    """Represents calculated date ranges."""
+
+    start_date: Optional[str] = None
+    end_date: Optional[str] = None
+
+
+def extracted_data(
+    tax_form,
+    application_form,
+    employment_contract,
+    worker_info: WorkerData,
+    employer_info: EmployerData,
+    contract_info: ContractData,
+    calculation_info: CalculationData,
+):
+    travel_info = TravelData(
+        arrival_date=get_value(tax_form, "arrival_date"),
+        recent_location="Germany",
+        months_at_recent_location="12",
+        nl_dates="2023-06-01 to 2023-08-01",
+        nl_reason="Work",
+        nl_reason_doc="Contract",
+    )
+
+    worker_info = WorkerData(
+        first_work_date=get_value(tax_form, "first_work_date"),
+        travel=travel_info,
+    )
+
+    employer_info = EmployerData(
+        employer=get_value(application_form, "employer"),
+        employer_type=get_value(application_form, "employer_type"),
+        ufo_code=get_value(application_form, "ufo_code"),
+    )
+
+    contract_info = ContractData(
+        job_name=get_value(application_form, "job_title"),
+        ao_start_date=get_value(application_form, "ao_start_date"),
+        ao_signed_date=get_value(employment_contract, "ao_signed_date"),
+        application_date=get_value(application_form, "application_date"),
+        wo_signed_date=get_value(employment_contract, "wo_signed_date"),
+    )
+
+    calculation_info = CalculationData(start_date="2024-01-01", end_date="2024-12-31")
+    return worker_info, employer_info, contract_info, calculation_info
 
 
 def check_application_type(tax_form, application_form, employment_contract):
@@ -9,16 +106,16 @@ def check_application_type(tax_form, application_form, employment_contract):
 
 
 def regular_application(tax_form, application_form, employment_contract):
-    employer = get_valuex(application_form, "employer")
-    ao_start_date = get_valuex(application_form, "ao_start_date")
-    employer_type = get_valuex(application_form, "employer_type")
-    first_work_date = get_valuex(tax_form, "first_work_date")
-    ao_signed_date = get_valuex(employment_contract, "ao_signed_date")
-    arrival_date = get_valuex(tax_form, "arrival_date")
-    wo_signed_date = get_valuex(employment_contract, "wo_signed_date")
-    job_name = get_valuex(application_form, "job_title")
-    ufo_code = get_valuex(application_form, "ufo_code")
-    application_date = get_valuex(application_form, "application_date")
+    employer = get_value(application_form, "employer")
+    ao_start_date = get_value(application_form, "ao_start_date")
+    employer_type = get_value(application_form, "employer_type")
+    first_work_date = get_value(tax_form, "first_work_date")
+    ao_signed_date = get_value(employment_contract, "ao_signed_date")
+    arrival_date = get_value(tax_form, "arrival_date")
+    wo_signed_date = get_value(employment_contract, "wo_signed_date")
+    job_name = get_value(application_form, "job_title")
+    ufo_code = get_value(application_form, "ufo_code")
+    application_date = get_value(application_form, "application_date")
     recent_location = "need text"
     explain_wo = "need text"
     recent_location_months = "need text"
@@ -182,18 +279,18 @@ def create_main_report(
 def create_email_report(tax_form: pd.DataFrame, application_form: pd.DataFrame) -> str:
     # FIX: and make use of the variables from the regular one
     data = {
-        "Naam": get_valuex(tax_form, "full_name"),
-        "BSnr": get_valuex(application_form, "bsn"),
-        "Geboortedatum": get_valuex(application_form, "date_of_birth"),
-        "Werkgever": get_valuex(application_form, "employer"),
-        "Loonheffingsnummer": get_valuex(application_form, "lhn"),
+        "Naam": get_value(tax_form, "full_name"),
+        "BSnr": get_value(application_form, "bsn"),
+        "Geboortedatum": get_value(application_form, "date_of_birth"),
+        "Werkgever": get_value(application_form, "employer"),
+        "Loonheffingsnummer": get_value(application_form, "lhn"),
         "Gewenste ingangsdatum": calc.start_date(
-            get_valuex(application_form, "application_date"),
-            get_valuex(application_form, "ao_start_date"),
+            get_value(application_form, "application_date"),
+            get_value(application_form, "ao_start_date"),
         ),
         "Looptijd tot en met": "need data",
-        "Functienaam": get_valuex(application_form, "job_title"),
-        "Loonnorm": calc.salarynorm(get_valuex(application_form, "ufo_code")),
+        "Functienaam": get_value(application_form, "job_title"),
+        "Loonnorm": calc.salarynorm(get_value(application_form, "ufo_code")),
         "Sectorcode": "61",
     }
 
@@ -202,7 +299,7 @@ def create_email_report(tax_form: pd.DataFrame, application_form: pd.DataFrame) 
     return report
 
 
-def get_valuex(df: pd.DataFrame, key: str) -> str:
+def get_value(df: pd.DataFrame, key: str) -> str:
     """Retrieve a value from the DataFrame based on the given key."""
     return df.loc[df["VAR"] == key, "VALUE"].values[0]
 
