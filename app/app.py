@@ -3,8 +3,11 @@ import pandas as pd
 from extractors.tax_form import main as tax_form_main
 from extractors.application_form import main as application_form_main
 from extractors.extra_info import main as extra_info_main
-from utils.reports import create_main_report, create_email_report
-from extractors.methods import extract_methods as em
+from utils.reports import (
+    create_main_report,
+    create_email_report,
+    extracted_data,
+)
 import utils.validation
 import logging
 
@@ -60,10 +63,17 @@ def submit_results():
     application_form_edited = get_edited_values(application_form_data, "data_app")
     extra_info_edited = get_edited_values(extra_info_data, "data_extra")
 
-    main_report = create_main_report(
-        tax_form_edited, application_form_edited, extra_info_edited
+    worker_info, employer_info, contract_info, calculation_info = extracted_data(
+        tax_form_edited,
+        application_form_edited,
+        extra_info_edited,
     )
-    email_report = create_email_report(tax_form_edited, application_form_edited)
+    main_report = create_main_report(
+        worker_info, employer_info, contract_info, calculation_info
+    )
+    email_report = create_email_report(
+        worker_info, employer_info, contract_info, calculation_info
+    )
 
     return render_template(
         "final.html",

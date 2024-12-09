@@ -5,23 +5,19 @@ from typing import Optional
 
 
 @dataclass
-class TravelData:
-    """Represents travel and residency information."""
+class WorkerData:
+    """Represents data related to the worker."""
 
+    full_name: str
+    bsn: str
+    date_of_birth: str
+    first_work_date: str
     arrival_date: str
     recent_location: str
     months_at_recent_location: str
     nl_dates: Optional[str] = None
     nl_reason: Optional[str] = None
     nl_reason_doc: Optional[str] = None
-
-
-@dataclass
-class WorkerData:
-    """Represents data related to the worker."""
-
-    first_work_date: str
-    travel: TravelData
     cv_data: Optional[str] = None
 
 
@@ -31,14 +27,16 @@ class EmployerData:
 
     employer: str
     employer_type: str
-    ufo_code: str
+    lhn: str
 
 
 @dataclass
 class ContractData:
     """Represents contract-specific data."""
 
-    job_name: str
+    job_title: str
+    ufo_code: str
+    wage_type: str
     ao_start_date: str
     ao_signed_date: str
     application_date: str
@@ -63,12 +61,13 @@ def extracted_data(
     tax_form,
     application_form,
     employment_contract,
-    worker_info: WorkerData,
-    employer_info: EmployerData,
-    contract_info: ContractData,
-    calculation_info: CalculationData,
 ):
-    travel_info = TravelData(
+
+    worker_info = WorkerData(
+        full_name=get_value(tax_form, "full_name"),
+        bsn=get_value(application_form, "bsn"),
+        date_of_birth=get_value(application_form, "date_of_birth"),
+        first_work_date=get_value(tax_form, "first_work_date"),
         arrival_date=get_value(tax_form, "arrival_date"),
         recent_location="Germany",
         months_at_recent_location="12",
@@ -77,19 +76,16 @@ def extracted_data(
         nl_reason_doc="Contract",
     )
 
-    worker_info = WorkerData(
-        first_work_date=get_value(tax_form, "first_work_date"),
-        travel=travel_info,
-    )
-
     employer_info = EmployerData(
         employer=get_value(application_form, "employer"),
         employer_type=get_value(application_form, "employer_type"),
-        ufo_code=get_value(application_form, "ufo_code"),
+        lhn=get_value(application_form, "lhn"),
     )
 
     contract_info = ContractData(
-        job_name=get_value(application_form, "job_title"),
+        job_title=get_value(application_form, "job_title"),
+        ufo_code=get_value(application_form, "ufo_code"),
+        wage_type=calc.salarynorm(get_value(application_form, "ufo_code")),
         ao_start_date=get_value(application_form, "ao_start_date"),
         ao_signed_date=get_value(employment_contract, "ao_signed_date"),
         application_date=get_value(application_form, "application_date"),
@@ -100,56 +96,63 @@ def extracted_data(
     return worker_info, employer_info, contract_info, calculation_info
 
 
-def check_application_type(tax_form, application_form, employment_contract):
+def check_application_type(
+    worker_info,
+    employer_info,
+    contract_info,
+    calculation_info,
+):
     """Figure out what type of report we are dealing with. There are only 4 options: regular, change of employer, returning expat or promovendus exception"""
-    return regular_application(tax_form, application_form, employment_contract)
+    return regular_application(
+        worker_info,
+        employer_info,
+        contract_info,
+        calculation_info,
+    )
 
 
-def regular_application(tax_form, application_form, employment_contract):
-    employer = get_value(application_form, "employer")
-    ao_start_date = get_value(application_form, "ao_start_date")
-    employer_type = get_value(application_form, "employer_type")
-    first_work_date = get_value(tax_form, "first_work_date")
-    ao_signed_date = get_value(employment_contract, "ao_signed_date")
-    arrival_date = get_value(tax_form, "arrival_date")
-    wo_signed_date = get_value(employment_contract, "wo_signed_date")
-    job_name = get_value(application_form, "job_title")
-    ufo_code = get_value(application_form, "ufo_code")
-    application_date = get_value(application_form, "application_date")
-    recent_location = "need text"
-    explain_wo = "need text"
-    recent_location_months = "need text"
-    start_date = "need text"
-    end_date = "need text"
-    nl_dates = "need text"
-    nl_reason = "need text"
-    nl_reason_doc = "need text"
-    cv_data = "need text"
-    income = "need text"
+def regular_application(
+    worker_info,
+    employer_info,
+    contract_info,
+    calculation_info,
+):
 
     title = formatting_text("Verslag regulier", "")
     werknemer = verslag_werknemer(
-        employer, ao_start_date, employer_type, first_work_date
+        employer_info.employer,
+        contract_info.ao_start_date,
+        employer_info.employer_type,
+        worker_info.first_work_date,
     )
     aanwerving = verslag_aanwerving(
-        ao_start_date,
-        ao_signed_date,
-        recent_location,
-        arrival_date,
-        wo_signed_date,
-        explain_wo,
+        contract_info.ao_start_date,
+        contract_info.ao_signed_date,
+        worker_info.recent_location,
+        worker_info.arrival_date,
+        contract_info.wo_signed_date,
+        contract_info.explain_wo,
     )
-    buitenland = verslag_buitenland(recent_location, recent_location_months, cv_data)
+    buitenland = verslag_buitenland(
+        worker_info.recent_location,
+        worker_info.months_at_recent_location,
+        worker_info.cv_data,
+    )
     woonplaats_radius = verslag_woonplaats_radius()
-    deskundigheid = verslag_deskundigheid(job_name, ufo_code, employer, income)
+    deskundigheid = verslag_deskundigheid(
+        contract_info.job_title,
+        contract_info.ufo_code,
+        employer_info.employer,
+        contract_info.income,
+    )
     looptijd = verslag_looptijd(
-        application_date,
-        ao_start_date,
-        nl_dates,
-        nl_reason,
-        nl_reason_doc,
-        start_date,
-        end_date,
+        contract_info.application_date,
+        contract_info.ao_start_date,
+        worker_info.nl_dates,
+        worker_info.nl_reason,
+        worker_info.nl_reason_doc,
+        calculation_info.start_date,
+        calculation_info.end_date,
     )
 
     return (
@@ -265,32 +268,37 @@ def verslag_looptijd(
 
 
 def create_main_report(
-    tax_form: pd.DataFrame,
-    application_form: pd.DataFrame,
-    employment_contract: pd.DataFrame,
+    worker_info,
+    employer_info,
+    contract_info,
+    calculation_info,
 ) -> str:
 
     main_report = check_application_type(
-        tax_form, application_form, employment_contract
+        worker_info,
+        employer_info,
+        contract_info,
+        calculation_info,
     )
     return main_report
 
 
-def create_email_report(tax_form: pd.DataFrame, application_form: pd.DataFrame) -> str:
-    # FIX: and make use of the variables from the regular one
+def create_email_report(
+    worker_info,
+    employer_info,
+    contract_info,
+    calculation_info,
+) -> str:
     data = {
-        "Naam": get_value(tax_form, "full_name"),
-        "BSnr": get_value(application_form, "bsn"),
-        "Geboortedatum": get_value(application_form, "date_of_birth"),
-        "Werkgever": get_value(application_form, "employer"),
-        "Loonheffingsnummer": get_value(application_form, "lhn"),
-        "Gewenste ingangsdatum": calc.start_date(
-            get_value(application_form, "application_date"),
-            get_value(application_form, "ao_start_date"),
-        ),
-        "Looptijd tot en met": "need data",
-        "Functienaam": get_value(application_form, "job_title"),
-        "Loonnorm": calc.salarynorm(get_value(application_form, "ufo_code")),
+        "Naam": worker_info.full_name,
+        "BSnr": worker_info.bsn,
+        "Geboortedatum": worker_info.date_of_birth,
+        "Werkgever": employer_info.employer,
+        "Loonheffingsnummer": employer_info.lhn,
+        "Gewenste ingangsdatum": calculation_info.start_date,
+        "Looptijd tot en met": calculation_info.end_date,
+        "Functienaam": contract_info.job_title,
+        "Loonnorm": contract_info.wage_type,
         "Sectorcode": "61",
     }
 
