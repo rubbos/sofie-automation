@@ -2,6 +2,7 @@ from utils import calculations as calc
 import pandas as pd
 from dataclasses import dataclass
 from typing import Optional
+from utils import locations_table
 
 
 @dataclass
@@ -14,6 +15,7 @@ class WorkerData:
     first_work_date: str
     arrival_date: str
     recent_location: str
+    recent_locations: str
     months_at_recent_location: str
     nl_dates: Optional[str] = None
     nl_reason: Optional[str] = None
@@ -69,7 +71,12 @@ def extracted_data(
         date_of_birth=get_value(application_form, "date_of_birth"),
         first_work_date=get_value(tax_form, "first_work_date"),
         arrival_date=get_value(tax_form, "arrival_date"),
-        recent_location="Germany",
+        recent_location="test",
+        recent_locations=locations_table.create_table(
+            locations_table.convert_string_to_data(
+                get_value(tax_form, "place_of_residence")
+            )
+        ),
         months_at_recent_location="12",
         nl_dates="2023-06-01 to 2023-08-01",
         nl_reason="Work",
@@ -129,6 +136,7 @@ def regular_application(
         contract_info.ao_start_date,
         contract_info.ao_signed_date,
         worker_info.recent_location,
+        worker_info.recent_locations,
         worker_info.arrival_date,
         contract_info.wo_signed_date,
         contract_info.explain_wo,
@@ -194,6 +202,7 @@ def verslag_aanwerving(
     ao_start_date,
     ao_signed_date,
     recent_location,
+    recent_locations,
     arrival_date,
     wo_signed_date,
     explain_wo,
@@ -203,7 +212,8 @@ def verslag_aanwerving(
     # Check if its signed outside NL
     if calc.get_most_recent_date(ao_signed_date, arrival_date) != arrival_date:
         text += f"Eerder is er al een wilsovereenkomst tot stand gekomen op {wo_signed_date}. Dit blijkt uit: {explain_wo}."
-    text += f"Op dat moment woonde de werknemer, naar omstandigheden beoordeeld, in het buitenland in {recent_location}. Dit is aannemelijk o.a. op basis van het cv, de adressering op de arbeidsovereenkomst en de informatie in het werknemersformulier. Werknemer is op {arrival_date} Nederland ingereisd."
+    text += f"Op dat moment woonde de werknemer, naar omstandigheden beoordeeld, in het buitenland in {recent_location}. Dit is aannemelijk o.a. op basis van het cv, de adressering op de arbeidsovereenkomst en de informatie in het werknemersformulier. Werknemer is op {arrival_date} Nederland ingereisd.<br><br>"
+    text += f"{recent_locations}"
     return formatting_text(title, text)
 
 
