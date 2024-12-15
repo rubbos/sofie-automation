@@ -234,7 +234,7 @@ def verslag_aanwerving(
     # Check if its signed outside NL
     if calc.get_most_recent_date(ao_signed_date, arrival_date) != arrival_date:
         text += f"Eerder is er al een wilsovereenkomst tot stand gekomen op {wo_signed_date}. Dit blijkt uit: {explain_wo}."
-    text += f"Op dat moment woonde de werknemer, naar omstandigheden beoordeeld, in het buitenland in {signed_location}. Dit is aannemelijk o.a. op basis van het cv, de adressering op de arbeidsovereenkomst en de informatie in het werknemersformulier. Werknemer is op {arrival_date} Nederland ingereisd."
+    text += f"Op dat moment woonde de werknemer, naar omstandigheden beoordeeld, in {signed_location}. Dit is aannemelijk o.a. op basis van het cv, de adressering op de arbeidsovereenkomst en de informatie in het werknemersformulier. Werknemer is op {arrival_date} Nederland ingereisd."
     return formatting_text(title, text)
 
 
