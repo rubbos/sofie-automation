@@ -14,6 +14,20 @@ def signed_outside_nl(signed_date: str, arrival_date: str) -> bool:
     return True
 
 
+def signed_location(signed_date: str, place_of_residence: str):
+    """Finds the location where the given signed date falls within the start and end date ranges"""
+    query_date = datetime.strptime(signed_date, "%d-%m-%Y")
+
+    for entry in place_of_residence:
+        start_date = datetime.strptime(entry[0], "%d-%m-%Y")
+        end_date = datetime.strptime(entry[1], "%d-%m-%Y")
+
+        if start_date <= query_date <= end_date:
+            return f"{entry[2]}, {entry[3]}"
+
+    return "Onbekend"
+
+
 def salarynorm(ufo_code: str) -> str:
     """If the users job position is an academic position, its an exception"""
     if ufo_code.startswith("01"):

@@ -14,7 +14,6 @@ class WorkerData:
     date_of_birth: str
     first_work_date: str
     arrival_date: str
-    recent_location: str
     recent_locations: str
     months_at_recent_location: str
     nl_dates: Optional[str] = None
@@ -57,6 +56,7 @@ class CalculationData:
 
     start_date: Optional[str] = None
     end_date: Optional[str] = None
+    signed_location: Optional[str] = None
 
 
 def extracted_data(
@@ -68,6 +68,8 @@ def extracted_data(
     ao_start_date = get_value(application_form, "ao_start_date")
     employer_type = get_value(application_form, "employer_type")
     first_work_date = get_value(tax_form, "first_work_date")
+    ao_signed_date = get_value(employment_contract, "ao_signed_date")
+    place_of_residence = get_value(tax_form, "place_of_residence")
 
     worker_info = WorkerData(
         full_name=get_value(tax_form, "full_name"),
@@ -75,11 +77,8 @@ def extracted_data(
         date_of_birth=get_value(application_form, "date_of_birth"),
         first_work_date=first_work_date,
         arrival_date=get_value(tax_form, "arrival_date"),
-        recent_location="test",
         recent_locations=locations_table.create_table(
-            locations_table.convert_string_to_data(
-                get_value(tax_form, "place_of_residence")
-            )
+            locations_table.convert_string_to_data(place_of_residence)
         ),
         months_at_recent_location="12",
         nl_dates="2023-06-01 to 2023-08-01",
@@ -98,7 +97,7 @@ def extracted_data(
         ufo_code=get_value(application_form, "ufo_code"),
         wage_type=calc.salarynorm(get_value(application_form, "ufo_code")),
         ao_start_date=ao_start_date,
-        ao_signed_date=get_value(employment_contract, "ao_signed_date"),
+        ao_signed_date=ao_signed_date,
         application_date=get_value(application_form, "application_date"),
         wo_signed_date=get_value(employment_contract, "wo_signed_date"),
     )
@@ -106,6 +105,9 @@ def extracted_data(
     calculation_info = CalculationData(
         start_date=calc.start_date(ao_start_date, first_work_date, employer_type),
         end_date="2024-12-31",
+        signed_location=calc.signed_location(
+            ao_signed_date, locations_table.convert_string_to_data(place_of_residence)
+        ),
     )
     return worker_info, employer_info, contract_info, calculation_info
 
@@ -143,14 +145,14 @@ def regular_application(
     aanwerving = verslag_aanwerving(
         contract_info.ao_start_date,
         contract_info.ao_signed_date,
-        worker_info.recent_location,
         worker_info.recent_locations,
         worker_info.arrival_date,
         contract_info.wo_signed_date,
         contract_info.explain_wo,
+        calculation_info.signed_location,
     )
     buitenland = verslag_buitenland(
-        worker_info.recent_location,
+        worker_info.recent_locations,
         worker_info.months_at_recent_location,
         worker_info.cv_data,
     )
@@ -210,18 +212,18 @@ def verslag_werknemer(
 def verslag_aanwerving(
     ao_start_date,
     ao_signed_date,
-    recent_location,
     recent_locations,
     arrival_date,
     wo_signed_date,
     explain_wo,
+    signed_location,
 ):
     title = "Verslag aanwerving"
     text = f"Het betreft een dienstverband met een startdatum van {ao_start_date}. De arbeidsovereenkomst is door de werknemer getekend op {ao_signed_date}. "
     # Check if its signed outside NL
     if calc.get_most_recent_date(ao_signed_date, arrival_date) != arrival_date:
         text += f"Eerder is er al een wilsovereenkomst tot stand gekomen op {wo_signed_date}. Dit blijkt uit: {explain_wo}."
-    text += f"Op dat moment woonde de werknemer, naar omstandigheden beoordeeld, in het buitenland in {recent_location}. Dit is aannemelijk o.a. op basis van het cv, de adressering op de arbeidsovereenkomst en de informatie in het werknemersformulier. Werknemer is op {arrival_date} Nederland ingereisd.<br><br>"
+    text += f"Op dat moment woonde de werknemer, naar omstandigheden beoordeeld, in het buitenland in {signed_location}. Dit is aannemelijk o.a. op basis van het cv, de adressering op de arbeidsovereenkomst en de informatie in het werknemersformulier. Werknemer is op {arrival_date} Nederland ingereisd.<br><br>"
     text += f"{recent_locations}"
     return formatting_text(title, text)
 
