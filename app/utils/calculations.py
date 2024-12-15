@@ -44,7 +44,14 @@ def next_first_of_month() -> str:
     return next_month.strftime("%d-%m-%Y")
 
 
-def start_date(application_upload_date: str, start_date: str) -> str:
+def start_date(ao_start_date: str, first_work_date: str, employer_type: str):
+    """Figure out the start date for the user"""
+    if employer_type == "Publiek":
+        return ao_start_date
+    return first_work_date
+
+
+def official_start_date(application_upload_date: str, start_date: str) -> str:
     """If the difference between dates is more than 4 months, we return the first of the next month"""
     if is_within_4_months(start_date, application_upload_date):
         return start_date

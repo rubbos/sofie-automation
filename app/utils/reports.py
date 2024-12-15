@@ -65,11 +65,15 @@ def extracted_data(
     employment_contract,
 ):
 
+    ao_start_date = get_value(application_form, "ao_start_date")
+    employer_type = get_value(application_form, "employer_type")
+    first_work_date = get_value(tax_form, "first_work_date")
+
     worker_info = WorkerData(
         full_name=get_value(tax_form, "full_name"),
         bsn=get_value(application_form, "bsn"),
         date_of_birth=get_value(application_form, "date_of_birth"),
-        first_work_date=get_value(tax_form, "first_work_date"),
+        first_work_date=first_work_date,
         arrival_date=get_value(tax_form, "arrival_date"),
         recent_location="test",
         recent_locations=locations_table.create_table(
@@ -85,7 +89,7 @@ def extracted_data(
 
     employer_info = EmployerData(
         employer=get_value(application_form, "employer"),
-        employer_type=get_value(application_form, "employer_type"),
+        employer_type=employer_type,
         lhn=get_value(application_form, "lhn"),
     )
 
@@ -93,13 +97,16 @@ def extracted_data(
         job_title=get_value(application_form, "job_title"),
         ufo_code=get_value(application_form, "ufo_code"),
         wage_type=calc.salarynorm(get_value(application_form, "ufo_code")),
-        ao_start_date=get_value(application_form, "ao_start_date"),
+        ao_start_date=ao_start_date,
         ao_signed_date=get_value(employment_contract, "ao_signed_date"),
         application_date=get_value(application_form, "application_date"),
         wo_signed_date=get_value(employment_contract, "wo_signed_date"),
     )
 
-    calculation_info = CalculationData(start_date="2024-01-01", end_date="2024-12-31")
+    calculation_info = CalculationData(
+        start_date=calc.start_date(ao_start_date, first_work_date, employer_type),
+        end_date="2024-12-31",
+    )
     return worker_info, employer_info, contract_info, calculation_info
 
 
@@ -131,6 +138,7 @@ def regular_application(
         contract_info.ao_start_date,
         employer_info.employer_type,
         worker_info.first_work_date,
+        calculation_info.start_date,
     )
     aanwerving = verslag_aanwerving(
         contract_info.ao_start_date,
@@ -183,18 +191,19 @@ def exception_returning_expat(): ...
 def exception_promovendus(): ...
 
 
-def verslag_werknemer(employer, ao_start_date, employer_type, first_work_date):
+def verslag_werknemer(
+    employer, ao_start_date, employer_type, first_work_date, start_date
+):
     title = "Verslag werknemer"
-    # Check for public or private university
+    text = f"De werkgever {employer} is een {employer_type.lower()}rechtelijk lichaam. "
+    # Check for public or private employer_type
     if employer_type == "Publiek":
-        text = f"De werkgever {employer} is een publiekrechtelijk lichaam. Aangezien de werkgever een publiekrechtelijk lichaam is en de werknemer in dienstbetrekking staat tot deze werkgever per {ao_start_date}, kwalificeert werknemer vanaf die datum ook als werknemer in de zin van artikel 2 Wet LB 1964."
+        text += f"Aangezien de werkgever een publiekrechtelijk lichaam is en de werknemer in dienstbetrekking staat tot deze werkgever per {start_date}, kwalificeert werknemer vanaf die datum ook als werknemer in de zin van artikel 2 Wet LB 1964."
     else:
-        # This is the private text with first_work_date.
+        # Check for the correct text for private employer_type
         if calc.get_most_recent_date(ao_start_date, first_work_date) != ao_start_date:
-            text = f"De werkgever is {employer}. Dit is een privaatrechtelijke werkgever. Werknemer is per {first_work_date} (deels) werkzaam vanuit Nederland of in ieder geval voor meer dan 10% van de werktijd. Daarmee kwalificeert werknemer als werknemer in de zin van artikel 2 van de wet op de Loonbelasting 1964 per {first_work_date}."
-        # This is the private text with ao_start_date.
-        else:
-            text = f"De werkgever is {employer}. Dit is een privaatrechtelijke werkgever. Werknemer staat in dienstbetrekking tot werkgever per {ao_start_date} en verricht de werkzaamheden ook vanuit Nederland (of in ieder geval meer dan 10%). Vanaf die datum kwalificeert werknemer als werknemer in de zin van artikel 2 van de Wet op de loonbelasting 1964."
+            text += f" Werknemer is per {start_date} (deels) werkzaam vanuit Nederland of in ieder geval voor meer dan 10% van de werktijd. Daarmee kwalificeert werknemer als werknemer in de zin van artikel 2 van de wet op de Loonbelasting 1964 per {start_date}."
+        text += f"Werknemer staat in dienstbetrekking tot werkgever per {start_date} en verricht de werkzaamheden ook vanuit Nederland (of in ieder geval meer dan 10%). Vanaf die datum kwalificeert werknemer als werknemer in de zin van artikel 2 van de Wet op de loonbelasting 1964."
     return formatting_text(title, text)
 
 
