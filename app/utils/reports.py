@@ -70,13 +70,14 @@ def extracted_data(
     first_work_date = get_value(tax_form, "first_work_date")
     ao_signed_date = get_value(employment_contract, "ao_signed_date")
     place_of_residence = get_value(tax_form, "place_of_residence")
+    arrival_date = get_value(tax_form, "arrival_date")
 
     worker_info = WorkerData(
         full_name=get_value(tax_form, "full_name"),
         bsn=get_value(application_form, "bsn"),
         date_of_birth=get_value(application_form, "date_of_birth"),
         first_work_date=first_work_date,
-        arrival_date=get_value(tax_form, "arrival_date"),
+        arrival_date=arrival_date,
         recent_locations=locations_table.create_table(
             locations_table.convert_string_to_data(place_of_residence)
         ),
@@ -100,13 +101,16 @@ def extracted_data(
         ao_signed_date=ao_signed_date,
         application_date=get_value(application_form, "application_date"),
         wo_signed_date=get_value(employment_contract, "wo_signed_date"),
+        explain_wo=get_value(employment_contract, "explain_wo"),
     )
 
     calculation_info = CalculationData(
         start_date=calc.start_date(ao_start_date, first_work_date, employer_type),
         end_date="2024-12-31",
         signed_location=calc.signed_location(
-            ao_signed_date, locations_table.convert_string_to_data(place_of_residence)
+            ao_signed_date,
+            locations_table.convert_string_to_data(place_of_residence),
+            arrival_date,
         ),
     )
     return worker_info, employer_info, contract_info, calculation_info
@@ -145,7 +149,6 @@ def regular_application(
     aanwerving = verslag_aanwerving(
         contract_info.ao_start_date,
         contract_info.ao_signed_date,
-        worker_info.recent_locations,
         worker_info.arrival_date,
         contract_info.wo_signed_date,
         contract_info.explain_wo,
@@ -212,7 +215,6 @@ def verslag_werknemer(
 def verslag_aanwerving(
     ao_start_date,
     ao_signed_date,
-    recent_locations,
     arrival_date,
     wo_signed_date,
     explain_wo,
@@ -224,7 +226,6 @@ def verslag_aanwerving(
     if calc.get_most_recent_date(ao_signed_date, arrival_date) != arrival_date:
         text += f"Eerder is er al een wilsovereenkomst tot stand gekomen op {wo_signed_date}. Dit blijkt uit: {explain_wo}."
     text += f"Op dat moment woonde de werknemer, naar omstandigheden beoordeeld, in het buitenland in {signed_location}. Dit is aannemelijk o.a. op basis van het cv, de adressering op de arbeidsovereenkomst en de informatie in het werknemersformulier. Werknemer is op {arrival_date} Nederland ingereisd.<br><br>"
-    text += f"{recent_locations}"
     return formatting_text(title, text)
 
 

@@ -14,6 +14,11 @@ def empty_info():
         ],
         # "Wilsovereenkomst getekend": [type_data[0], ""],
         "Wilsovereenkomst datum getekend": [type_data[2], "", "wo_signed_date"],
+        "De wilsovereenkomst blijkt uit: ": [
+            type_data[0],
+            "",
+            "explain_wo",
+        ],
         "Volgens het cv werkte/studeerde werknemer als ...": [
             type_data[0],
             "",
