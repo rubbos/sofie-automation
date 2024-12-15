@@ -1,8 +1,8 @@
-from utils import calculations as calc
 import pandas as pd
 from dataclasses import dataclass
 from typing import Optional
 from utils import locations_table
+from utils import calculations as calc
 
 
 @dataclass
@@ -65,17 +65,28 @@ def extracted_data(
     employment_contract,
 ):
 
-    ao_start_date = get_value(application_form, "ao_start_date")
-    employer_type = get_value(application_form, "employer_type")
+    full_name = get_value(tax_form, "full_name")
     first_work_date = get_value(tax_form, "first_work_date")
-    ao_signed_date = get_value(employment_contract, "ao_signed_date")
     place_of_residence = get_value(tax_form, "place_of_residence")
     arrival_date = get_value(tax_form, "arrival_date")
+    employer = get_value(application_form, "employer")
+    lhn = get_value(application_form, "lhn")
+    bsn = get_value(application_form, "bsn")
+    date_of_birth = get_value(application_form, "date_of_birth")
+    ao_start_date = get_value(application_form, "ao_start_date")
+    employer_type = get_value(application_form, "employer_type")
+    job_title = get_value(application_form, "job_title")
+    ufo_code = get_value(application_form, "ufo_code")
+    wage_type = calc.salarynorm(get_value(application_form, "ufo_code"))
+    application_date = get_value(application_form, "application_date")
+    wo_signed_date = get_value(employment_contract, "wo_signed_date")
+    explain_wo = get_value(employment_contract, "explain_wo")
+    ao_signed_date = get_value(employment_contract, "ao_signed_date")
 
     worker_info = WorkerData(
-        full_name=get_value(tax_form, "full_name"),
-        bsn=get_value(application_form, "bsn"),
-        date_of_birth=get_value(application_form, "date_of_birth"),
+        full_name=full_name,
+        bsn=bsn,
+        date_of_birth=date_of_birth,
         first_work_date=first_work_date,
         arrival_date=arrival_date,
         recent_locations=locations_table.create_table(
@@ -88,20 +99,18 @@ def extracted_data(
     )
 
     employer_info = EmployerData(
-        employer=get_value(application_form, "employer"),
-        employer_type=employer_type,
-        lhn=get_value(application_form, "lhn"),
+        employer=employer, employer_type=employer_type, lhn=lhn
     )
 
     contract_info = ContractData(
-        job_title=get_value(application_form, "job_title"),
-        ufo_code=get_value(application_form, "ufo_code"),
-        wage_type=calc.salarynorm(get_value(application_form, "ufo_code")),
+        job_title=job_title,
+        ufo_code=ufo_code,
+        wage_type=wage_type,
         ao_start_date=ao_start_date,
         ao_signed_date=ao_signed_date,
-        application_date=get_value(application_form, "application_date"),
-        wo_signed_date=get_value(employment_contract, "wo_signed_date"),
-        explain_wo=get_value(employment_contract, "explain_wo"),
+        application_date=application_date,
+        wo_signed_date=wo_signed_date,
+        explain_wo=explain_wo,
     )
 
     calculation_info = CalculationData(
@@ -225,13 +234,14 @@ def verslag_aanwerving(
     # Check if its signed outside NL
     if calc.get_most_recent_date(ao_signed_date, arrival_date) != arrival_date:
         text += f"Eerder is er al een wilsovereenkomst tot stand gekomen op {wo_signed_date}. Dit blijkt uit: {explain_wo}."
-    text += f"Op dat moment woonde de werknemer, naar omstandigheden beoordeeld, in het buitenland in {signed_location}. Dit is aannemelijk o.a. op basis van het cv, de adressering op de arbeidsovereenkomst en de informatie in het werknemersformulier. Werknemer is op {arrival_date} Nederland ingereisd.<br><br>"
+    text += f"Op dat moment woonde de werknemer, naar omstandigheden beoordeeld, in het buitenland in {signed_location}. Dit is aannemelijk o.a. op basis van het cv, de adressering op de arbeidsovereenkomst en de informatie in het werknemersformulier. Werknemer is op {arrival_date} Nederland ingereisd."
     return formatting_text(title, text)
 
 
 def verslag_buitenland(recent_location, recent_location_months, cv_data):
     title = "Verslag 150 km criterium 16/24 maanden criterium"
-    text = f"Bij de aanwerving woonde werknemer in {recent_location}. De werknemer woonde daar ook gedurende {recent_location_months} van de 24 maanden voorafgaand aan de tewerkstelling. Deze woonplaats ligt op meer dan 150 km van de Nederlandse grens. Het CV en de informatie op het aanvraagformulier geven geen aanleiding om iets anders te concluderen.<br><br>"
+    text = f"Bij de aanwerving woonde werknemer in: {recent_location}"
+    text += f"De werknemer woonde daar ook gedurende {recent_location_months} van de 24 maanden voorafgaand aan de tewerkstelling. Deze woonplaats ligt op meer dan 150 km van de Nederlandse grens. Het CV en de informatie op het aanvraagformulier geven geen aanleiding om iets anders te concluderen.<br><br>"
     text += f"Volgens het CV werkte/studeerde de werknemer als: {cv_data}<br><br>"
     text += "Conclusie: het is aannemelijk dat werknemer op meer dan 150 km van de Nederlandse grens woonde gedurende meer dan 2/3 van de 24 maanden direct voorafgaand aan de eerste dag van tewerkstelling."
     return formatting_text(title, text)
