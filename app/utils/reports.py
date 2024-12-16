@@ -15,7 +15,6 @@ class WorkerData:
     first_work_date: str
     arrival_date: str
     recent_locations: str
-    months_at_recent_location: str
     nl_dates: Optional[str] = None
     nl_reason: Optional[str] = None
     nl_reason_doc: Optional[str] = None
@@ -82,6 +81,7 @@ def extracted_data(
     wo_signed_date = get_value(employment_contract, "wo_signed_date")
     explain_wo = get_value(employment_contract, "explain_wo")
     ao_signed_date = get_value(employment_contract, "ao_signed_date")
+    cv_data = get_value(employment_contract, "previous_jobs")
 
     worker_info = WorkerData(
         full_name=full_name,
@@ -92,10 +92,10 @@ def extracted_data(
         recent_locations=locations_table.create_table(
             locations_table.convert_string_to_data(place_of_residence)
         ),
-        months_at_recent_location="12",
         nl_dates="2023-06-01 to 2023-08-01",
         nl_reason="Work",
         nl_reason_doc="Contract",
+        cv_data=cv_data,
     )
 
     employer_info = EmployerData(
@@ -165,7 +165,6 @@ def regular_application(
     )
     buitenland = verslag_buitenland(
         worker_info.recent_locations,
-        worker_info.months_at_recent_location,
         worker_info.cv_data,
     )
     woonplaats_radius = verslag_woonplaats_radius()
@@ -238,10 +237,11 @@ def verslag_aanwerving(
     return formatting_text(title, text)
 
 
-def verslag_buitenland(recent_location, recent_location_months, cv_data):
+# NOTE: need something to fix the text if the country in under 150km from nl
+def verslag_buitenland(recent_locations, cv_data):
     title = "Verslag 150 km criterium 16/24 maanden criterium"
-    text = f"Bij de aanwerving woonde werknemer in: {recent_location}"
-    text += f"De werknemer woonde daar ook gedurende {recent_location_months} van de 24 maanden voorafgaand aan de tewerkstelling. Deze woonplaats ligt op meer dan 150 km van de Nederlandse grens. Het CV en de informatie op het aanvraagformulier geven geen aanleiding om iets anders te concluderen.<br><br>"
+    text = f"Bij de aanwerving woonde werknemer in: {recent_locations}"
+    text += "Deze woonplaats(en) liggen op meer dan 150 km van de Nederlandse grens. Het CV en de informatie op het aanvraagformulier geven geen aanleiding om iets anders te concluderen.<br><br>"
     text += f"Volgens het CV werkte/studeerde de werknemer als: {cv_data}<br><br>"
     text += "Conclusie: het is aannemelijk dat werknemer op meer dan 150 km van de Nederlandse grens woonde gedurende meer dan 2/3 van de 24 maanden direct voorafgaand aan de eerste dag van tewerkstelling."
     return formatting_text(title, text)

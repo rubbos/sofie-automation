@@ -4,11 +4,11 @@ from dateutil.relativedelta import relativedelta
 
 def create_table(data):
     headers = [
-        "Start Date",
-        "End Date",
-        "City",
-        "Country",
-        "Time of Stay (months, days)",
+        "Startdatum",
+        "Einddatum",
+        "Stad",
+        "Land",
+        "Tijdsduur",
     ]
 
     def calculate_time_of_stay(start_date, end_date):
@@ -16,7 +16,7 @@ def create_table(data):
         start = datetime.strptime(start_date, fmt)
         end = datetime.strptime(end_date, fmt)
         delta = relativedelta(end, start)
-        return f"{delta.years * 12 + delta.months} months, {delta.days} days"
+        return f"{delta.years * 12 + delta.months} maanden, {delta.days} dagen"
 
     html = '<table border="1" style="border-collapse: collapse; text-align: left;">\n'
     html += "  <tr>\n"

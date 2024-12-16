@@ -5,3 +5,4 @@ app/temp_files
 .testeasyocr
 testeasyocr
 testeasyocr
+*.png
