@@ -61,17 +61,16 @@
             {% endfor %}
           </tr>
         </thead>
-    <tbody>
-        {% for _, row in extra_info_data.iterrows() %}
-        <tr>
+        <tbody>
+          {% for _, row in extra_info_data.iterrows() %}
+          <tr>
             {% for value in row %}
             <td class="py-2 px-4 border-b border-gray-700">{{ value }}</td>
             {% endfor %}
-        </tr>
-        {% endfor %}
-    </tbody>
+          </tr>
+          {% endfor %}
+        </tbody>
       </table>
-
 
       <h2 class="text-2xl mb-4 mt-8">Tax Form 30%:</h2>
       <table class="min-w-full bg-gray-800 border border-gray-700">
@@ -82,15 +81,15 @@
             {% endfor %}
           </tr>
         </thead>
-    <tbody>
-        {% for _, row in tax_form_data.iterrows() %}
-        <tr>
+        <tbody>
+          {% for _, row in tax_form_data.iterrows() %}
+          <tr>
             {% for value in row %}
             <td class="py-2 px-4 border-b border-gray-700">{{ value }}</td>
             {% endfor %}
-        </tr>
-        {% endfor %}
-    </tbody>
+          </tr>
+          {% endfor %}
+        </tbody>
       </table>
       <h2 class="text-2xl mb-4 mt-8">Application Form:</h2>
       <table class="min-w-full bg-gray-800 border border-gray-700">
@@ -101,15 +100,15 @@
             {% endfor %}
           </tr>
         </thead>
-    <tbody>
-        {% for _, row in application_form_data.iterrows() %}
-        <tr>
+        <tbody>
+          {% for _, row in application_form_data.iterrows() %}
+          <tr>
             {% for value in row %}
             <td class="py-2 px-4 border-b border-gray-700">{{ value }}</td>
             {% endfor %}
-        </tr>
-        {% endfor %}
-    </tbody>
+          </tr>
+          {% endfor %}
+        </tbody>
       </table>
     </div>
     <script>

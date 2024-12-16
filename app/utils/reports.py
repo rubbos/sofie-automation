@@ -1,7 +1,7 @@
 import pandas as pd
 from dataclasses import dataclass
 from typing import Optional
-from utils import locations_table
+from utils import locations_table, locations_timeline
 from utils import calculations as calc
 
 
@@ -82,6 +82,11 @@ def extracted_data(
     explain_wo = get_value(employment_contract, "explain_wo")
     ao_signed_date = get_value(employment_contract, "ao_signed_date")
     cv_data = get_value(employment_contract, "previous_jobs")
+
+    # creating timeline_image
+    locations_timeline.create_timeline(
+        locations_table.convert_string_to_data(place_of_residence), arrival_date
+    )
 
     worker_info = WorkerData(
         full_name=full_name,
@@ -241,6 +246,7 @@ def verslag_aanwerving(
 def verslag_buitenland(recent_locations, cv_data):
     title = "Verslag 150 km criterium 16/24 maanden criterium"
     text = f"Bij de aanwerving woonde werknemer in: {recent_locations}"
+    text += '<img src="/static/images/timeline_image.png" alt="Timeline Image">'
     text += "Deze woonplaats(en) liggen op meer dan 150 km van de Nederlandse grens. Het CV en de informatie op het aanvraagformulier geven geen aanleiding om iets anders te concluderen.<br><br>"
     text += f"Volgens het CV werkte/studeerde de werknemer als: {cv_data}<br><br>"
     text += "Conclusie: het is aannemelijk dat werknemer op meer dan 150 km van de Nederlandse grens woonde gedurende meer dan 2/3 van de 24 maanden direct voorafgaand aan de eerste dag van tewerkstelling."

@@ -7,7 +7,7 @@ matplotlib.use("Agg")  # Use the non-GUI backend for rendering
 
 
 def create_timeline(
-    data, arrival_date_str, output_file="../temp_files/timeline_image.png"
+    data, arrival_date_str, output_file="static/images/timeline_image.png"
 ):
     # Convert data to DataFrame
     df = pd.DataFrame(data, columns=["Startdatum", "Einddatum", "Stad", "Land"])
