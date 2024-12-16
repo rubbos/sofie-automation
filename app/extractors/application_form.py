@@ -44,40 +44,6 @@ def extract(text: str) -> dict:
             em.extract_dates(text, "into service", "\n"),
             "ao_start_date",
         ],
-        "Returning expat": [
-            type_data[0],
-            em.extract_specific_words(text, "Expat", "employment?", yes_no),
-            "returning_expat",
-        ],
-        "Changing Dutch employer": [
-            type_data[0],
-            em.extract_specific_words(text, "employee eligible for", "the 30%", yes_no),
-            "change_of_employer",
-        ],
-        "Contract signed outside NL": [
-            type_data[0],
-            em.extract_specific_words(
-                text, "Was the employee living outside", "the Netherlands", yes_no
-            ),
-            "ao_signed_outside_nl",
-        ],
-        "16/24 Months outside NL": [
-            type_data[0],
-            em.extract_specific_words(
-                text, "employee living outside", "the Netherlands", yes_no
-            ),
-            "living_outside_nl",
-        ],
-        "Promovendus exception": [
-            type_data[0],
-            em.extract_specific_words(text, "Did the employee live", "PhD", yes_no),
-            "promovendus_exception",
-        ],
-        "UFO 01 type": [
-            type_data[0],
-            em.extract_specific_words(text, "Specific Expertise", "UFO", yes_no),
-            "ufo_01_type",
-        ],
         "UFO code": [
             type_data[0],
             em.extract_between_keywords(text, "UFO code", "\n"),

@@ -11,6 +11,7 @@ def extract(text: str) -> dict:
     type_data = ["str", "list[str]", "date", "list[date]"]
 
     extracted_data = {
+        "Application type": [type_data[0], "", "application_type"],
         "Full name": [
             type_data[0],
             em.extract_between_keywords(text, "Initials", "Has agreed"),
@@ -76,11 +77,11 @@ def transform(extracted_data: dict) -> pd.DataFrame:
 
     # Clean locations and group
     try:
-        df.at[4, "VALUE"] = [item.replace("Country:", "") for item in df.at[4, "VALUE"]]
-        df.at[4, "VALUE"] = [item.replace("  ", " ") for item in df.at[4, "VALUE"]]
-        df.at[4, "VALUE"] = [item.replace(":", "") for item in df.at[4, "VALUE"]]
-        df.at[4, "VALUE"] = [item.lstrip() for item in df.at[4, "VALUE"]]
-        df.at[4, "VALUE"] = [item for item in df.at[4, "VALUE"] if item]
+        df.at[5, "VALUE"] = [item.replace("Country:", "") for item in df.at[5, "VALUE"]]
+        df.at[5, "VALUE"] = [item.replace("  ", " ") for item in df.at[5, "VALUE"]]
+        df.at[5, "VALUE"] = [item.replace(":", "") for item in df.at[5, "VALUE"]]
+        df.at[5, "VALUE"] = [item.lstrip() for item in df.at[5, "VALUE"]]
+        df.at[5, "VALUE"] = [item for item in df.at[5, "VALUE"] if item]
     except TypeError:
         pass
 
