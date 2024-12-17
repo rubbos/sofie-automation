@@ -51,8 +51,9 @@ class ContractData:
 
 @dataclass
 class CalculationData:
-    """Represents calculated date ranges."""
+    """Represents calculated data"""
 
+    application_type: str
     start_date: Optional[str] = None
     end_date: Optional[str] = None
     signed_location: Optional[str] = None
@@ -82,6 +83,7 @@ def extracted_data(
     explain_wo = get_value(employment_contract, "explain_wo")
     ao_signed_date = get_value(employment_contract, "ao_signed_date")
     cv_data = get_value(employment_contract, "previous_jobs")
+    application_type = get_value(tax_form, "application_type")
 
     # creating timeline_image
     locations_timeline.create_timeline(
@@ -119,6 +121,7 @@ def extracted_data(
     )
 
     calculation_info = CalculationData(
+        application_type=application_type,
         start_date=calc.start_date(ao_start_date, first_work_date, employer_type),
         end_date="2024-12-31",
         signed_location=calc.signed_location(
@@ -137,12 +140,14 @@ def check_application_type(
     calculation_info,
 ):
     """Figure out what type of report we are dealing with. There are only 4 options: regular, change of employer, returning expat or promovendus exception"""
-    return regular_application(
-        worker_info,
-        employer_info,
-        contract_info,
-        calculation_info,
-    )
+    if calculation_info.application_type == "Reguliere aanvraag":
+        return regular_application(
+            worker_info,
+            employer_info,
+            contract_info,
+            calculation_info,
+        )
+    return "Oeps deze aanvraag type bestaat nog niet in SOFIEbot!"
 
 
 def regular_application(

@@ -33,24 +33,30 @@
       <form method="POST" action="{{ url_for('submit_results') }}">
         <div class="grid grid-cols-1 gap-6">
           {% for row in tax_form_data.iterrows() %}
-          <div
-            class="bg-gray-800 border border-gray-900 p-6 shadow-lg rounded-lg"
-          >
+          <div class="bg-gray-800 border border-gray-900 p-6 shadow-lg rounded-lg">
             <p class="text-xs mb-1">30% Tax Form</p>
-            <label
-              class="block mb-2 text-lg"
-              for="data_tax_{{ loop.index0 }}_VALUE"
-            >
+            <label class="block mb-2 text-lg" for="data_tax_{{ loop.index0 }}_VALUE">
               {{ row[1]['KEY'] }}
             </label>
             <div class="flex justify-between items-center">
               <div class="space-y-2 flex-grow mr-4">
+                {% if loop.index0 == 0 %}
+                <select
+                  class="border border-gray-300 text-black p-3 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-2xl"
+                  id="input_tax_{{ loop.index0 }}"
+                  name="data_tax_{{ loop.index0 }}_VALUE"
+                >
+                  <option value="Reguliere aanvraag" {% if row[1]['VALUE'] == 'Reguliere aanvraag' %} selected {% endif %}>Reguliere aanvraag</option>
+                  <option value="Uitzondering Wisseling Werkgever" {% if row[1]['VALUE'] == 'Uitzondering Wisseling Werkgever' %} selected {% endif %}>Uitzondering Wisseling Werkgever</option>
+                  <option value="Uitzondering Promovendus" {% if row[1]['VALUE'] == 'Uitzondering Promovendus' %} selected {% endif %}>Uitzondering Promovendus</option>
+                  <option value="Uitzondering Terugkerende Expats" {% if row[1]['VALUE'] == 'Uitzondering Terugkerende Expats' %} selected {% endif %}>Uitzondering Terugkerende Expats</option>
+                </select>
+                {% else %}
                 <label
                   class="block font-semibold mb-2 break-words text-2xl"
                   id="label_tax_{{ loop.index0 }}"
                 >
-                  {% if row[1]['VALUE'] is not none %} {{ row[1]["VALUE"] }} {%
-                  else %} {% endif %}
+                  {% if row[1]['VALUE'] is not none %} {{ row[1]["VALUE"] }} {% else %} {% endif %}
                 </label>
                 <input
                   class="border border-gray-300 text-black p-3 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 hidden text-2xl"
@@ -60,6 +66,7 @@
                   value="{{ row[1]['VALUE'] }}"
                   autocomplete="off"
                 />
+                {% endif %}
               </div>
               <button
                 type="button"
