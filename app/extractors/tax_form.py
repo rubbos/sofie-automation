@@ -11,48 +11,48 @@ def extract(text: str) -> dict:
     type_data = ["str", "list[str]", "date", "list[date]"]
 
     extracted_data = {
-        "Application type": [type_data[0], "", "application_type"],
-        "Full name": [
+        "Aanvraag type": [type_data[0], "", "application_type"],
+        "Naam": [
             type_data[0],
             em.extract_between_keywords(text, "Initials", "Has agreed"),
             "full_name",
         ],
-        "Arrival date": [
+        "Aankomstdatum in Nederland": [
             type_data[2],
             em.extract_dates(text, "Date of arrival", "My address"),
             "arrival_date",
         ],
-        "Start work date": [
+        "Eerste werkdag in Nederland": [
             type_data[2],
             em.extract_dates(text, "working day", "Place"),
             "first_work_date",
         ],
-        "Place of residence": [
+        "Recente woonplaatsen in het buitenland": [
             type_data[1],
             em.extract_place_of_residences(text),
             "place_of_residence",
         ],
-        "NL lived dates": [
+        "Alle periodes in Nederland": [
             type_data[3],
             em.extract_dates(text, "in the Netherlands?", "Were you registered"),
             "nl_residence_dates",
         ],
-        "NL deregister date": [
+        "Uitschrijvingsdatum Nederland": [
             type_data[2],
             em.extract_dates(text, "deregister", "Have you"),
             "nl_deregister_date",
         ],
-        "NL worked dates": [
+        "Periodes gewerkt in Nederland": [
             type_data[3],
             em.extract_dates(text, "Have you previously worked", "private"),
             "nl_worked_dates",
         ],
-        "NL private dates": [
+        "Periodes privezaken in Nederland": [
             type_data[3],
             em.extract_dates(text, "holiday", "outside"),
             "nl_private_visit_dates",
         ],
-        "NL dutch employer dates": [
+        "Periodes gewerkt voor een Nederlandse werkgever": [
             type_data[3],
             em.extract_dates(text, "outside", "undersigned"),
             "nl_worked_dutch_employer_dates",

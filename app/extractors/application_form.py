@@ -13,33 +13,33 @@ def extract(text: str) -> dict:
     yes_no = ["Yes", "No"]
 
     extracted_data = {
-        "Name employer": [
+        "Naam werkgever": [
             type_data[0],
             em.extract_between_keywords(text, "Name of employer", "\n"),
             "employer",
         ],
-        "Loonheffing number": [
+        "Loonheffingsnummer": [
             type_data[0],
             em.extract_between_keywords(text, "LH number", "\n"),
             "lhn",
         ],
-        "University type": [type_data[0], "None", "employer_type"],
-        "Date of birth": [
+        "Publiek/Privaat universiteit": [type_data[0], "None", "employer_type"],
+        "Geboortedatum": [
             type_data[2],
             em.extract_dates(text, "Birth", "\n"),
             "date_of_birth",
         ],
-        "BSN number": [
+        "BSN": [
             type_data[0],
             em.extract_between_keywords(text, "BSN Number", "\n"),
             "bsn",
         ],
-        "Job title": [
+        "Functietitel": [
             type_data[0],
             em.extract_between_keywords(text, "Title", "\n"),
             "job_title",
         ],
-        "Date of entry into service": [
+        "Startdatum arbeidsovereenkomst": [
             type_data[2],
             em.extract_dates(text, "into service", "\n"),
             "ao_start_date",
@@ -49,21 +49,7 @@ def extract(text: str) -> dict:
             em.extract_between_keywords(text, "UFO code", "\n"),
             "ufo_code",
         ],
-        "Application tax": [
-            type_data[0],
-            em.extract_specific_words(
-                text, "Did employer and employee", "Note", yes_no
-            ),
-            "application_tax",
-        ],
-        "Agreement": [
-            type_data[0],
-            em.extract_specific_words(
-                text, "On behalf of the employer", "confirm that", yes_no
-            ),
-            "agreement_signed",
-        ],
-        "Application upload date": [
+        "SOFIE Aanvraagdatum": [
             type_data[2],
             em.extract_dates(text, "Created at", "by"),
             "application_date",

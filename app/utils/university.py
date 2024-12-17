@@ -9,7 +9,7 @@ def get_universities() -> pd.DataFrame:
 
 def find_university(df) -> list | None:
     universities = get_universities()
-    university = df.loc[df["KEY"] == "Name employer", "VALUE"].values[0]
+    university = df.loc[df["VAR"] == "employer", "VALUE"].values[0]
     if university is None:
         return None
 

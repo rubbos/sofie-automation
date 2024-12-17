@@ -6,13 +6,11 @@ def empty_info():
     type_data = ["str", "list[str]", "date", "list[date]"]
 
     extracted_data = {
-        # "Getekend": [type_data[0], ""],
         "Arbeidsovereenkomst datum getekend": [
             type_data[2],
             "01-01-2024",
             "ao_signed_date",
         ],
-        # "Wilsovereenkomst getekend": [type_data[0], ""],
         "Wilsovereenkomst datum getekend": [type_data[2], "", "wo_signed_date"],
         "De wilsovereenkomst blijkt uit: ": [
             type_data[0],

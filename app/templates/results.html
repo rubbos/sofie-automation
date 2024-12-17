@@ -37,10 +37,10 @@
               {{ row[1]['KEY'] }}
             </label>
             <div class="flex justify-between items-center">
-              <div class="space-y-2 flex-grow">
+              <div class="space-y-2 flex-grow mr-4">
                 {% if loop.index0 == 0 %}
                 <select
-                  class="border border-gray-300 text-black text-xl p-3 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 "
+                  class="border border-gray-300 text-black text-xl p-3 mr-2 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 "
                   id="input_tax_{{ loop.index0 }}"
                   name="data_tax_{{ loop.index0 }}_VALUE"
                 >
@@ -84,7 +84,7 @@
           >
             <p class="text-xs mb-1">Oorspronkelijke aanvraag</p>
             <label
-              class="block text-lg mb-2"
+              class="block mb-2"
               for="data_app_{{ loop.index0 }}_VALUE"
             >
               {{ row[1]['KEY'] }}
@@ -92,14 +92,14 @@
             <div class="flex justify-between items-center">
               <div class="space-y-2 flex-grow mr-4">
                 <label
-                  class="block font-semibold mb-2 break-words text-2xl"
+                  class="block font-semibold mb-2 break-words text-xl"
                   id="label_app_{{ loop.index0 }}"
                 >
                   {% if row[1]['VALUE'] is not none %} {{ row[1]["VALUE"] }} {%
                   else %} {% endif %}
                 </label>
                 <input
-                  class="border border-gray-300 text-black p-3 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 hidden text-2xl
+                  class="border border-gray-300 text-black p-3 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 hidden text-xl
                   {% if row[1]['VAR'] in ['employer', 'lhn', 'employer_type', 'date_of_birth', 'bsn', 'job_title', 'ao_start_date', 'ufo_code', 'application_date'] %} validate-required {% endif %}"
                   type="text"
                   id="input_app_{{ loop.index0 }}"
@@ -124,7 +124,7 @@
           >
             <p class="text-xs mb-1">Arbeidsovereenkomst</p>
             <label
-              class="block mb-2 text-lg"
+              class="block mb-2 "
               for="data_extra_{{ loop.index0 }}_VALUE"
             >
               {{ row[1]['KEY'] }}
@@ -132,14 +132,14 @@
             <div class="flex justify-between items-center">
               <div class="space-y-2 flex-grow mr-4">
                 <label
-                  class="block font-semibold mb-2 break-words text-2xl"
+                  class="block font-semibold mb-2 break-words text-xl"
                   id="label_extra_{{ loop.index0 }}"
                 >
                   {% if row[1]['VALUE'] is not none %} {{ row[1]["VALUE"] }} {%
                   else %} {% endif %}
                 </label>
                 <input
-                  class="border border-gray-300 text-black p-3 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 hidden text-2xl
+                  class="border border-gray-300 text-black p-3 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 hidden text-xl
                   {% if row[1]['VAR'] in ['ao_signed_date', 'previous_jobs'] %} validate-required {% endif %}"
                   type="text"
                   id="input_extra_{{ loop.index0 }}"
