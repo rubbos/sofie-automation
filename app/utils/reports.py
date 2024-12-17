@@ -351,7 +351,7 @@ def get_value(df: pd.DataFrame, key: str) -> str:
 
 
 def formatting_text(title: str, text: str) -> str:
-    return title + "<br>" + text + "<br><br>"
+    return title + "<br>" + text + "<br><br><br>"
 
 
 def replace_values(replacements: dict, report: str):

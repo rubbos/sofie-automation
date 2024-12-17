@@ -19,7 +19,7 @@ application_form_data = pd.DataFrame()
 extra_info_data = pd.DataFrame()
 
 # Skip the upload with DEV_MODE
-DEV_MODE = False
+DEV_MODE = True
 LOCAL_FILE1 = "temp_files/tax_form.txt"
 LOCAL_FILE2 = "temp_files/application_form.txt"
 
