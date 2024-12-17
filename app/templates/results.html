@@ -11,11 +11,9 @@
   </head>
   <body class="bg-gray-900 text-white flex flex-col min-h-screen p-6">
     <div class="container mx-auto mb-12 mt-6">
-      <h1 class="text-3xl font-bold mb-6 text-center">Check values</h1>
+      <h1 class="text-3xl font-bold mb-6 text-center">Controleer gegevens</h1>
       <p class="mb-6">
-        Please check the following values. There might be mistakes from
-        extracting. <b>SOFIEbot only works for standard requests!</b>
-      </p>
+       De onderstaande gegevens zijn zoveel mogelijk uit de geuploade bestanden gehaald. Echter is dit nog niet perfect. Controleer daarom de onderstaande gegevens zorgvuldig.        </p>
       <table
         class="mb-6 min-w-full bg-red-900 border border-red-700 text-color-black"
       >
@@ -35,14 +33,14 @@
           {% for row in tax_form_data.iterrows() %}
           <div class="bg-gray-800 border border-gray-900 p-6 shadow-lg rounded-lg">
             <p class="text-xs mb-1">30% Tax Form</p>
-            <label class="block mb-2 text-lg" for="data_tax_{{ loop.index0 }}_VALUE">
+            <label class="block mb-2" for="data_tax_{{ loop.index0 }}_VALUE">
               {{ row[1]['KEY'] }}
             </label>
             <div class="flex justify-between items-center">
-              <div class="space-y-2 flex-grow mr-4">
+              <div class="space-y-2 flex-grow">
                 {% if loop.index0 == 0 %}
                 <select
-                  class="border border-gray-300 text-black p-3 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-2xl"
+                  class="border border-gray-300 text-black text-xl p-3 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 "
                   id="input_tax_{{ loop.index0 }}"
                   name="data_tax_{{ loop.index0 }}_VALUE"
                 >
@@ -53,13 +51,14 @@
                 </select>
                 {% else %}
                 <label
-                  class="block font-semibold mb-2 break-words text-2xl"
+                  class="block font-semibold mb-2 break-words text-xl"
                   id="label_tax_{{ loop.index0 }}"
                 >
                   {% if row[1]['VALUE'] is not none %} {{ row[1]["VALUE"] }} {% else %} {% endif %}
                 </label>
                 <input
-                  class="border border-gray-300 text-black p-3 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 hidden text-2xl"
+                  class="border border-gray-300 text-black text-xl p-3 mr-2 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 hidden
+                  {% if row[1]['VAR'] in ['application_type', 'full_name', 'arrival_date', 'first_work_date', 'place_of_residence'] %} validate-required {% endif %}"
                   type="text"
                   id="input_tax_{{ loop.index0 }}"
                   name="data_tax_{{ loop.index0 }}_VALUE"
@@ -68,13 +67,15 @@
                 />
                 {% endif %}
               </div>
+              {% if loop.index0 != 0 %}
               <button
                 type="button"
-                class="text-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition-all duration-300"
+                class="bg-blue-600 hover:bg-blue-700 text-white text-xl font-semibold py-3 px-6 rounded-lg shadow-md transition-all duration-300"
                 onclick="toggleEdit('tax', {{ loop.index0 }})"
               >
                 edit
               </button>
+              {% endif %}
             </div>
           </div>
           {% endfor %} {% for row in application_form_data.iterrows() %}
@@ -98,7 +99,8 @@
                   else %} {% endif %}
                 </label>
                 <input
-                  class="border border-gray-300 text-black p-3 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 hidden text-2xl"
+                  class="border border-gray-300 text-black p-3 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 hidden text-2xl
+                  {% if row[1]['VAR'] in ['employer', 'lhn', 'employer_type', 'date_of_birth', 'bsn', 'job_title', 'ao_start_date', 'ufo_code', 'application_date'] %} validate-required {% endif %}"
                   type="text"
                   id="input_app_{{ loop.index0 }}"
                   name="data_app_{{ loop.index0 }}_VALUE"
@@ -108,7 +110,8 @@
               </div>
               <button
                 type="button"
-                class="text-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition-all duration-300"
+                class="text-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition-all duration-300 
+                "
                 onclick="toggleEdit('app', {{ loop.index0 }})"
               >
                 edit
@@ -136,7 +139,8 @@
                   else %} {% endif %}
                 </label>
                 <input
-                  class="border border-gray-300 text-black p-3 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 hidden text-2xl"
+                  class="border border-gray-300 text-black p-3 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 hidden text-2xl
+                  {% if row[1]['VAR'] in ['ao_signed_date', 'previous_jobs'] %} validate-required {% endif %}"
                   type="text"
                   id="input_extra_{{ loop.index0 }}"
                   name="data_extra_{{ loop.index0 }}_VALUE"
@@ -166,6 +170,35 @@
       </form>
     </div>
     <script>
+    // Check for empty/None values in required fields before submitting
+    document.querySelector("form").addEventListener("submit", function (event) {
+      let valid = true;
+
+      document.querySelectorAll(".validate-required").forEach((input) => {
+        const value = input.value.trim();
+        const parentDiv = input.closest("div");
+
+        const existingWarning = parentDiv.querySelector(".warning");
+        if (existingWarning) existingWarning.remove();
+
+        if (value === "" || value.toLowerCase() === "none") {
+          valid = false;
+
+          const warning = document.createElement("p");
+          warning.textContent = "Dit veld mag niet leeg zijn!";
+          warning.className = "warning text-red-500 mt-2 text-sm";
+          parentDiv.appendChild(warning);
+        }
+      });
+
+      // Prevent form submission if validation fails
+      if (!valid) {
+        event.preventDefault();
+        alert("Je bent waarschijnlijk iets vergeten!");
+      }
+    });
+
+      // Make buttons work with input fields 
       function toggleEdit(type, index) {
         const label = document.getElementById(`label_${type}_${index}`);
         const input = document.getElementById(`input_${type}_${index}`);
@@ -182,6 +215,7 @@
         }
       }
 
+    // Prevent <enter> from submitting form and make toggleEdit work with enter
       document.querySelectorAll('input[type="text"]').forEach((input) => {
         input.addEventListener("keydown", function (event) {
           if (event.key === "Enter") {
@@ -192,6 +226,7 @@
         });
       });
 
+      // Handling form submission
       document
         .querySelector("form")
         .addEventListener("submit", function (event) {
