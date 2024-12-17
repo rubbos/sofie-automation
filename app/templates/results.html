@@ -37,10 +37,10 @@
               {{ row[1]['KEY'] }}
             </label>
             <div class="flex justify-between items-center">
-              <div class="space-y-2 flex-grow mr-4">
+              <div class="flex-grow mr-4">
                 {% if loop.index0 == 0 %}
                 <select
-                  class="border border-gray-300 text-black text-xl p-3 mr-2 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 "
+                  class="border border-gray-300 text-black text-xl p-3 mr-2 w-full rounded-lg focus:outline-none "
                   id="input_tax_{{ loop.index0 }}"
                   name="data_tax_{{ loop.index0 }}_VALUE"
                 >
@@ -51,13 +51,13 @@
                 </select>
                 {% else %}
                 <label
-                  class="block font-semibold mb-2 break-words text-xl"
+                  class="block font-semibold break-words text-xl"
                   id="label_tax_{{ loop.index0 }}"
                 >
                   {% if row[1]['VALUE'] is not none %} {{ row[1]["VALUE"] }} {% else %} {% endif %}
                 </label>
                 <input
-                  class="border border-gray-300 text-black text-xl p-3 mr-2 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 hidden
+                  class="border border-gray-300 text-black text-xl p-3 mr-2 w-full rounded-lg focus:outline-none hidden
                   {% if row[1]['VAR'] in ['application_type', 'full_name', 'arrival_date', 'first_work_date', 'place_of_residence'] %} validate-required {% endif %}"
                   type="text"
                   id="input_tax_{{ loop.index0 }}"
@@ -70,10 +70,10 @@
               {% if loop.index0 != 0 %}
               <button
                 type="button"
-                class="bg-blue-600 hover:bg-blue-700 text-white text-xl font-semibold py-3 px-6 rounded-lg shadow-md transition-all duration-300"
+                class="bg-blue-600 hover:bg-blue-700 text-white text-xl font-semibold py-3 px-6 rounded-lg shadow-md transition-all duration-300" style="margin: 1px"
                 onclick="toggleEdit('tax', {{ loop.index0 }})"
               >
-                edit
+                wijzig
               </button>
               {% endif %}
             </div>
@@ -90,16 +90,16 @@
               {{ row[1]['KEY'] }}
             </label>
             <div class="flex justify-between items-center">
-              <div class="space-y-2 flex-grow mr-4">
+              <div class="flex-grow mr-4">
                 <label
-                  class="block font-semibold mb-2 break-words text-xl"
+                  class="block font-semibold break-words text-xl"
                   id="label_app_{{ loop.index0 }}"
                 >
                   {% if row[1]['VALUE'] is not none %} {{ row[1]["VALUE"] }} {%
                   else %} {% endif %}
                 </label>
                 <input
-                  class="border border-gray-300 text-black p-3 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 hidden text-xl
+                  class="border border-gray-300 text-black p-3 w-full rounded-lg focus:outline-none hidden text-xl
                   {% if row[1]['VAR'] in ['employer', 'lhn', 'employer_type', 'date_of_birth', 'bsn', 'job_title', 'ao_start_date', 'ufo_code', 'application_date'] %} validate-required {% endif %}"
                   type="text"
                   id="input_app_{{ loop.index0 }}"
@@ -111,10 +111,10 @@
               <button
                 type="button"
                 class="text-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition-all duration-300 
-                "
+                "style="margin: 1px"
                 onclick="toggleEdit('app', {{ loop.index0 }})"
               >
-                edit
+                wijzig
               </button>
             </div>
           </div>
@@ -130,9 +130,9 @@
               {{ row[1]['KEY'] }}
             </label>
             <div class="flex justify-between items-center">
-              <div class="space-y-2 flex-grow mr-4">
+              <div class="flex-grow mr-4">
                 <label
-                  class="block font-semibold mb-2 break-words text-xl"
+                  class="block font-semibold break-words text-xl"
                   id="label_extra_{{ loop.index0 }}"
                 >
                   {% if row[1]['VALUE'] is not none %} {{ row[1]["VALUE"] }} {%
@@ -150,21 +150,21 @@
               </div>
               <button
                 type="button"
-                class="text-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition-all duration-300"
+                class="text-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition-all duration-300"style="margin: 1px"
                 onclick="toggleEdit('extra', {{ loop.index0 }})"
               >
-                edit
+                wijzig
               </button>
             </div>
           </div>
           {% endfor %}
         </div>
-        <div class="mt-8 text-center">
+        <div class="mt-12 text-right">
           <button
             type="submit"
             class="text-xl bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition-all duration-300"
           >
-            Submit
+            Doorgaan
           </button>
         </div>
       </form>
