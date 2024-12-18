@@ -54,9 +54,10 @@ class CalculationData:
     """Represents calculated data"""
 
     application_type: str
-    start_date: Optional[str] = None
-    end_date: Optional[str] = None
-    signed_location: Optional[str] = None
+    start_date: str
+    true_start_date: str
+    end_date: str
+    signed_location: str
 
 
 def extracted_data(
@@ -84,6 +85,9 @@ def extracted_data(
     ao_signed_date = get_value(employment_contract, "ao_signed_date")
     cv_data = get_value(employment_contract, "previous_jobs")
     application_type = get_value(tax_form, "application_type")
+    nl_dates = get_value(tax_form, "nl_residence_dates")
+    start_date = calc.start_date(ao_start_date, first_work_date, employer_type)
+    true_start_date = calc.true_start_date(application_date, start_date)
 
     # creating timeline_image
     locations_timeline.create_timeline(
@@ -99,7 +103,7 @@ def extracted_data(
         recent_locations=locations_table.create_table(
             locations_table.convert_string_to_data(place_of_residence)
         ),
-        nl_dates="2023-06-01 to 2023-08-01",
+        nl_dates=nl_dates,
         nl_reason="Work",
         nl_reason_doc="Contract",
         cv_data=cv_data,
@@ -122,8 +126,9 @@ def extracted_data(
 
     calculation_info = CalculationData(
         application_type=application_type,
-        start_date=calc.start_date(ao_start_date, first_work_date, employer_type),
-        end_date="2024-12-31",
+        start_date=start_date,
+        true_start_date=true_start_date,
+        end_date="XXXXXXXXXXX",
         signed_location=calc.signed_location(
             ao_signed_date,
             locations_table.convert_string_to_data(place_of_residence),
@@ -191,6 +196,7 @@ def regular_application(
         worker_info.nl_reason,
         worker_info.nl_reason_doc,
         calculation_info.start_date,
+        calculation_info.true_start_date,
         calculation_info.end_date,
     )
 
@@ -271,6 +277,7 @@ def verslag_deskundigheid(job_name, ufo_code, employer, income):
     if ufo_code.startswith("01"):
         text = f"De functie van {job_name} ({ufo_code}) is een functie binnen de UFO functiefamilie «onderzoek en onderwijs» en de werknemer is tewerkgesteld bij {employer} welke een werkgever is zoals bedoeld in artikel 1.11, onderdelen a, van het Vreemdelingenbesluit 2000. Daarmee kwalificeert de werknemer als schaars specifiek deskundig."
     # Non-academic position
+    # NOTE: Still needs more attention!
     else:
         # High-income position
         text = f"Uit de pro forma loonstrook, jaaropgaaf, salarisbedrag uit de arbeidsovereenkomst, addendum, blijkt dat voldaan wordt aan de loonnorm. Het loon omgerekend op jaarbasis bedraagt {income} EUR. <br><br>"
@@ -290,16 +297,17 @@ def verslag_looptijd(
     nl_reason,
     nl_reason_doc,
     start_date,
+    true_start_date,
     end_date,
 ):
     title = "Verslag looptijd"
 
     # Check if the difference between start_date and application_date is less than 4 months.
     if calc.is_within_4_months(ao_start_date, application_date):
-        text = f"Het verzoek is tijdig ingediend op {application_date}. Dat is binnen de 4 maanden na de aanvang van de tewerkstelling op {start_date}.<br><br>"
+        text = f"Het verzoek is tijdig ingediend op {application_date}. Dat is binnen de 4 maanden na de aanvang van de tewerkstelling op {true_start_date}.<br><br>"
     else:
         text = f"Het verzoek is niet tijdig ingediend op {application_date}. Dat is 4 maanden na de aanvang van de tewerkstelling op {start_date}.<br><br>"
-    text += f"- De startdatum is daarom {start_date}.<br><br>"
+    text += f"- De startdatum is daarom {true_start_date}.<br><br>"
 
     # If worker has been in NL before, we have to remove these months if its more than 6 weeks a year.
     if nl_dates:

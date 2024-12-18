@@ -51,14 +51,21 @@ def is_within_4_months(date1_str, date2_str, date_format="%d-%m-%Y") -> bool:
     return date2 <= cutoff_date
 
 
-def next_first_of_month() -> str:
-    """Gets the first date of the next month"""
-    today = datetime.today()
-    if today.month == 12:
-        next_month = datetime(today.year + 1, 1, 1)
-    else:
-        next_month = datetime(today.year, today.month + 1, 1)
-    return next_month.strftime("%d-%m-%Y")
+def next_first_of_month(date: str) -> str:
+    """Gets the first day of the next month based of input"""
+    try:
+        # Parse the input date
+        date_obj = datetime.strptime(date, "%d-%m-%Y")
+
+        # Determine the first date of the next month
+        if date_obj.month == 12:
+            next_month = datetime(date_obj.year + 1, 1, 1)
+        else:
+            next_month = datetime(date_obj.year, date_obj.month + 1, 1)
+
+        return next_month.strftime("%d-%m-%Y")
+    except ValueError:
+        return "Invalid date format. Please use dd-mm-yyyy."
 
 
 def start_date(ao_start_date: str, first_work_date: str, employer_type: str):
@@ -68,11 +75,11 @@ def start_date(ao_start_date: str, first_work_date: str, employer_type: str):
     return first_work_date
 
 
-def official_start_date(application_upload_date: str, start_date: str) -> str:
+def true_start_date(application_date: str, start_date: str) -> str:
     """If the difference between dates is more than 4 months, we return the first of the next month"""
-    if is_within_4_months(start_date, application_upload_date):
+    if is_within_4_months(start_date, application_date):
         return start_date
-    return next_first_of_month()
+    return next_first_of_month(application_date)
 
 
 def get_most_recent_date(date1: str, date2: str) -> str:
