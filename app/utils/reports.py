@@ -88,6 +88,7 @@ def extracted_data(
     nl_dates = get_value(tax_form, "nl_residence_dates")
     start_date = calc.start_date(ao_start_date, first_work_date, employer_type)
     true_start_date = calc.true_start_date(application_date, start_date)
+    end_date = calc.end_date(true_start_date)
 
     # creating timeline_image
     locations_timeline.create_timeline(
@@ -128,7 +129,7 @@ def extracted_data(
         application_type=application_type,
         start_date=start_date,
         true_start_date=true_start_date,
-        end_date="XXXXXXXXXXX",
+        end_date=end_date,
         signed_location=calc.signed_location(
             ao_signed_date,
             locations_table.convert_string_to_data(place_of_residence),
@@ -310,10 +311,11 @@ def verslag_looptijd(
     text += f"- De startdatum is daarom {true_start_date}.<br><br>"
 
     # If worker has been in NL before, we have to remove these months if its more than 6 weeks a year.
-    if nl_dates:
-        text += f"Er is eerder verblijf in NL wat gekort wordt op de looptijd. Betrokkene heeft in Nederland gewoond van {nl_dates} Dit verblijf was in het kader van {nl_reason}. Dit blijkt o.a. uit {nl_reason_doc}.<br><br>"
-    else:
+    # NOTE: Fix the garbage variables types :(
+    if nl_dates == "None":
         text += "Betrokkene geeft aan niet eerder in Nederland verblijf te hebben gehad wat in aanmerking genomen moet worden voor een korting. De regeling kan voor de maximale duur worden toegekend (5 jaar). De inhoud van het bijgevoegde cv en het aanvraagformulier, geven geen aanleiding om anders te concluderen.<br><br>"
+    else:
+        text += f"Er is eerder verblijf in NL wat gekort wordt op de looptijd. Betrokkene heeft in Nederland gewoond van {nl_dates} Dit verblijf was in het kader van {nl_reason}. Dit blijkt o.a. uit {nl_reason_doc}.<br><br>"
     text += f"- De einddatum van de looptijd is daarmee {end_date}."
     return formatting_text(title, text)
 
@@ -346,7 +348,7 @@ def create_email_report(
         "Geboortedatum": worker_info.date_of_birth,
         "Werkgever": employer_info.employer,
         "Loonheffingsnummer": employer_info.lhn,
-        "Gewenste ingangsdatum": calculation_info.start_date,
+        "Gewenste ingangsdatum": calculation_info.true_start_date,
         "Looptijd tot en met": calculation_info.end_date,
         "Functienaam": contract_info.job_title,
         "Loonnorm": contract_info.wage_type,
