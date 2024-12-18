@@ -3,44 +3,23 @@ from dateutil.relativedelta import relativedelta
 
 
 def create_table(data):
-    headers = [
-        "Startdatum",
-        "Einddatum",
-        "Stad",
-        "Land",
-        "Tijdsduur",
-    ]
-
     def calculate_time_of_stay(start_date, end_date):
         fmt = "%d-%m-%Y"
         start = datetime.strptime(start_date, fmt)
         end = datetime.strptime(end_date, fmt)
         delta = relativedelta(end, start)
-        return f"{delta.years * 12 + delta.months} maanden, {delta.days} dagen"
+        return f"{delta.years * 12 + delta.months}m + {delta.days}d"
 
-    html = '<table border="1" style="border-collapse: collapse; text-align: left;">\n'
-    html += "  <tr>\n"
-    for header in headers:
-        html += f"    <th>{header}</th>\n"
-    html += "  </tr>\n"
-
+    rows = []
     for entry in data:
-        print("Processing entry:", entry)  # Debugging
         if isinstance(entry, list) and len(entry) >= 4:
             start_date, end_date, city, country = entry[:4]
             time_of_stay = calculate_time_of_stay(start_date, end_date)
-            html += "  <tr>\n"
-            html += f"    <td>{start_date}</td>\n"
-            html += f"    <td>{end_date}</td>\n"
-            html += f"    <td>{city}</td>\n"
-            html += f"    <td>{country}</td>\n"
-            html += f"    <td>{time_of_stay}</td>\n"
-            html += "  </tr>\n"
+            row = f"<br>{city}, {country} van {start_date} t/m {end_date}({time_of_stay})."
+            rows.append(row)
         else:
             print("Invalid entry:", entry)  # Debugging
-
-    html += "</table>"
-    return html
+    return "\n".join(rows)
 
 
 def convert_string_to_data(string_data):

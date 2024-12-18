@@ -157,7 +157,7 @@ def regular_application(
     calculation_info,
 ):
 
-    title = formatting_text("Verslag regulier", "")
+    header = formatting_header("Verslag regulier")
     werknemer = verslag_werknemer(
         employer_info.employer,
         contract_info.ao_start_date,
@@ -195,7 +195,7 @@ def regular_application(
     )
 
     return (
-        title
+        header
         + werknemer
         + aanwerving
         + buitenland
@@ -250,11 +250,11 @@ def verslag_aanwerving(
 # NOTE: need something to fix the text if the country in under 150km from nl
 def verslag_buitenland(recent_locations, cv_data):
     title = "Verslag 150 km criterium 16/24 maanden criterium"
-    text = f"Bij de aanwerving woonde werknemer in: {recent_locations}"
-    text += '<img src="/static/images/timeline_image.png" alt="Timeline Image">'
+    text = f"24 maanden voorafgaand aan de tewerkstelling woonde werknemer in: {recent_locations}<br>"
     text += "Deze woonplaats(en) liggen op meer dan 150 km van de Nederlandse grens. Het CV en de informatie op het aanvraagformulier geven geen aanleiding om iets anders te concluderen.<br><br>"
     text += f"Volgens het CV werkte/studeerde de werknemer als: {cv_data}<br><br>"
     text += "Conclusie: het is aannemelijk dat werknemer op meer dan 150 km van de Nederlandse grens woonde gedurende meer dan 2/3 van de 24 maanden direct voorafgaand aan de eerste dag van tewerkstelling."
+    text += '<img src="/static/images/timeline_image.png" alt="Timeline Image">'
     return formatting_text(title, text)
 
 
@@ -355,8 +355,12 @@ def get_value(df: pd.DataFrame, key: str) -> str:
     return df.loc[df["VAR"] == key, "VALUE"].values[0]
 
 
-def formatting_text(title: str, text: str) -> str:
-    return title + "<br>" + text + "<br><br><br>"
+def formatting_header(header: str) -> str:
+    return "<b style='font-size:20px'>" + header + "</b><br><br>"
+
+
+def formatting_text(subheader: str, text: str) -> str:
+    return "<b>" + subheader + "</b><br>" + text + "<br><br><br>"
 
 
 def replace_values(replacements: dict, report: str):
