@@ -186,7 +186,7 @@ def create_timeline(
     ax.set_ylim(-0.5, 0.8 + (len(gaps) * 0.15))
 
     # Format x-axis
-    ax.xaxis.set_major_locator(mdates.MonthLocator(interval=2))
+    ax.xaxis.set_major_locator(mdates.MonthLocator(interval=1))
     ax.xaxis.set_major_formatter(mdates.DateFormatter("%b %Y"))
     plt.xticks(rotation=45)
 
