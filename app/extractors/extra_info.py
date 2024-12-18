@@ -22,6 +22,11 @@ def empty_info():
             "",
             "previous_jobs",
         ],
+        "Het verblijf in Nederland was in het kader van ... Dit blijkt o.a. uit Contract ...": [
+            type_data[0],
+            "",
+            "explain_nl",
+        ],
     }
 
     return extracted_data

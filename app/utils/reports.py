@@ -18,6 +18,7 @@ class WorkerData:
     nl_dates: Optional[str] = None
     nl_reason: Optional[str] = None
     nl_reason_doc: Optional[str] = None
+    explain_nl: Optional[str] = None
     cv_data: Optional[str] = None
 
 
@@ -84,6 +85,7 @@ def extracted_data(
     explain_wo = get_value(employment_contract, "explain_wo")
     ao_signed_date = get_value(employment_contract, "ao_signed_date")
     cv_data = get_value(employment_contract, "previous_jobs")
+    explain_nl = get_value(employment_contract, "explain_nl")
     application_type = get_value(tax_form, "application_type")
     nl_dates = get_value(tax_form, "nl_residence_dates")
     start_date = calc.start_date(ao_start_date, first_work_date, employer_type)
@@ -105,8 +107,7 @@ def extracted_data(
             locations_table.convert_string_to_data(place_of_residence)
         ),
         nl_dates=nl_dates,
-        nl_reason="Work",
-        nl_reason_doc="Contract",
+        explain_nl=explain_nl,
         cv_data=cv_data,
     )
 
@@ -194,8 +195,7 @@ def regular_application(
         contract_info.application_date,
         contract_info.ao_start_date,
         worker_info.nl_dates,
-        worker_info.nl_reason,
-        worker_info.nl_reason_doc,
+        worker_info.explain_nl,
         calculation_info.start_date,
         calculation_info.true_start_date,
         calculation_info.end_date,
@@ -295,8 +295,7 @@ def verslag_looptijd(
     application_date,
     ao_start_date,
     nl_dates,
-    nl_reason,
-    nl_reason_doc,
+    explain_nl,
     start_date,
     true_start_date,
     end_date,
@@ -315,7 +314,7 @@ def verslag_looptijd(
     if nl_dates == "None":
         text += "Betrokkene geeft aan niet eerder in Nederland verblijf te hebben gehad wat in aanmerking genomen moet worden voor een korting. De regeling kan voor de maximale duur worden toegekend (5 jaar). De inhoud van het bijgevoegde cv en het aanvraagformulier, geven geen aanleiding om anders te concluderen.<br><br>"
     else:
-        text += f"Er is eerder verblijf in NL wat gekort wordt op de looptijd. Betrokkene heeft in Nederland gewoond van {nl_dates} Dit verblijf was in het kader van {nl_reason}. Dit blijkt o.a. uit {nl_reason_doc}.<br><br>"
+        text += f"Er is eerder verblijf in NL wat gekort wordt op de looptijd. Betrokkene heeft in Nederland gewoond van {nl_dates} Dit verblijf was in het kader van {explain_nl}.<br><br>"
     text += f"- De einddatum van de looptijd is daarmee {end_date}."
     return formatting_text(title, text)
 
