@@ -55,19 +55,19 @@ def validate_uni(df):
     """Validate university data and update the values in the DataFrame."""
     uni = find_university(df)
 
-    def update_value(key, value):
+    def update_value(var, value):
         """Helper function to update a row in the DataFrame."""
-        df.loc[df["KEY"] == key, "VALUE"] = value
+        df.loc[df["VAR"] == var, "VALUE"] = value
 
     if isinstance(uni, (list, tuple)) and len(uni) >= 3:
         # Update DataFrame with university data
-        update_value("Name employer", uni[0])
-        update_value("Loonheffing number", uni[1])
-        update_value("University type", uni[2])
+        update_value("employer", uni[0])
+        update_value("lhn", uni[1])
+        update_value("employer_type", uni[2])
     else:
         # Log error and set default values
         print("Error: Invalid university data")
-        for key in ["Name employer", "Loonheffing number", "University type"]:
-            update_value(key, None)
+        for var in ["employer", "lhn", "employer_type"]:
+            update_value(var, None)
 
     return df
