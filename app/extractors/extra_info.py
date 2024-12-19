@@ -8,7 +8,7 @@ def empty_info():
     extracted_data = {
         "Arbeidsovereenkomst datum getekend": [
             type_data[2],
-            "01-01-2024",
+            "",
             "ao_signed_date",
         ],
         "Wilsovereenkomst datum getekend": [type_data[2], "", "wo_signed_date"],

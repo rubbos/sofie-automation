@@ -93,8 +93,11 @@ def extracted_data(
     end_date = calc.end_date(true_start_date)
 
     # creating timeline_image
-    locations_timeline.create_timeline(
-        locations_table.convert_string_to_data(place_of_residence), arrival_date
+    timeline = locations_timeline.TimelineVisualizer()
+    timeline.create_timeline(
+        data=locations_table.convert_string_to_data(place_of_residence),
+        ao_start_date_str=ao_start_date,
+        output_file="static/images/timeline_image.png",
     )
 
     worker_info = WorkerData(

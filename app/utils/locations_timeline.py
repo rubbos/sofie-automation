@@ -4,208 +4,273 @@ import numpy as np
 from datetime import timedelta
 import matplotlib.dates as mdates
 from matplotlib.patches import Rectangle
+from typing import Union, List, Dict
+from dataclasses import dataclass
+from pathlib import Path
 
 
-def create_timeline(
-    data, arrival_date_str, output_file="static/images/timeline_image.png"
-):
-    # Convert data to DataFrame - handle both list of dicts and direct input
-    if isinstance(data, list):
-        if all(isinstance(item, dict) for item in data):
-            df = pd.DataFrame(data)
+@dataclass
+class TimelineConfig:
+    """Configuration settings for timeline visualization."""
+
+    figsize: tuple = (15, 6)
+    bar_height: float = 0.3
+    base_level: float = 0
+    date_format: str = "%d-%m-%Y"
+    required_columns: tuple = ("Startdatum", "Einddatum", "Stad", "Land")
+
+
+class TimelineVisualizer:
+    """Class to handle timeline visualization of location stays."""
+
+    def __init__(self, config: TimelineConfig = None):
+        self.config = config or TimelineConfig()
+
+    def _validate_data(self, df: pd.DataFrame) -> None:
+        """Validate that DataFrame contains required columns."""
+        missing_columns = [
+            col for col in self.config.required_columns if col not in df.columns
+        ]
+        if missing_columns:
+            raise ValueError(f"Missing required columns: {missing_columns}")
+
+    def _prepare_dataframe(
+        self,
+        data: Union[List[Dict], pd.DataFrame],
+        timeline_start: pd.Timestamp,
+        timeline_end: pd.Timestamp,
+    ) -> pd.DataFrame:
+        """Convert input data to DataFrame and prepare dates."""
+        if isinstance(data, list):
+            df = (
+                pd.DataFrame(data)
+                if all(isinstance(item, dict) for item in data)
+                else pd.DataFrame(data, columns=self.config.required_columns)
+            )
         else:
-            # If it's a list but not of dictionaries, try to create DataFrame differently
-            df = pd.DataFrame(data, columns=["Startdatum", "Einddatum", "Stad", "Land"])
-    else:
-        # If data is already a DataFrame
-        df = data
+            df = data.copy()
 
-    # Verify required columns exist
-    required_columns = ["Startdatum", "Einddatum", "Stad", "Land"]
-    missing_columns = [col for col in required_columns if col not in df.columns]
-    if missing_columns:
-        print("Current columns in DataFrame:", df.columns.tolist())
-        print("Data structure received:", data)
-        raise ValueError(f"Missing required columns: {missing_columns}")
+        self._validate_data(df)
 
-    # Convert dates to datetime
-    df["Startdatum"] = pd.to_datetime(df["Startdatum"], format="%d-%m-%Y")
-    df["Einddatum"] = pd.to_datetime(df["Einddatum"], format="%d-%m-%Y")
-    df = df.sort_values("Startdatum")
+        # Convert dates to datetime
+        for col in ["Startdatum", "Einddatum"]:
+            df[col] = pd.to_datetime(df[col], format=self.config.date_format)
 
-    # Define arrival date and two years back
-    arrival_date = pd.to_datetime(arrival_date_str, format="%d-%m-%Y")
-    two_years_back = arrival_date - timedelta(days=2 * 365)
+        # Clip dates to timeline window
+        df["Startdatum"] = df["Startdatum"].clip(
+            lower=timeline_start, upper=timeline_end
+        )
+        df["Einddatum"] = df["Einddatum"].clip(lower=timeline_start, upper=timeline_end)
 
-    # Filter data for the last 2 years from the arrival date
-    df = df[df["Einddatum"] >= two_years_back].copy()
+        # Filter out periods that are completely outside the window
+        df = df[
+            ~((df["Startdatum"] > timeline_end) | (df["Einddatum"] < timeline_start))
+        ]
 
-    # Create figure and axis
-    fig, ax = plt.subplots(figsize=(15, 6))
-    fig.patch.set_facecolor("white")
+        return df.sort_values("Startdatum")
 
-    # Calculate all gaps (including start and end of timeline)
-    gaps = []
+    def _calculate_gaps(
+        self, df: pd.DataFrame, timeline_start: pd.Timestamp, timeline_end: pd.Timestamp
+    ) -> List[tuple]:
+        """Calculate gaps in the timeline."""
+        gaps = []
 
-    # Check gap at the start of the timeline
-    if len(df) > 0:
-        first_start = df["Startdatum"].iloc[0]
-        if first_start > two_years_back:
-            start_gap_days = (first_start - two_years_back).days
-            if start_gap_days > 0:
-                gaps.append((two_years_back, first_start - timedelta(days=1)))
+        # Check start gap
+        if df.empty:
+            return [(timeline_start, timeline_end)]
 
-        # Check gaps between stays
+        if df["Startdatum"].iloc[0] > timeline_start:
+            gaps.append((timeline_start, df["Startdatum"].iloc[0] - timedelta(days=1)))
+
+        # Check intermediate gaps
         for i in range(len(df) - 1):
             current_end = df["Einddatum"].iloc[i]
             next_start = df["Startdatum"].iloc[i + 1]
-            gap_days = (next_start - current_end).days - 1
-            if gap_days > 0:
+            if (next_start - current_end).days > 1:
                 gaps.append(
                     (current_end + timedelta(days=1), next_start - timedelta(days=1))
                 )
 
-        # Check gap at the end of the timeline
-        last_end = df["Einddatum"].iloc[-1]
-        if last_end < arrival_date:
-            end_gap_days = (arrival_date - last_end).days - 1
-            if end_gap_days > 0:
-                gaps.append((last_end + timedelta(days=1), arrival_date))
+        # Check end gap
+        if df["Einddatum"].iloc[-1] < timeline_end:
+            gap_days = (timeline_end - df["Einddatum"].iloc[-1]).days
+            if gap_days > 1:  # Changed from > 0 to > 1
+                gaps.append(
+                    (
+                        df["Einddatum"].iloc[-1] + timedelta(days=1),
+                        timeline_end - timedelta(days=1),
+                    )
+                )
 
-    # Plot settings
-    base_level = 0
-    bar_height = 0.3
-    colors = plt.cm.Pastel1(np.linspace(0, 1, len(df)))
+        return gaps
 
-    # Plot stays
-    for idx, row in df.iterrows():
-        start_num = mdates.date2num(row["Startdatum"])
-        end_num = mdates.date2num(row["Einddatum"])
-        width = end_num - start_num
+    def _plot_stays(self, ax: plt.Axes, df: pd.DataFrame) -> None:
+        """Plot the stays on the timeline."""
+        colors = plt.cm.Pastel1(np.linspace(0, 1, len(df)))
 
-        rect = Rectangle(
-            (start_num, base_level - bar_height / 2),
-            width,
-            bar_height,
-            facecolor=colors[idx % len(colors)],
-            edgecolor="none",
-            alpha=0.7,
+        for idx, row in df.iterrows():
+            start_num = mdates.date2num(row["Startdatum"])
+            end_num = mdates.date2num(row["Einddatum"])
+            width = end_num - start_num
+
+            # Only plot if width is positive (end date after start date)
+            if width > 0:
+                # Plot stay rectangle
+                rect = Rectangle(
+                    (start_num, self.config.base_level - self.config.bar_height / 2),
+                    width,
+                    self.config.bar_height,
+                    facecolor=colors[idx % len(colors)],
+                    edgecolor="none",
+                    alpha=0.7,
+                )
+                ax.add_patch(rect)
+
+                # Add location label
+                location = f"{row['Stad']}, {row['Land']}"
+                self._add_text(
+                    ax,
+                    start_num + width / 2,
+                    self.config.base_level + self.config.bar_height / 2 - 0.25,
+                    location,
+                    rotation=45,
+                    fontsize=9,
+                    fontweight="bold",
+                )
+
+                # Add date labels with small offset to prevent overlap
+                self._add_text(
+                    ax,
+                    start_num,
+                    self.config.base_level - self.config.bar_height / 2 - 0.15,
+                    row["Startdatum"].strftime("%d-%b-%Y"),
+                    rotation=45,
+                    fontsize=8,
+                    ha="left",
+                )
+
+                self._add_text(
+                    ax,
+                    end_num,
+                    self.config.base_level - self.config.bar_height / 2 - 0.15,
+                    row["Einddatum"].strftime("%d-%b-%Y"),
+                    rotation=45,
+                    fontsize=8,
+                    ha="right",
+                )
+
+    def _plot_gaps(self, ax: plt.Axes, gaps: List[tuple]) -> float:
+        """Plot timeline gaps and return maximum y position used."""
+        max_y = self.config.base_level + self.config.bar_height
+
+        for i, (gap_start, gap_end) in enumerate(gaps):
+            # Plot gap line
+            ax.hlines(
+                self.config.base_level,
+                gap_start,
+                gap_end,
+                colors="red",
+                linestyles="--",
+                linewidth=2,
+                alpha=0.5,
+            )
+
+            # Add gap label
+            gap_duration = (gap_end - gap_start).days
+            gap_label = (
+                f"{gap_start.strftime('%d-%b-%Y')} t/m "
+                f"{gap_end.strftime('%d-%b-%Y')} ({gap_duration} days)"
+            )
+
+            y_pos = max_y + 0.1 + (i * 0.15)
+            mid_point = mdates.date2num(gap_start + (gap_end - gap_start) / 2)
+            self._add_text(ax, mid_point, y_pos, gap_label, fontsize=8, color="red")
+
+            max_y = max(max_y, y_pos + 0.15)
+
+        return max_y
+
+    @staticmethod
+    def _add_text(ax: plt.Axes, x: float, y: float, text: str, **kwargs) -> None:
+        """Helper method to add text to the plot with default alignment."""
+        defaults = {"ha": "center", "va": "bottom"}
+        ax.text(x, y, text, **{**defaults, **kwargs})
+
+    def create_timeline(
+        self,
+        data: Union[List[Dict], pd.DataFrame],
+        ao_start_date_str: str,
+        output_file: Union[str, Path] = "timeline_image.png",
+    ) -> None:
+        """Create and save a timeline visualization."""
+        # Calculate timeline boundaries
+        ao_start_date = pd.to_datetime(
+            ao_start_date_str, format=self.config.date_format
         )
-        ax.add_patch(rect)
+        timeline_start = ao_start_date - pd.DateOffset(years=2)
 
-        location = f"{row['Stad']}, {row['Land']}"
-        mid_point = start_num + width / 2
-        ax.text(
-            mid_point,
-            base_level + bar_height / 2 + 0.05,
-            location,
-            ha="center",
-            va="bottom",
-            fontsize=9,
+        # Prepare data with timeline boundaries
+        df = self._prepare_dataframe(data, timeline_start, ao_start_date)
+
+        # Calculate exact 2-year timeline start
+        timeline_start = ao_start_date - pd.DateOffset(years=2)
+
+        # Filter data to exact 2-year window
+        df = df[df["Einddatum"] >= timeline_start].copy()
+
+        # Create figure
+        fig, ax = plt.subplots(figsize=self.config.figsize)
+        fig.patch.set_facecolor("white")
+
+        # Calculate gaps and plot elements
+        gaps = self._calculate_gaps(df, timeline_start, ao_start_date)
+        self._plot_stays(ax, df)
+        max_y = self._plot_gaps(ax, gaps)
+
+        # Add timeline boundaries
+        for date, label in [
+            (timeline_start, "Timeline Start"),
+            (ao_start_date, "Timeline Einde"),
+        ]:
+            ax.axvline(x=mdates.date2num(date), color="black", linestyle="-", alpha=0.3)
+            self._add_text(
+                ax,
+                mdates.date2num(date),
+                -0.4,
+                f"{label}\n{date.strftime('%d-%b-%Y')}",
+                fontsize=8,
+                va="top",
+            )
+
+        # Configure axes
+        ax.set_xlim(
+            mdates.date2num(timeline_start - timedelta(days=30)),
+            mdates.date2num(ao_start_date + timedelta(days=30)),
+        )
+        ax.set_ylim(-0.5, max_y + 0.1)
+
+        # Format x-axis
+        ax.xaxis.set_major_locator(mdates.MonthLocator(interval=1))
+        ax.xaxis.set_major_formatter(mdates.DateFormatter("%b %Y"))
+        plt.xticks(rotation=45)
+
+        # Clean up plot
+        ax.set_yticks([])
+        ax.spines["left"].set_visible(False)
+        ax.spines["right"].set_visible(False)
+        ax.grid(axis="x", linestyle="--", alpha=0.3)
+
+        # Add title
+        plt.title(
+            "Timeline 24 maanden voor aanvang tewerkstelling",
+            pad=20,
+            fontsize=12,
             fontweight="bold",
         )
 
-        start_date = row["Startdatum"].strftime("%d-%b-%Y")
-        end_date = row["Einddatum"].strftime("%d-%b-%Y")
-        ax.text(
-            start_num,
-            base_level - bar_height / 2 - 0.1,
-            start_date,
-            ha="right",
-            va="top",
-            fontsize=8,
-            rotation=45,
-        )
-        ax.text(
-            end_num,
-            base_level - bar_height / 2 - 0.1,
-            end_date,
-            ha="left",
-            va="top",
-            fontsize=8,
-            rotation=45,
-        )
-
-    # Plot gaps with staggered labels
-    for i, (gap_start, gap_end) in enumerate(gaps):
-        ax.hlines(
-            base_level,
-            gap_start,
-            gap_end,
-            colors="red",
-            linestyles="--",
-            linewidth=2,
-            alpha=0.5,
-        )
-
-        gap_duration = (gap_end - gap_start).days
-        gap_label = f"{gap_start.strftime('%d-%b-%Y')} t/m {gap_end.strftime('%d-%b-%Y')} ({gap_duration} days)"
-
-        vertical_position = base_level + bar_height + 0.1 + (i * 0.15)
-        mid_point = mdates.date2num(gap_start + (gap_end - gap_start) / 2)
-        ax.text(
-            mid_point,
-            vertical_position,
-            gap_label,
-            ha="center",
-            va="bottom",
-            fontsize=8,
-            color="red",
-        )
-
-    # Add markers for timeline boundaries
-    ax.axvline(
-        x=mdates.date2num(two_years_back), color="black", linestyle="-", alpha=0.3
-    )
-    ax.axvline(x=mdates.date2num(arrival_date), color="black", linestyle="-", alpha=0.3)
-
-    ax.text(
-        mdates.date2num(two_years_back),
-        -0.4,
-        "Timeline Start\n" + two_years_back.strftime("%d-%b-%Y"),
-        ha="center",
-        va="top",
-        fontsize=8,
-        color="black",
-    )
-    ax.text(
-        mdates.date2num(arrival_date),
-        -0.4,
-        "Arrival Date\n" + arrival_date.strftime("%d-%b-%Y"),
-        ha="center",
-        va="top",
-        fontsize=8,
-        color="black",
-    )
-
-    # Set axis limits
-    ax.set_xlim(
-        mdates.date2num(two_years_back - timedelta(days=30)),
-        mdates.date2num(arrival_date + timedelta(days=30)),
-    )
-    ax.set_ylim(-0.5, 0.8 + (len(gaps) * 0.15))
-
-    # Format x-axis
-    ax.xaxis.set_major_locator(mdates.MonthLocator(interval=1))
-    ax.xaxis.set_major_formatter(mdates.DateFormatter("%b %Y"))
-    plt.xticks(rotation=45)
-
-    # Remove y-axis
-    ax.set_yticks([])
-    ax.spines["left"].set_visible(False)
-    ax.spines["right"].set_visible(False)
-
-    # Add grid
-    ax.grid(axis="x", linestyle="--", alpha=0.3)
-
-    # Add title
-    plt.title(
-        "Timeline voor aanvang tewerkstelling", pad=20, fontsize=12, fontweight="bold"
-    )
-
-    # Save plot
-    plt.tight_layout()
-    plt.savefig(output_file, bbox_inches="tight", dpi=300)
-    plt.close()
-
-    print(f"Timeline image saved as {output_file}")
+        # Save plot
+        plt.tight_layout()
+        output_path = Path(output_file)
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        plt.savefig(output_path, bbox_inches="tight", dpi=300)
+        plt.close()
