@@ -20,11 +20,13 @@ def save_text(text: str, name: str) -> None:
         text_file.write(text)
 
 
-def preprocess_image(image):
-    """Make pytesseract more accurate by processing the image"""
+def preprocess_image(image, margin=50):
+    """Preprocess the image for pytesseract by resizing and cropping fixed margins."""
     img = np.array(image)
     resized_img = cv2.resize(img, None, fx=1.5, fy=1.5, interpolation=cv2.INTER_CUBIC)
-    return resized_img
+    height, width = resized_img.shape[:2]
+    cropped_img = resized_img[margin : height - margin, margin : width - margin]
+    return cropped_img
 
 
 def file_to_raw_data(pdf_bytes, config_psm: int) -> str:
