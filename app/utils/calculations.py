@@ -106,18 +106,14 @@ def end_date(true_start_date: str, months_nl: Optional[int] = None) -> str:
 
 
 def get_most_recent_date(date1: str, date2: str) -> str:
-    """
-    Returns the most recent date from two given dates.
-
-    Args:
-        date1 (str): First date in the format dd-mm-yyyy.
-        date2 (str): Second date in the format dd-mm-yyyy.
-
-    Returns:
-        str: The most recent date.
-    """
+    """Returns the most recent date from two given dates."""
     date_format = "%d-%m-%Y"
     date1_parsed = datetime.strptime(date1, date_format)
     date2_parsed = datetime.strptime(date2, date_format)
 
     return date1 if date1_parsed > date2_parsed else date2
+
+
+def get_total_months_in_nl():
+    """Look back for the last 25 years and sum up all the periods the users has been in NL"""
+    return None

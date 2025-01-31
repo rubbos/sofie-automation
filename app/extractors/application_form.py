@@ -5,12 +5,11 @@ from utils.validation import validate_uni
 
 
 def get_raw_data(pdf_path) -> str:
-    return em.file_to_raw_data(pdf_path, 4)
+    return em.pdf_to_text(pdf_path)
 
 
 def extract(text: str) -> dict:
     type_data = ["str", "list[str]", "date", "list[date]"]
-    yes_no = ["Yes", "No"]
 
     extracted_data = {
         "Naam werkgever": [

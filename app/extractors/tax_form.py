@@ -4,7 +4,8 @@ from extractors.methods import transform_methods as tm
 
 
 def get_raw_data(pdf_path) -> str:
-    return em.file_to_raw_data(pdf_path, 11)
+    return em.pdf_to_text(pdf_path)
+    # return em.file_to_raw_data(pdf_path, 11)
 
 
 def extract(text: str) -> dict:

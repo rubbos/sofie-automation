@@ -1,12 +1,15 @@
 import re
 import pandas as pd
-from pytesseract import image_to_string
+
+# from pytesseract import image_to_string
 from pdf2image import convert_from_bytes
 from extractors.methods import transform_methods as tm
 import cv2
 import numpy as np
 import os
 from datetime import datetime
+import spacy
+from spacy_layout import spaCyLayout
 
 
 def save_text(text: str, name: str) -> None:
@@ -29,15 +32,23 @@ def preprocess_image(image, margin=50):
     return cropped_img
 
 
-def file_to_raw_data(pdf_bytes, config_psm: int) -> str:
-    """Convert uploaded file to string"""
-    doc = convert_from_bytes(pdf_bytes)
+def pdf_to_text(pdf) -> str:
+    nlp = spacy.load("en_core_web_sm")
+    layout = spaCyLayout(nlp)
+    doc = layout(pdf)
+    return doc.text
 
-    text = ""
-    for page_data in doc:
-        processed_data = preprocess_image(page_data)
-        text += image_to_string(processed_data, config=f"--psm {config_psm}")
-    return text
+
+# def file_to_raw_data(pdf_bytes, config_psm: int) -> str:
+#     """Convert uploaded file to string"""
+#     doc = convert_from_bytes(pdf_bytes)
+#
+#     text = ""
+#     for page_data in doc:
+#         processed_data = preprocess_image(page_data)
+#         text += image_to_string(processed_data, config=f"--psm {config_psm}")
+#     return text
+#
 
 
 def extract_after_keyword(text: str, start_keyword: str) -> str | None:
