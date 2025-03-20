@@ -1,21 +1,13 @@
 services:
   sofiebot:
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: .  
+      dockerfile: Dockerfile  
     ports:
-      - "5000:5000"
+      - "5000:5000" 
     volumes:
-      - ./app:/app
+      - ./app:/app 
     environment:
       - FLASK_APP=app.py
       - FLASK_ENV=development
-    deploy:
-      resources:
-        limits:
-          memory: 16G
-        reservations:
-          devices:
-            - driver: nvidia
-              count: 1
-              capabilities: [gpu]
+
