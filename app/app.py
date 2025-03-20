@@ -96,4 +96,4 @@ def get_edited_values(data: pd.DataFrame, key_name: str):
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0', port=5000)
