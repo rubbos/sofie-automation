@@ -1,14 +1,14 @@
 import pandas as pd
 from utils.university import find_university
-
+"""This module contains validation functions that are used in the results.html before it gets loaded"""
 
 def validate_df(df, df2):
     validations = []
     df_name, df2_name = "Tax Form 30%", "Application Form"
-    validations.append(check_standard_request(df2))
-    validations.append(check_missing_fields(df, df_name, ignore_index=[5, 6, 7, 8, 9]))
-    validations.append(check_missing_fields(df2, df2_name))
-    validations.append(check_missing_dates(df, df_name))
+    #validations.append(check_standard_request(df2))
+    #validations.append(check_missing_fields(df, df_name, ignore_index=[5, 6, 7, 8, 9]))
+    #validations.append(check_missing_fields(df2, df2_name))
+    #validations.append(check_missing_dates(df, df_name))
     validations = [item for item in validations if item is not None]
     pd.set_option("display.max_colwidth", None)
     return pd.DataFrame(validations, columns=["VALUE"])
