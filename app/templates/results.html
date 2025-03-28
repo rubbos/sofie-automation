@@ -41,45 +41,98 @@
 
               <!-- type aanvraag-->
               {% if loop.index0 == 0 %}
-                <select class="border border-gray-300 text-black text-xl p-3 mr-2 w-full rounded-lg focus:outline-none"
-                  id="input_tax_{{ loop.index0 }}" name="data_tax_{{ loop.index0 }}_VALUE">
-                  <option value="Reguliere aanvraag" {% if row[1]['VALUE']=='Reguliere aanvraag' %} selected {% endif
-                    %}>
-                    Reguliere aanvraag</option>
-                  <option value="Uitzondering Wisseling Werkgever" {% if
-                    row[1]['VALUE']=='Uitzondering Wisseling Werkgever' %} selected {% endif %}>Uitzondering Wisseling
-                    Werkgever</option>
-                  <option value="Uitzondering Promovendus" {% if row[1]['VALUE']=='Uitzondering Promovendus' %} selected
-                    {% endif %}>Uitzondering Promovendus</option>
-                  <option value="Uitzondering Terugkerende Expats" {% if
-                    row[1]['VALUE']=='Uitzondering Terugkerende Expats' %} selected {% endif %}>Uitzondering
-                    Terugkerende
-                    Expats</option>
-                </select>
+              <select class="border border-gray-300 text-black text-xl p-3 mr-2 w-full rounded-lg focus:outline-none"
+                id="" name="data_tax_{{ loop.index0 }}_VALUE">
+                <option value="Reguliere aanvraag" {% if row[1]['VALUE']=='Reguliere aanvraag' %} selected {% endif %}>
+                  Reguliere aanvraag</option>
+                <option value="Uitzondering Wisseling Werkgever" {% if
+                  row[1]['VALUE']=='Uitzondering Wisseling Werkgever' %} selected {% endif %}>Uitzondering Wisseling
+                  Werkgever</option>
+                <option value="Uitzondering Promovendus" {% if row[1]['VALUE']=='Uitzondering Promovendus' %} selected
+                  {% endif %}>Uitzondering Promovendus</option>
+                <option value="Uitzondering Terugkerende Expats" {% if
+                  row[1]['VALUE']=='Uitzondering Terugkerende Expats' %} selected {% endif %}>Uitzondering
+                  Terugkerende
+                  Expats</option>
+              </select>
 
-              <!-- recente woonplaatsen-->
+              <!-- Recente woonplaatsen -->
               {% elif loop.index0 == 4 %}
-                <div class="flex justify-between items-center">
-                  <label class="block p-3 font-semibold break-words text-xl" id="label_tax_{{ loop.index0 }}">
-                    {% if row[1]['VALUE'] is not none %}
-                    {{ row[1]["VALUE"] }}
-                    {% else %} {% endif %}
-                  </label>
-                  <input
-                    class="border border-gray-300 text-black text-xl p-3 mr-2 w-full rounded-lg focus:outline-none hidden {% if row[1]['VAR'] in ['application_type', 'full_name', 'arrival_date', 'first_work_date', 'place_of_residence'] %} validate-required {% endif %}"
-                    type="text" id="input_tax_{{ loop.index0 }}" name="data_tax_{{ loop.index0 }}_VALUE"
-                    value="{{ row[1]['VALUE'] }}" autocomplete="off" />
-                    <button type="button"
-                    class="bg-blue-600 hover:bg-blue-700 text-white text-xl font-semibold py-3 px-6 rounded-lg shadow-md transition-all duration-300"
-                    style="margin: 1px" onclick="toggleEdit('tax', {{ loop.index0 }})">
-                    wijzig
-                    </button>
+              <div>
+                <div class="flex justify-evenly">
+                  <label class="w-full">Start Date</label>
+                  <label class="w-full">End Date</label>
+                  <label class="w-full">City</label>
+                  <label class="w-full">Country</label>
+                  <label class="w-full"></label>
                 </div>
+
+                <div id="location-container">
+                  {% for location in row[1]["VALUE"] %}
+                  <div class="flex justify-evenly items-center" id="row_{{ loop.index }}">
+                      <label data-label="tax_{{ loop.index }}"
+                        class="border border-white p-3 w-full font-semibold break-words text-xl">
+                        {{ location[0] }}
+                      </label>
+                      <input data-input="tax_{{ loop.index }}"
+                        class="border border-gray-300 text-black text-xl p-3 w-full rounded-lg focus:outline-none hidden"
+                        type="text" name="start_date_{{ loop.index }}" value="{{ location[0] }}">
+
+                      <label data-label="tax_{{ loop.index }}"
+                        class="border border-white p-3 w-full font-semibold break-words text-xl">
+                        {{ location[1] }}
+                      </label>
+                      <input data-input="tax_{{ loop.index }}"
+                        class="border border-gray-300 text-black text-xl p-3 w-full rounded-lg focus:outline-none hidden"
+                        type="text" name="end_date_{{ loop.index }}" value="{{ location[1] }}">
+
+                      <label data-label="tax_{{ loop.index }}"
+                        class="border border-white p-3 w-full font-semibold break-words text-xl">
+                        {{ location[2] }}
+                      </label>
+                      <input data-input="tax_{{ loop.index }}"
+                        class="border border-gray-300 text-black text-xl p-3 w-full rounded-lg focus:outline-none hidden"
+                        type="text" name="city_{{ loop.index }}" value="{{ location[2] }}">
+
+                      <label data-label="tax_{{ loop.index }}"
+                        class="border border-white p-3 w-full font-semibold break-words text-xl">
+                        {{ location[3] }}
+                      </label>
+                      
+                      <input data-input="tax_{{ loop.index }}"
+                        class="border border-gray-300 text-black text-xl p-3 w-full rounded-lg focus:outline-none hidden"
+                        type="text" name="country_{{ loop.index }}" value="{{ location[3] }}">
+                   
+                      <div class="flex justify-end w-full">
+                      <!-- Edit Button -->
+                      <button type="button"
+                        class="bg-blue-600 hover:bg-blue-700 text-white text-xl font-semibold py-3 px-4 mx-2 rounded-lg shadow-md transition-all duration-300"
+                        onclick="toggleEditLocation('tax', {{ loop.index }})">
+                        wijzig
+                      </button>
+
+                      <!-- Remove Button -->
+                      <button type="button"
+                        class="bg-red-600 hover:bg-red-700 text-white text-xl font-semibold py-3 px-4 mx-2 rounded-lg shadow-md transition-all duration-300"
+                        onclick="removeRow('row_{{ loop.index }}')">
+                        x
+                      </button>
+                      </div>
+                  </div>
+                  {% endfor %}
+                </div>
+
+                <!-- Add new row button at the end -->
+                <button type="button" id="addRowButton"
+                  class="bg-green-600 hover:bg-green-700 text-white text-xl font-semibold py-3 px-6 rounded-lg shadow-md transition-all duration-300 mt-2">
+                  ➕ Add New Row
+                </button>
+              </div>
 
 
               <!-- de rest -->
               {% else %}
-                <div class="flex justify-between items-center">
+              <div class="flex justify-between items-center">
                 <label class="block p-3 font-semibold break-words text-xl" id="label_tax_{{ loop.index0 }}">
                   {% if row[1]['VALUE'] is not none %}
                   {{ row[1]["VALUE"] }}
@@ -89,11 +142,11 @@
                   class="border border-gray-300 text-black text-xl p-3 mr-2 w-full rounded-lg focus:outline-none hidden {% if row[1]['VAR'] in ['application_type', 'full_name', 'arrival_date', 'first_work_date', 'place_of_residence'] %} validate-required {% endif %}"
                   type="text" id="input_tax_{{ loop.index0 }}" name="data_tax_{{ loop.index0 }}_VALUE"
                   value="{{ row[1]['VALUE'] }}" autocomplete="off" />
-                  <button type="button"
+                <button type="button"
                   class="bg-blue-600 hover:bg-blue-700 text-white text-xl font-semibold py-3 px-6 rounded-lg shadow-md transition-all duration-300"
                   style="margin: 1px" onclick="toggleEdit('tax', {{ loop.index0 }})">
                   wijzig
-                  </button>
+                </button>
               </div>
               {% endif %}
 
