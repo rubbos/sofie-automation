@@ -50,12 +50,12 @@ document.getElementById("addRowButton").addEventListener("click", function () {
     const newIndex = container.children.length + 1; // Unique index for the new row
 
     const newRow = document.createElement("div");
-    newRow.classList.add("flex", "justify-evenly", "items-center");
+    newRow.classList.add("flex", "justify-evenly", "items-center", "border-b");
     newRow.id = `row_${newIndex}`;
 
     newRow.innerHTML = `
                           <label data-label="tax_${newIndex}"
-                        class="border border-white p-3 w-full font-semibold break-words text-xl">
+                        class=" w-full font-semibold break-words text-xl">
                         
                       </label>
                       <input data-input="tax_${newIndex}"
@@ -63,7 +63,7 @@ document.getElementById("addRowButton").addEventListener("click", function () {
                         type="text" name="start_date_${newIndex}" value="">
 
                       <label data-label="tax_${newIndex}"
-                        class="border border-white p-3 w-full font-semibold break-words text-xl">
+                        class=" w-full font-semibold break-words text-xl">
                         
                       </label>
                       <input data-input="tax_${newIndex}"
@@ -71,7 +71,7 @@ document.getElementById("addRowButton").addEventListener("click", function () {
                         type="text" name="end_date_${newIndex}" value="">
 
                       <label data-label="tax_${newIndex}"
-                        class="border border-white p-3 w-full font-semibold break-words text-xl">
+                        class=" w-full font-semibold break-words text-xl">
                         
                       </label>
                       <input data-input="tax_${newIndex}"
@@ -79,7 +79,7 @@ document.getElementById("addRowButton").addEventListener("click", function () {
                         type="text" name="city_${newIndex}" value="">
 
                       <label data-label="tax_${newIndex}"
-                        class="border border-white p-3 w-full font-semibold break-words text-xl">
+                        class=" w-full font-semibold break-words text-xl">
                         
                       </label>
                       
@@ -90,14 +90,14 @@ document.getElementById("addRowButton").addEventListener("click", function () {
                       <div class="flex justify-end w-full">
                       <!-- Edit Button -->
                       <button type="button"
-                        class="bg-blue-600 hover:bg-blue-700 text-white text-xl font-semibold py-3 px-4 mx-2 rounded-lg shadow-md transition-all duration-300"
+                        class="bg-blue-600 hover:bg-blue-700 text-white text-xl font-semibold py-3 px-4 m-2 rounded-lg shadow-md transition-all duration-300"
                         onclick="toggleEditLocation('tax', ${newIndex})">
                         wijzig
                       </button>
 
                       <!-- Remove Button -->
                       <button type="button"
-                        class="bg-red-600 hover:bg-red-700 text-white text-xl font-semibold py-3 px-4 mx-2 rounded-lg shadow-md transition-all duration-300"
+                        class="bg-red-600 hover:bg-red-700 text-white text-xl font-semibold py-3 px-4 m-2 rounded-lg shadow-md transition-all duration-300"
                         onclick="removeRow('row_${newIndex}')">
                         x
                       </button>

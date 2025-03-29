@@ -69,9 +69,9 @@
 
                 <div id="location-container">
                   {% for location in row[1]["VALUE"] %}
-                  <div class="flex justify-evenly items-center" id="row_{{ loop.index }}">
+                  <div class="flex justify-evenly items-center border-b" id="row_{{ loop.index }}">
                       <label data-label="tax_{{ loop.index }}"
-                        class="border border-white p-3 w-full font-semibold break-words text-xl">
+                        class="p-3 w-full font-semibold break-words text-xl">
                         {{ location[0] }}
                       </label>
                       <input data-input="tax_{{ loop.index }}"
@@ -79,7 +79,7 @@
                         type="text" name="start_date_{{ loop.index }}" value="{{ location[0] }}">
 
                       <label data-label="tax_{{ loop.index }}"
-                        class="border border-white p-3 w-full font-semibold break-words text-xl">
+                        class="p-3 w-full font-semibold break-words text-xl">
                         {{ location[1] }}
                       </label>
                       <input data-input="tax_{{ loop.index }}"
@@ -87,7 +87,7 @@
                         type="text" name="end_date_{{ loop.index }}" value="{{ location[1] }}">
 
                       <label data-label="tax_{{ loop.index }}"
-                        class="border border-white p-3 w-full font-semibold break-words text-xl">
+                        class="p-3 w-full font-semibold break-words text-xl">
                         {{ location[2] }}
                       </label>
                       <input data-input="tax_{{ loop.index }}"
@@ -95,7 +95,7 @@
                         type="text" name="city_{{ loop.index }}" value="{{ location[2] }}">
 
                       <label data-label="tax_{{ loop.index }}"
-                        class="border border-white p-3 w-full font-semibold break-words text-xl">
+                        class="p-3 w-full font-semibold break-words text-xl">
                         {{ location[3] }}
                       </label>
                       
@@ -106,14 +106,14 @@
                       <div class="flex justify-end w-full">
                       <!-- Edit Button -->
                       <button type="button"
-                        class="bg-blue-600 hover:bg-blue-700 text-white text-xl font-semibold py-3 px-4 mx-2 rounded-lg shadow-md transition-all duration-300"
+                        class="bg-blue-600 hover:bg-blue-700 text-white text-xl font-semibold py-3 px-4 m-2 rounded-lg shadow-md transition-all duration-300"
                         onclick="toggleEditLocation('tax', {{ loop.index }})">
                         wijzig
                       </button>
 
                       <!-- Remove Button -->
                       <button type="button"
-                        class="bg-red-600 hover:bg-red-700 text-white text-xl font-semibold py-3 px-4 mx-2 rounded-lg shadow-md transition-all duration-300"
+                        class="bg-red-600 hover:bg-red-700 text-white text-xl font-semibold py-3 px-4 m-2 rounded-lg shadow-md transition-all duration-300"
                         onclick="removeRow('row_{{ loop.index }}')">
                         x
                       </button>
