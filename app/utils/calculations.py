@@ -19,7 +19,7 @@ def signed_location(signed_date: str, place_of_residence: list, arrival_date: st
     """Finds the location where the given signed date falls within the start and end date ranges"""
     query_date = datetime.strptime(signed_date, "%d-%m-%Y")
     arrival_nl = datetime.strptime(arrival_date, "%d-%m-%Y")
-
+ 
     for entry in place_of_residence:
         start_date = datetime.strptime(entry[0], "%d-%m-%Y")
         end_date = datetime.strptime(entry[1], "%d-%m-%Y")
@@ -28,7 +28,7 @@ def signed_location(signed_date: str, place_of_residence: list, arrival_date: st
             return f"{entry[2]}, {entry[3]}"
         elif query_date >= arrival_nl:
             return "Nederland"
-
+    
     return "Onbekend"
 
 

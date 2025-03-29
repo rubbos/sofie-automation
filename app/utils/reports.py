@@ -95,7 +95,7 @@ def extracted_data(
     # creating timeline_image
     timeline = locations_timeline.TimelineVisualizer()
     timeline.create_timeline(
-        data=locations_table.convert_string_to_data(place_of_residence),
+        data=place_of_residence,
         ao_start_date_str=ao_start_date,
         output_file="static/images/timeline_image.png",
     )
@@ -106,9 +106,7 @@ def extracted_data(
         date_of_birth=date_of_birth,
         first_work_date=first_work_date,
         arrival_date=arrival_date,
-        recent_locations=locations_table.create_table(
-            locations_table.convert_string_to_data(place_of_residence)
-        ),
+        recent_locations=locations_table.create_table(place_of_residence),
         nl_dates=nl_dates,
         explain_nl=explain_nl,
         cv_data=cv_data,
@@ -136,7 +134,7 @@ def extracted_data(
         end_date=end_date,
         signed_location=calc.signed_location(
             ao_signed_date,
-            locations_table.convert_string_to_data(place_of_residence),
+            place_of_residence,
             arrival_date,
         ),
     )

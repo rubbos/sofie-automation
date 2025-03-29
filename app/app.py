@@ -84,14 +84,37 @@ def submit_results():
         email_report=email_report,
     )
 
-
 def get_edited_values(data: pd.DataFrame, key_name: str):
-    """Refreshes the edited values by the user in the form."""
+    """Refreshes the edited values by the user in the form, handling both single values and arrays."""
+    
     for i in range(len(data)):
-        key = f"{key_name}_{i}_VALUE"
-        if key in request.form:
-            new_value = request.form[key].strip()
-            data.at[i, "VALUE"] = new_value
+        base_key = f"{key_name}_{i}"
+        print(f"Base key: {base_key}")  # Check base key
+        
+        # Check if this row has multiple related values
+        if f"{base_key}_start_date_1" in request.form:
+            print(f"Row {i}: Detected multiple values.")  # Debugging
+
+            locations = []
+            index = 1
+            while f"{base_key}_start_date_{index}" in request.form:
+                location_entry = [
+                    request.form.get(f"{base_key}_start_date_{index}", "").strip(),
+                    request.form.get(f"{base_key}_end_date_{index}", "").strip(),
+                    request.form.get(f"{base_key}_city_{index}", "").strip(),
+                    request.form.get(f"{base_key}_country_{index}", "").strip(),
+                ]
+                locations.append(location_entry)
+                index += 1
+            print(f"Row {i} Updated Locations: {locations}")  # Debugging: Check before updating
+            data.at[i, "VALUE"] = locations
+        # Handle single value updates
+        else:
+            key = f"{base_key}_VALUE"
+            if key in request.form:
+                new_value = request.form[key].strip()
+                data.at[i, "VALUE"] = new_value
+
     return data
 
 

@@ -55,37 +55,37 @@ document.getElementById("addRowButton").addEventListener("click", function () {
 
     newRow.innerHTML = `
                           <label data-label="tax_${newIndex}"
-                        class=" w-full font-semibold break-words text-xl">
+                        class="p-3 w-full font-semibold break-words text-xl">
                         
                       </label>
                       <input data-input="tax_${newIndex}"
                         class="border border-gray-300 text-black text-xl p-3 w-full rounded-lg focus:outline-none hidden"
-                        type="text" name="start_date_${newIndex}" value="">
+                        type="text" name="data_tax_4_start_date_${newIndex}" value="">
 
                       <label data-label="tax_${newIndex}"
-                        class=" w-full font-semibold break-words text-xl">
+                        class="p-3 w-full font-semibold break-words text-xl">
                         
                       </label>
                       <input data-input="tax_${newIndex}"
                         class="border border-gray-300 text-black text-xl p-3 w-full rounded-lg focus:outline-none hidden"
-                        type="text" name="end_date_${newIndex}" value="">
+                        type="text" name="data_tax_4_end_date_${newIndex}" value="">
 
                       <label data-label="tax_${newIndex}"
-                        class=" w-full font-semibold break-words text-xl">
+                        class="p-3 w-full font-semibold break-words text-xl">
                         
                       </label>
                       <input data-input="tax_${newIndex}"
                         class="border border-gray-300 text-black text-xl p-3 w-full rounded-lg focus:outline-none hidden"
-                        type="text" name="city_${newIndex}" value="">
+                        type="text" name="data_tax_4_city_${newIndex}" value="">
 
                       <label data-label="tax_${newIndex}"
-                        class=" w-full font-semibold break-words text-xl">
+                        class="p-3 w-full font-semibold break-words text-xl">
                         
                       </label>
                       
                       <input data-input="tax_${newIndex}"
                         class="border border-gray-300 text-black text-xl p-3 w-full rounded-lg focus:outline-none hidden"
-                        type="text" name="country_${newIndex}" value="">
+                        type="text" name="data_tax_4_country_${newIndex}" value="">
                    
                       <div class="flex justify-end w-full">
                       <!-- Edit Button -->
