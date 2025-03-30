@@ -27,7 +27,7 @@ def extract(text: str) -> dict:
             em.extract_dates(text, "working day", "Place"),
             "first_work_date",
         ],
-        "Recente woonplaatsen in het buitenland": [
+        "Recente woonplaats(en)": [
             type_data[1],
             em.extract_place_of_residences(text),
             "place_of_residence",

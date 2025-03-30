@@ -31,7 +31,7 @@
     <form method="POST" action="{{ url_for('submit_results') }}">
       <div class="grid grid-cols-1 gap-6">
         {% for row in tax_form_data.iterrows() %}
-        <div class="bg-gray-800 border border-gray-900 p-6 shadow-lg rounded-lg">
+        <div class="bg-gray-800 border border-gray-900 p-6 shadow-lg rounded-lg" id="tax_block_{{ loop.index0 }}">
           <p class="text-xs mb-1">30% Tax Form</p>
           <label class="block mb-2" for="data_tax_{{ loop.index0 }}_VALUE">
             {{ row[1]['KEY'] }}
@@ -154,7 +154,7 @@
           </div>
         </div>
         {% endfor %} {% for row in application_form_data.iterrows() %}
-        <div class="bg-gray-700 border border-gray-800 p-6 shadow-lg rounded-lg">
+        <div class="bg-gray-700 border border-gray-800 p-6 shadow-lg rounded-lg" id="app_block_{{ loop.index0 }}">
           <p class="text-xs mb-1">Oorspronkelijke aanvraag</p>
           <label class="block mb-2" for="data_app_{{ loop.index0 }}_VALUE">
             {{ row[1]['KEY'] }}
@@ -178,7 +178,7 @@
           </div>
         </div>
         {% endfor %} {% for row in extra_info_data.iterrows() %}
-        <div class="bg-gray-800 border border-gray-900 p-6 shadow-lg rounded-lg">
+        <div class="bg-gray-800 border border-gray-900 p-6 shadow-lg rounded-lg" id="extra_block_{{ loop.index0 }}">
           <p class="text-xs mb-1">Arbeidsovereenkomst</p>
           <label class="block mb-2" for="data_extra_{{ loop.index0 }}_VALUE">
             {{ row[1]['KEY'] }}
@@ -212,6 +212,10 @@
     </form>
   </div>
   <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+  <script>
+
+
+    </script>
 </body>
 
 </html>

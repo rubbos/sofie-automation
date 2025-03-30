@@ -114,6 +114,37 @@ function removeRow(rowId) {
         row.remove();
     }
 }
+// Function to hide secondary fields unless the primary label has text.
+function hideSecondaryBlock(labelId, hiddenFieldId) {
+
+    function checkLabelText() {
+        let label = document.getElementById(labelId);
+        let hiddenField = document.getElementById(hiddenFieldId);
+
+        if (!label || !hiddenField) return; // Prevent errors if elements are missing
+
+        if (label.textContent.trim() === "" | label.textContent === "None") {
+            hiddenField.style.display = "none";
+        } else {
+            hiddenField.style.display = "block";
+        }
+    }
+
+    // Run check on page load
+    window.addEventListener("DOMContentLoaded", checkLabelText);
+
+    // Observe label text changes
+    const observer = new MutationObserver(() => checkLabelText());
+    observer.observe(document.getElementById(labelId), { childList: true, subtree: true });
+
+    // Run check immediately in case script loads after DOMContentLoaded
+    checkLabelText();
+}
+
+hideSecondaryBlock("label_tax_5", "tax_block_6");
+hideSecondaryBlock("label_extra_1", "extra_block_2");
+hideSecondaryBlock("label_tax_5", "extra_block_4");
+
 
 document.addEventListener("DOMContentLoaded", function () {
     if (document.body.id !== "results") return;
