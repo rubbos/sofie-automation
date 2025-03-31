@@ -34,7 +34,7 @@ def extract(text: str) -> dict:
         ],
         "Alle periodes in Nederland": [
             type_data[3],
-            em.extract_dates(text, "in the Netherlands?", "Were you registered"),
+            em.extract_dates(text, "Have you previously", "Were you registered"),
             "nl_residence_dates",
         ],
         "Uitschrijvingsdatum Nederland": [

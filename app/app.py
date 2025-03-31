@@ -19,7 +19,7 @@ application_form_data = pd.DataFrame()
 extra_info_data = pd.DataFrame()
 
 # Skip the upload with DEV_MODE
-DEV_MODE = False
+DEV_MODE = True
 LOCAL_FILE1 = "temp_files/tax_form.txt"
 LOCAL_FILE2 = "temp_files/application_form.txt"
 
@@ -29,9 +29,9 @@ for func_name in dir(utils.validation):
     if callable(func):
         app.jinja_env.globals[func_name] = func
 
-
 @app.route("/", methods=["GET", "POST"])
 def upload_files():
+    """Upload files and process them. Skip if in DEV_MODE."""
     global tax_form_data, application_form_data, extra_info_data
     if request.method == "POST" or DEV_MODE:
         if DEV_MODE:
@@ -47,6 +47,8 @@ def upload_files():
             application_form_data = application_form_main(file2)
 
         extra_info_data = extra_info_main()
+
+        # Check data manually for validity before submitting
         return render_template(
             "results.html",
             extra_info_data=extra_info_data,
@@ -56,11 +58,12 @@ def upload_files():
 
     return render_template("upload.html")
 
-
 @app.route("/submit-results", methods=["POST"])
 def submit_results():
+    """Submit the results and show the final report."""	
     tax_form_edited = get_edited_values(tax_form_data, "data_tax")
-    application_form_edited = get_edited_values(application_form_data, "data_app")
+    application_form_edited = get_edited_values(
+        application_form_data, "data_app")
     extra_info_edited = get_edited_values(extra_info_data, "data_extra")
 
     worker_info, employer_info, contract_info, calculation_info = extracted_data(
@@ -84,30 +87,32 @@ def submit_results():
         email_report=email_report,
     )
 
+
 def get_edited_values(data: pd.DataFrame, key_name: str):
-    """Refreshes the edited values by the user in the form, handling both single values and arrays."""
-    
+    """Gets the user-edited values from the form and updates the DataFrame."""
+
     for i in range(len(data)):
         base_key = f"{key_name}_{i}"
         print(f"Base key: {base_key}")  # Check base key
-        
-        # Check if this row has multiple related values
-        if f"{base_key}_start_date_1" in request.form:
-            print(f"Row {i}: Detected multiple values.")  # Debugging
 
+        # Check if row has multiple related values
+        if f"{base_key}_start_date_1" in request.form:
             locations = []
             index = 1
             while f"{base_key}_start_date_{index}" in request.form:
                 location_entry = [
-                    request.form.get(f"{base_key}_start_date_{index}", "").strip(),
-                    request.form.get(f"{base_key}_end_date_{index}", "").strip(),
+                    request.form.get(
+                        f"{base_key}_start_date_{index}", "").strip(),
+                    request.form.get(
+                        f"{base_key}_end_date_{index}", "").strip(),
                     request.form.get(f"{base_key}_city_{index}", "").strip(),
-                    request.form.get(f"{base_key}_country_{index}", "").strip(),
+                    request.form.get(
+                        f"{base_key}_country_{index}", "").strip(),
                 ]
                 locations.append(location_entry)
                 index += 1
-            print(f"Row {i} Updated Locations: {locations}")  # Debugging: Check before updating
             data.at[i, "VALUE"] = locations
+
         # Handle single value updates
         else:
             key = f"{base_key}_VALUE"
