@@ -107,7 +107,7 @@ def extract_multiple_between_keywords(
 
 def find_all_dates(text: str) -> list[str]:
     """Find any kind of date format in string"""
-    date_pattern = r"(?i)\b\d{1,2}[-/.]\d{1,2}[-/.]\d{2,4}\b|\b\d{1,2}(?:[-\s])?(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec|January|February|March|April|May|June|July|August|September|October|November|December)(?:[-\s])?\d{2,4}\b"
+    date_pattern = r"(?i)\b\d{1,2}[-/.]\d{1,2}[-/.]\d{2,4}\b|\b\d{1,2}(?:[-\s])?(?:Jan|Feb|Mar|Mrt|Apr|May|Mei|Jun|Jul|Aug|Sep|Oct|Okt|Nov|Dec|January|February|March|Maart|April|May|Mei|June|Juni|July|Juli|August|Augustus|September|October|Oktober|November|December)(?:[-\s])?\d{2,4}\b"
     pattern = re.compile(date_pattern)
     matches = pattern.findall(text)
     return matches

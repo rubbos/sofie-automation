@@ -145,6 +145,49 @@ hideSecondaryBlock("label_tax_5", "tax_block_6");
 hideSecondaryBlock("label_extra_1", "extra_block_2");
 hideSecondaryBlock("label_tax_5", "extra_block_4");
 
+function parseDate(labelText) {
+    if (!labelText) return null;
+    let parts = labelText.trim().split("-");
+    if (parts.length !== 3) return null; // Invalid format check
+    return new Date(parts[2], parts[1] - 1, parts[0]); // Convert to Date object (yyyy, mm-1, dd)
+}
+
+function compareDates(labelId1, labelId2, hiddenFieldId) {
+    let label1 = document.getElementById(labelId1);
+    let label2 = document.getElementById(labelId2);
+    let hiddenField = document.getElementById(hiddenFieldId);
+
+    if (!label1 || !label2 || !hiddenField) return; // Prevent errors if elements are missing
+
+    let date1 = parseDate(label1.textContent);
+    let date2 = parseDate(label2.textContent);
+
+    if (!date1 || !date2) return; // Prevent errors if date parsing fails
+
+    if (date1 > date2) {
+        hiddenField.style.display = "none"; // Hide if label_date_1 is greater
+    } else {
+        hiddenField.style.display = "block"; // Show otherwise
+    }
+}
+
+// Function to monitor changes in labels
+function observeDateChanges(labelId1, labelId2, hiddenFieldId) {
+    let observer = new MutationObserver(() => compareDates(labelId1, labelId2, hiddenFieldId));
+    // Limit observation scope to childList only for better performance
+    let observerOptions = { childList: true };
+
+    let label1 = document.getElementById(labelId1);
+    let label2 = document.getElementById(labelId2);
+    if (label1) observer.observe(label1, observerOptions);
+    if (label2) observer.observe(label2, observerOptions);
+
+    compareDates(labelId1, labelId2, hiddenFieldId); // Initial check
+}
+
+// Compare both dates and only show the extra block if the user signed contracted in NL.
+observeDateChanges("label_tax_2", "label_extra_0", "extra_block_1");
+
 
 document.addEventListener("DOMContentLoaded", function () {
     if (document.body.id !== "results") return;

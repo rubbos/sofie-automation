@@ -17,6 +17,21 @@ def dict_to_table(data: dict):
     )
     return df
 
+def normalize_date(date_str):
+    """Translate the Dutch month names to English"""
+    dutch_to_english = {
+    "januari": "january", "februari": "february", "maart": "march", "april": "april", "mei": "may",
+    "juni": "june", "juli": "july", "augustus": "august", "september": "september", 
+    "oktober": "october", "november": "november", "december": "december",
+    "jan": "jan", "feb": "feb", "mrt": "mar", "apr": "apr", "mei": "may", 
+    "jun": "jun", "jul": "jul", "aug": "aug", "sep": "sep", "okt": "oct", 
+    "nov": "nov", "dec": "dec"
+    }
+    
+    for dutch, english in dutch_to_english.items():
+        date_str = date_str.replace(dutch, english)
+    return date_str
+
 
 def transform_date(date: str) -> str:
     """Convert different date formats into dd-mm-yyyy"""
@@ -34,6 +49,7 @@ def transform_date(date: str) -> str:
         "%d/%m/%y",
         "%d.%m.%y",
     ]
+    date = normalize_date(date.lower())
 
     for date_format in date_formats:
         try:
