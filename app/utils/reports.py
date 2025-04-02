@@ -1,7 +1,7 @@
 import pandas as pd
 from dataclasses import dataclass
 from typing import Optional
-from utils import locations_table, locations_timeline
+from utils import locations_timeline
 from utils import calculations as calc
 
 
