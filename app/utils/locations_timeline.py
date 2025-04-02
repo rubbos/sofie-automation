@@ -7,7 +7,7 @@ from matplotlib.patches import Rectangle
 from typing import Union, List, Dict
 from dataclasses import dataclass
 from pathlib import Path
-
+from dateutil.relativedelta import relativedelta
 
 @dataclass
 class TimelineConfig:
@@ -66,8 +66,23 @@ class TimelineVisualizer:
         df = df[
             ~((df["Startdatum"] > timeline_end) | (df["Einddatum"] < timeline_start))
         ]
-
+        print(df)
         return df.sort_values("Startdatum")
+
+    # makes a readable list for users instead of visuals
+    def location_table_24_months(self, *arg, **kwargs) -> str:
+        df = self._prepare_dataframe(*arg, **kwargs)
+        
+        def calculate_time_of_stay(start, end):
+            delta = relativedelta(end, start)
+            return f"{delta.years * 12 + delta.months} maanden + {delta.days} dagen"
+
+        locations = []
+        for index, row in df.iterrows():
+            time_of_stay = calculate_time_of_stay(row[0], row[1])
+            location = (f"<br>Van {row[0].date()} t/m {row[1].date()} in {row[2]}, {row[3]}, ({time_of_stay}).")
+            locations.append(location)
+        return "\n".join(locations)
 
     def _calculate_gaps(
         self, df: pd.DataFrame, timeline_start: pd.Timestamp, timeline_end: pd.Timestamp
@@ -196,6 +211,8 @@ class TimelineVisualizer:
         defaults = {"ha": "center", "va": "bottom"}
         ax.text(x, y, text, **{**defaults, **kwargs})
 
+
+
     def create_timeline(
         self,
         data: Union[List[Dict], pd.DataFrame],
@@ -211,9 +228,6 @@ class TimelineVisualizer:
 
         # Prepare data with timeline boundaries
         df = self._prepare_dataframe(data, timeline_start, ao_start_date)
-
-        # Calculate exact 2-year timeline start
-        timeline_start = ao_start_date - pd.DateOffset(years=2)
 
         # Filter data to exact 2-year window
         df = df[df["Einddatum"] >= timeline_start].copy()

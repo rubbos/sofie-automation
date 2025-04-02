@@ -92,8 +92,12 @@ def extracted_data(
     true_start_date = calc.true_start_date(application_date, start_date)
     end_date = calc.end_date(true_start_date)
 
-    # creating timeline_image
     timeline = locations_timeline.TimelineVisualizer()
+    timeline_end = pd.to_datetime(true_start_date, format= "%d-%m-%Y")
+    timeline_start = timeline_end - pd.DateOffset(years=2)
+    recent_locations = timeline.location_table_24_months(place_of_residence, timeline_start, timeline_end)
+    
+    # creating timeline_image
     timeline.create_timeline(
         data=place_of_residence,
         ao_start_date_str=ao_start_date,
@@ -106,7 +110,7 @@ def extracted_data(
         date_of_birth=date_of_birth,
         first_work_date=first_work_date,
         arrival_date=arrival_date,
-        recent_locations=locations_table.create_table(place_of_residence),
+        recent_locations=recent_locations,
         nl_dates=nl_dates,
         explain_nl=explain_nl,
         cv_data=cv_data,
