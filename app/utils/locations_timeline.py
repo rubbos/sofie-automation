@@ -1,13 +1,16 @@
 import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
 import pandas as pd
 import numpy as np
 from datetime import timedelta
-import matplotlib.dates as mdates
 from matplotlib.patches import Rectangle
 from typing import Union, List, Dict
 from dataclasses import dataclass
 from pathlib import Path
 from dateutil.relativedelta import relativedelta
+
+import matplotlib
+matplotlib.use("Agg")  # Use the non-GUI Agg backend
 
 @dataclass
 class TimelineConfig:
@@ -286,5 +289,5 @@ class TimelineVisualizer:
         plt.tight_layout()
         output_path = Path(output_file)
         output_path.parent.mkdir(parents=True, exist_ok=True)
-        plt.savefig(output_path, bbox_inches="tight", dpi=300)
+        plt.savefig(output_path, bbox_inches="tight", dpi=100)
         plt.close()
