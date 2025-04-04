@@ -69,23 +69,43 @@ class TimelineVisualizer:
         df = df[
             ~((df["Startdatum"] > timeline_end) | (df["Einddatum"] < timeline_start))
         ]
-        print(df)
         return df.sort_values("Startdatum")
 
     # makes a readable list for users instead of visuals
     def location_table_24_months(self, *arg, **kwargs) -> str:
         df = self._prepare_dataframe(*arg, **kwargs)
-        
+        gaps = self._calculate_gaps(df, *arg[1:3])
+        date_format = self.config.date_format
+
         def calculate_time_of_stay(start, end):
             delta = relativedelta(end, start)
-            return f"{delta.years * 12 + delta.months} maanden + {delta.days} dagen"
+            months = delta.years * 12 + delta.months
+            days = delta.days
+
+            month_text = "maand" if months == 1 else "maanden"
+            day_text = "dag" if days == 1 else "dagen"
+
+            parts = []
+            if months:
+                parts.append(f"{months} {month_text}")
+            if days:
+                parts.append(f"{days} {day_text}")
+
+            return " + ".join(parts) if parts else "0 dagen"
 
         locations = []
         for index, row in df.iterrows():
             time_of_stay = calculate_time_of_stay(row[0], row[1])
-            location = (f"<br>Van {row[0].date()} t/m {row[1].date()} in {row[2]}, {row[3]}, ({time_of_stay}).")
+            location = (f"Van {row[0].strftime(date_format)} t/m {row[1].strftime(date_format)} in {row[2]}, {row[3]}, ({time_of_stay}).")
             locations.append(location)
-        return "\n".join(locations)
+
+        if gaps:        
+            locations.append("Ontbrekende periode(s):")
+            for i, (gap_start, gap_end) in enumerate(gaps):
+                time_of_stay = calculate_time_of_stay(gap_start, gap_end)
+                gap = f"{gap_start.strftime(date_format)} t/m {gap_end.strftime(date_format)} ({time_of_stay})."
+                locations.append(gap)
+        return "<br>".join(locations)
 
     def _calculate_gaps(
         self, df: pd.DataFrame, timeline_start: pd.Timestamp, timeline_end: pd.Timestamp

@@ -262,7 +262,7 @@ def verslag_aanwerving(
 # NOTE: need something to fix the text if the country in under 150km from nl
 def verslag_buitenland(recent_locations, cv_data):
     title = "Verslag 150 km criterium 16/24 maanden criterium"
-    text = f"24 maanden voorafgaand aan de tewerkstelling woonde werknemer in: {recent_locations}<br><br>"
+    text = f"24 maanden voorafgaand aan de tewerkstelling woonde werknemer in: <br>{recent_locations}<br><br>"
     text += f"Volgens het CV werkte/studeerde de werknemer als: {cv_data}<br><br>"
     text += "Conclusie: het is aannemelijk dat werknemer op meer dan 150 km van de Nederlandse grens woonde gedurende meer dan 2/3 van de 24 maanden direct voorafgaand aan de eerste dag van tewerkstelling."
     text += '<img src="/static/images/timeline_image.png" alt="Timeline Image">'
