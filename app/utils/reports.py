@@ -95,12 +95,13 @@ def extracted_data(
     timeline = locations_timeline.TimelineVisualizer()
     timeline_end = pd.to_datetime(true_start_date, format= "%d-%m-%Y")
     timeline_start = timeline_end - pd.DateOffset(years=2)
-    recent_locations = timeline.location_table_24_months(place_of_residence, timeline_start, timeline_end)
+    recent_locations = timeline.location_table_24_months(place_of_residence, timeline_start, timeline_end, arrival_date)
     
     # creating timeline_image
     timeline.create_timeline(
         data=place_of_residence,
         ao_start_date_str=ao_start_date,
+        arrival_date_str=arrival_date,
         output_file="static/images/timeline_image.png",
     )
 
