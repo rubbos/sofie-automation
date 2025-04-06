@@ -11,7 +11,7 @@ from dateutil.relativedelta import relativedelta
 
 import matplotlib
 matplotlib.use("Agg")  # Use the non-GUI Agg backend
-
+matplotlib.pyplot.set_loglevel("warning")  
 
 @dataclass
 class TimelineConfig:
@@ -74,7 +74,6 @@ class TimelineVisualizer:
               (df["Einddatum"] < timeline_start))
         ]
         return df.sort_values("Startdatum")
-    
 
     def calculate_time_of_stay(self, start, end):
         delta = relativedelta(end, start)
@@ -109,8 +108,8 @@ class TimelineVisualizer:
         arrival_gap = self.arrival_date_in_gap(gaps, *arg[3:4])
         if arrival_gap is not None:
             locations.append(arrival_gap)
-            
-            # Remove the last gap if it is the same as the arrival date 
+
+            # Remove the last gap if it is the same as the arrival date
             if gaps and gaps[-1][0] == pd.to_datetime(arrival_gap.split()[0], format=date_format):
                 gaps.pop(-1)
 
@@ -127,7 +126,7 @@ class TimelineVisualizer:
         self, gaps: list, arrival_date: pd.Timestamp
     ) -> str:
         """Check if arrival date falls within any gap."""
-        arrival_date = pd.to_datetime(arrival_date)  
+        arrival_date = pd.to_datetime(arrival_date, dayfirst=True)
         for i, (gap_start, gap_end) in enumerate(gaps):
             if gap_start <= arrival_date <= gap_end:
                 time_of_stay = self.calculate_time_of_stay(gap_start, gap_end)
@@ -196,17 +195,20 @@ class TimelineVisualizer:
                 # Add location label
                 location = f"{row['Stad']}, {row['Land']}"
                 dates = f"{row['Startdatum'].strftime('%d-%m-%Y')} t/m {row['Einddatum'].strftime('%d-%m-%Y')}"
+                duration = self.calculate_time_of_stay(row["Startdatum"], row["Einddatum"])
                 self._add_text(
                     ax,
                     start_num + width / 2,
                     self.config.base_level,
-                    location + "\n" + dates,
+                    location + "\n" + dates + "\n" + duration,
                     va="center",
+                    rotation=45,
                 )
 
     def _plot_gaps(self, ax: plt.Axes, gaps: List[tuple]) -> float:
         """Plot timeline gaps and return maximum y position used."""
         max_y = self.config.base_level + self.config.bar_height / 2
+        y_pos = max_y + 0.05
 
         for i, (gap_start, gap_end) in enumerate(gaps):
             # Plot gap line
@@ -226,15 +228,11 @@ class TimelineVisualizer:
                 f"{gap_start.strftime('%d-%m-%Y')} t/m "
                 f"{gap_end.strftime('%d-%m-%Y')}\n({gap_duration})"
             )
-
-            # Adjust y position for each gap
-            y_pos = max_y + 0.05 + (i * 0.05)
             mid_point = mdates.date2num(gap_start + (gap_end - gap_start) / 2)
             self._add_text(ax, mid_point, y_pos, gap_label,
                            color="red")
 
-            max_y = max(max_y, y_pos + 0.05)
-
+        max_y = max(max_y, y_pos + 0.05)
         return max_y
 
     @staticmethod
@@ -251,17 +249,13 @@ class TimelineVisualizer:
         output_file: Union[str, Path] = "timeline_image.png",
     ) -> None:
         """Create and save a timeline visualization."""
-        # Calculate timeline boundaries
-        ao_start_date = pd.to_datetime(
-            ao_start_date_str, format=self.config.date_format
-        )
-        arrival_date = pd.to_datetime(
-            ao_start_date_str, format=self.config.date_format
-        )
+        ao_start_date = pd.to_datetime(ao_start_date_str, dayfirst=True)
+        arrival_date = pd.to_datetime(arrival_date_str, dayfirst=True)
         timeline_start = ao_start_date - pd.DateOffset(years=2)
 
         # Prepare data with timeline boundaries
-        df = self._prepare_dataframe(data, timeline_start, ao_start_date, arrival_date)
+        df = self._prepare_dataframe(
+            data, timeline_start, ao_start_date, arrival_date)
 
         # Filter data to exact 2-year window
         df = df[df["Einddatum"] >= timeline_start].copy()
@@ -270,8 +264,29 @@ class TimelineVisualizer:
         fig, ax = plt.subplots(figsize=self.config.figsize)
         fig.patch.set_facecolor("white")
 
-        # Calculate gaps and plot elements
+        # Calculate gaps and plot stays
         gaps = self._calculate_gaps(df, timeline_start, ao_start_date)
+
+        # TODO: make this a function since its being used twice in this file 
+        # Check if a gap exists that alings with arrival date
+        arrival_gap = self.arrival_date_in_gap(gaps, arrival_date)
+        if arrival_gap is not None:
+            if gaps and gaps[-1][0] == pd.to_datetime(arrival_gap.split()[0], format=self.config.date_format):
+                # Add the early arrival date to the timeline
+                df = pd.concat([df,
+                    pd.DataFrame([{
+                        "Startdatum": pd.to_datetime(arrival_gap.split()[0], format=self.config.date_format),
+                        "Einddatum": pd.to_datetime(arrival_gap.split()[2], format=self.config.date_format),
+                        "Stad": "Aankomstperiode",
+                        "Land": "Nederland",
+                    }])
+                    ],
+                    ignore_index=True
+                )
+                # Remove the last gap if it is the same as the arrival date
+                gaps.pop(-1)
+
+        # Plot the timeline
         self._plot_stays(ax, df)
         max_y = self._plot_gaps(ax, gaps)
 
@@ -301,8 +316,6 @@ class TimelineVisualizer:
         # Format x-axis
         ax.xaxis.set_major_locator(mdates.YearLocator())
         ax.xaxis.set_major_formatter(mdates.DateFormatter("%Y"))
-        ax.xaxis.set_minor_locator(mdates.MonthLocator())
-        ax.xaxis.set_minor_formatter(mdates.DateFormatter("%m"))
 
         # Clean up plot
         ax.set_yticks([])

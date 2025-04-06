@@ -93,7 +93,6 @@ def get_edited_values(data: pd.DataFrame, key_name: str):
 
     for i in range(len(data)):
         base_key = f"{key_name}_{i}"
-        print(f"Base key: {base_key}")  # Check base key
 
         # Check if row has multiple related values
         if f"{base_key}_start_date_1" in request.form:
