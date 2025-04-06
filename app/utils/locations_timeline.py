@@ -291,17 +291,14 @@ class TimelineVisualizer:
         max_y = self._plot_gaps(ax, gaps)
 
         # Add timeline boundaries
-        for date, label in [
-            (timeline_start, "24 maanden voorafgaand"),
-            (ao_start_date, "Startdatum tewerkstelling"),
-        ]:
+        for date in [timeline_start, ao_start_date]:
             ax.axvline(x=mdates.date2num(date), color="black",
-                       linestyle="--", alpha=0.3)
+                       linestyle=":", alpha=0.3)
             self._add_text(
-                ax,
-                mdates.date2num(date),
-                -0.25,
-                f"{date.strftime('%d-%m-%Y')}\n{label}",
+                ax=ax,
+                x=mdates.date2num(date),
+                y=-0.23,
+                text=date.strftime('%d-%m-%Y'),
                 fontsize=11,
                 va="top",
             )
@@ -316,6 +313,8 @@ class TimelineVisualizer:
         # Format x-axis
         ax.xaxis.set_major_locator(mdates.YearLocator())
         ax.xaxis.set_major_formatter(mdates.DateFormatter("%Y"))
+        ax.xaxis.set_minor_locator(mdates.MonthLocator())
+        ax.xaxis.set_minor_formatter(mdates.DateFormatter("%m"))
 
         # Clean up plot
         ax.set_yticks([])
