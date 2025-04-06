@@ -92,8 +92,8 @@ class TimelineVisualizer:
 
         return " + ".join(parts) if parts else "0 dagen"
 
-    # makes a readable list for users instead of visuals
     def location_table_24_months(self, *arg, **kwargs) -> str:
+        """Create a readable list of locations and gaps."""
         df = self._prepare_dataframe(*arg, **kwargs)
         gaps = self._calculate_gaps(df, *arg[1:3])
         date_format = self.config.date_format
@@ -105,10 +105,16 @@ class TimelineVisualizer:
                 f"{row[0].strftime(date_format)} t/m {row[1].strftime(date_format)} in {row[2]}, {row[3]} ({time_of_stay}).")
             locations.append(location)
 
-        arrival_gap = self.arrival_date_in_gap(gaps, *arg[2:4])
+        # Check if a gap exists that alings with arrival date
+        arrival_gap = self.arrival_date_in_gap(gaps, *arg[3:4])
         if arrival_gap is not None:
             locations.append(arrival_gap)
+            
+            # Remove the last gap if it is the same as the arrival date 
+            if gaps and gaps[-1][0] == pd.to_datetime(arrival_gap.split()[0], format=date_format):
+                gaps.pop(-1)
 
+        # Add missing gaps to the list as unknown locations
         if gaps:
             locations.append("Ontbrekende periode(s):")
             for i, (gap_start, gap_end) in enumerate(gaps):
@@ -118,7 +124,7 @@ class TimelineVisualizer:
         return "<br>".join(locations)
 
     def arrival_date_in_gap(
-        self, gaps: list, timeline_end: pd.Timestamp, arrival_date: pd.Timestamp
+        self, gaps: list, arrival_date: pd.Timestamp
     ) -> str:
         """Check if arrival date falls within any gap."""
         arrival_date = pd.to_datetime(arrival_date)  
@@ -166,7 +172,7 @@ class TimelineVisualizer:
         return gaps
 
     def _plot_stays(self, ax: plt.Axes, df: pd.DataFrame) -> None:
-        """Plot the stays on the timeline."""
+        """Plot the locations on the timeline."""
         colors = plt.cm.Pastel1(np.linspace(0, 1, len(df)))
 
         for idx, row in df.iterrows():
@@ -189,40 +195,18 @@ class TimelineVisualizer:
 
                 # Add location label
                 location = f"{row['Stad']}, {row['Land']}"
+                dates = f"{row['Startdatum'].strftime('%d-%m-%Y')} t/m {row['Einddatum'].strftime('%d-%m-%Y')}"
                 self._add_text(
                     ax,
                     start_num + width / 2,
-                    self.config.base_level + self.config.bar_height / 2 - 0.25,
-                    location,
-                    rotation=45,
-                    fontsize=9,
-                    fontweight="bold",
-                )
-
-                # Add date labels with small offset to prevent overlap
-                self._add_text(
-                    ax,
-                    start_num,
-                    self.config.base_level - self.config.bar_height / 2 - 0.15,
-                    row["Startdatum"].strftime("%d-%b-%Y"),
-                    rotation=45,
-                    fontsize=8,
-                    ha="left",
-                )
-
-                self._add_text(
-                    ax,
-                    end_num,
-                    self.config.base_level - self.config.bar_height / 2 - 0.15,
-                    row["Einddatum"].strftime("%d-%b-%Y"),
-                    rotation=45,
-                    fontsize=8,
-                    ha="right",
+                    self.config.base_level,
+                    location + "\n" + dates,
+                    va="center",
                 )
 
     def _plot_gaps(self, ax: plt.Axes, gaps: List[tuple]) -> float:
         """Plot timeline gaps and return maximum y position used."""
-        max_y = self.config.base_level + self.config.bar_height
+        max_y = self.config.base_level + self.config.bar_height / 2
 
         for i, (gap_start, gap_end) in enumerate(gaps):
             # Plot gap line
@@ -237,18 +221,19 @@ class TimelineVisualizer:
             )
 
             # Add gap label
-            gap_duration = (gap_end - gap_start).days
+            gap_duration = self.calculate_time_of_stay(gap_start, gap_end)
             gap_label = (
-                f"{gap_start.strftime('%d-%b-%Y')} t/m "
-                f"{gap_end.strftime('%d-%b-%Y')} ({gap_duration} days)"
+                f"{gap_start.strftime('%d-%m-%Y')} t/m "
+                f"{gap_end.strftime('%d-%m-%Y')}\n({gap_duration})"
             )
 
-            y_pos = max_y + 0.1 + (i * 0.15)
+            # Adjust y position for each gap
+            y_pos = max_y + 0.05 + (i * 0.05)
             mid_point = mdates.date2num(gap_start + (gap_end - gap_start) / 2)
             self._add_text(ax, mid_point, y_pos, gap_label,
-                           fontsize=8, color="red")
+                           color="red")
 
-            max_y = max(max_y, y_pos + 0.15)
+            max_y = max(max_y, y_pos + 0.05)
 
         return max_y
 
@@ -292,17 +277,17 @@ class TimelineVisualizer:
 
         # Add timeline boundaries
         for date, label in [
-            (timeline_start, "Timeline Start"),
-            (ao_start_date, "Timeline Einde"),
+            (timeline_start, "24 maanden voorafgaand"),
+            (ao_start_date, "Startdatum tewerkstelling"),
         ]:
             ax.axvline(x=mdates.date2num(date), color="black",
-                       linestyle="-", alpha=0.3)
+                       linestyle="--", alpha=0.3)
             self._add_text(
                 ax,
                 mdates.date2num(date),
-                -0.4,
-                f"{label}\n{date.strftime('%d-%b-%Y')}",
-                fontsize=8,
+                -0.25,
+                f"{date.strftime('%d-%m-%Y')}\n{label}",
+                fontsize=11,
                 va="top",
             )
 
@@ -311,26 +296,20 @@ class TimelineVisualizer:
             mdates.date2num(timeline_start - timedelta(days=30)),
             mdates.date2num(ao_start_date + timedelta(days=30)),
         )
-        ax.set_ylim(-0.5, max_y + 0.1)
+        ax.set_ylim(-0.2, max_y)
 
         # Format x-axis
-        ax.xaxis.set_major_locator(mdates.MonthLocator(interval=1))
-        ax.xaxis.set_major_formatter(mdates.DateFormatter("%b %Y"))
-        plt.xticks(rotation=45)
+        ax.xaxis.set_major_locator(mdates.YearLocator())
+        ax.xaxis.set_major_formatter(mdates.DateFormatter("%Y"))
+        ax.xaxis.set_minor_locator(mdates.MonthLocator())
+        ax.xaxis.set_minor_formatter(mdates.DateFormatter("%m"))
 
         # Clean up plot
         ax.set_yticks([])
         ax.spines["left"].set_visible(False)
         ax.spines["right"].set_visible(False)
+        ax.spines["top"].set_visible(False)
         ax.grid(axis="x", linestyle="--", alpha=0.3)
-
-        # Add title
-        plt.title(
-            "Timeline 24 maanden voor aanvang tewerkstelling",
-            pad=20,
-            fontsize=12,
-            fontweight="bold",
-        )
 
         # Save plot
         plt.tight_layout()
