@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 from typing import Optional
+import pandas as pd
 
 
 def signed_outside_nl(signed_date: str, arrival_date: str) -> bool:
@@ -121,3 +122,19 @@ def get_most_recent_date(date1: str, date2: str) -> str:
     date2_parsed = datetime.strptime(date2, date_format)
 
     return date1 if date1_parsed > date2_parsed else date2
+
+def calculate_time_of_stay(start: pd.DataFrame, end: pd.DataFrame) -> str:
+    delta = relativedelta(end, start)
+    months = delta.years * 12 + delta.months
+    days = delta.days
+
+    month_text = "maand" if months == 1 else "maanden"
+    day_text = "dag" if days == 1 else "dagen"
+
+    parts = []
+    if months:
+        parts.append(f"{months} {month_text}")
+    if days:
+        parts.append(f"{days} {day_text}")
+
+    return " + ".join(parts) if parts else "0 dagen"
