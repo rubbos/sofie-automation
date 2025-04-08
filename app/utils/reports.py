@@ -1,7 +1,7 @@
 import pandas as pd
 from dataclasses import dataclass
 from typing import Optional
-from utils import locations_timeline
+from utils import locations_timeline, total_months_nl
 from utils import calculations as calc
 
 
@@ -15,7 +15,7 @@ class WorkerData:
     first_work_date: str
     arrival_date: str
     recent_locations: str
-    nl_dates: Optional[str] = None
+    nl_all_dates: Optional[str] = None
     nl_reason: Optional[str] = None
     nl_reason_doc: Optional[str] = None
     explain_nl: Optional[str] = None
@@ -59,6 +59,7 @@ class CalculationData:
     true_start_date: str
     end_date: str
     signed_location: str
+    discount: int
 
 
 def extracted_data(
@@ -67,6 +68,7 @@ def extracted_data(
     employment_contract,
 ):
 
+    # Extracted data from the forms
     full_name = get_value(tax_form, "full_name")
     first_work_date = get_value(tax_form, "first_work_date")
     place_of_residence = get_value(tax_form, "place_of_residence")
@@ -87,11 +89,18 @@ def extracted_data(
     cv_data = get_value(employment_contract, "previous_jobs")
     explain_nl = get_value(employment_contract, "explain_nl")
     application_type = get_value(tax_form, "application_type")
-    nl_dates = get_value(tax_form, "nl_residence_dates")
+    nl_all_dates = get_value(tax_form, "nl_residence_dates")
+    nl_worked_dates = get_value(tax_form, "nl_worked_dates")
+    nl_private_dates = get_value(tax_form, "nl_private_visit_dates")
+
+    # Calculated data from the forms
     start_date = calc.start_date(ao_start_date, first_work_date, employer_type)
     true_start_date = calc.true_start_date(application_date, start_date)
     end_date = calc.end_date(true_start_date)
+    signed_location = calc.signed_location(ao_signed_date, place_of_residence, arrival_date)
+    discount = total_months_nl.calc(nl_lived=nl_all_dates, nl_worked=nl_worked_dates, nl_visited=nl_private_dates)
 
+    # Creating locations table (same as timeline image, but in a table)
     timeline = locations_timeline.TimelineVisualizer()
     timeline_end = pd.to_datetime(true_start_date, format= "%d-%m-%Y")
     timeline_start = timeline_end - pd.DateOffset(years=2)
@@ -112,7 +121,7 @@ def extracted_data(
         first_work_date=first_work_date,
         arrival_date=arrival_date,
         recent_locations=recent_locations,
-        nl_dates=nl_dates,
+        nl_all_dates=nl_all_dates,
         explain_nl=explain_nl,
         cv_data=cv_data,
     )
@@ -137,11 +146,8 @@ def extracted_data(
         start_date=start_date,
         true_start_date=true_start_date,
         end_date=end_date,
-        signed_location=calc.signed_location(
-            ao_signed_date,
-            place_of_residence,
-            arrival_date,
-        ),
+        signed_location=signed_location,
+        discount=discount,
     )
     return worker_info, employer_info, contract_info, calculation_info
 
@@ -200,11 +206,12 @@ def regular_application(
     looptijd = verslag_looptijd(
         contract_info.application_date,
         contract_info.ao_start_date,
-        worker_info.nl_dates,
+        worker_info.nl_all_dates,
         worker_info.explain_nl,
         calculation_info.start_date,
         calculation_info.true_start_date,
         calculation_info.end_date,
+        calculation_info.discount,
     )
 
     return (
@@ -299,11 +306,12 @@ def verslag_deskundigheid(job_name, ufo_code, employer, income):
 def verslag_looptijd(
     application_date,
     ao_start_date,
-    nl_dates,
+    nl_all_dates,
     explain_nl,
     start_date,
     true_start_date,
     end_date,
+    discount,
 ):
     title = "Verslag looptijd"
 
@@ -315,11 +323,13 @@ def verslag_looptijd(
     text += f"- De startdatum is daarom {true_start_date}.<br><br>"
 
     # If worker has been in NL before, we have to remove these months if its more than 6 weeks a year.
-    # NOTE: Fix the garbage variables types :(
-    if nl_dates == "None":
+    # FIXME not working correctly
+    if nl_all_dates == "None":
         text += "Betrokkene geeft aan niet eerder in Nederland verblijf te hebben gehad wat in aanmerking genomen moet worden voor een korting. De regeling kan voor de maximale duur worden toegekend (5 jaar). De inhoud van het bijgevoegde cv en het aanvraagformulier, geven geen aanleiding om anders te concluderen.<br><br>"
     else:
-        text += f"Er is eerder verblijf in NL wat gekort wordt op de looptijd. Betrokkene heeft in Nederland gewoond van {nl_dates} Dit verblijf was in het kader van {explain_nl}.<br><br>"
+        text += f"Er is eerder verblijf in NL wat gekort wordt op de looptijd. Betrokkene heeft in Nederland gewoond van {nl_all_dates} Dit verblijf was in het kader van {explain_nl}.<br><br>"
+
+    text += f"{discount} maanden korten.<br><br>"
     text += f"- De einddatum van de looptijd is daarmee {end_date}."
     return formatting_text(title, text)
 
