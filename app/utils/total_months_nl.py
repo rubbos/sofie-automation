@@ -15,14 +15,26 @@ def pair_dates(flat_list: list, stay_type: str) -> list[tuple]:
         pairs.append((start_date, end_date, stay_type))
     return pairs
 
+def string_to_literal_list(lst: list) -> bool:
+    """Converts a string representation of a list to an actual list"""
+    #FIXME need to fix these variable on submit of form, happens in more places
+    if lst == "" or lst == None:
+        return []
+    return ast.literal_eval(lst)
+
 #NOTE Does not check the period from the arrival date to start of work. 
 def combine_periods(nl_lived: list, nl_worked: list, nl_visited: list) -> list:
     """Combines the periods into a single sorted list"""
-    all_periods = pair_dates(nl_lived, "private") + pair_dates(nl_worked, "work") + pair_dates(nl_visited, "private")
+    #FIXME this string to list isnt good but works for now
+    nl_lived = string_to_literal_list(nl_lived)
+    nl_worked = string_to_literal_list(nl_worked)
+    nl_visited = string_to_literal_list(nl_visited)
+
+    all_periods = pair_dates((nl_lived), "private") + pair_dates(nl_worked, "work") + pair_dates(nl_visited, "private")
     return sorted(all_periods)  
 
 #NOTE This still needs refinement for the period between arrival date and start of work. 
-def get_total_months_in_nl(nl_list: list[tuple]) -> int:
+def calc(nl_list: list[tuple]) -> int:
     """
     Calculates the total months in the Netherlands in the last 25 years,
     applying specific filtering rules:
@@ -117,13 +129,3 @@ def get_total_months_in_nl(nl_list: list[tuple]) -> int:
     total_months = len(unique_months)
     
     return total_months
-
-# Wrapper function to call the main calculation
-def calc(nl_lived: list, nl_worked: list, nl_visited: list):
-    #FIXME This should be a list of strings, not a string
-    nl_lived = ast.literal_eval(nl_lived)
-    nl_worked = ast.literal_eval(nl_worked)
-    nl_visited = ast.literal_eval(nl_visited)
-    
-    periods = combine_periods(nl_lived=nl_lived, nl_worked=nl_worked, nl_visited=nl_visited)
-    return get_total_months_in_nl(periods)
