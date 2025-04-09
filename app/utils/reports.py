@@ -96,9 +96,9 @@ def extracted_data(
     # Calculated data from the forms
     start_date = calc.start_date(ao_start_date, first_work_date, employer_type)
     true_start_date = calc.true_start_date(application_date, start_date)
-    end_date = calc.end_date(true_start_date)
     signed_location = calc.signed_location(ao_signed_date, place_of_residence, arrival_date)
     discount = total_months_nl.calc(nl_lived=nl_all_dates, nl_worked=nl_worked_dates, nl_visited=nl_private_dates)
+    end_date = calc.end_date(true_start_date, discount)
 
     # Creating locations table (same as timeline image, but in a table)
     timeline = locations_timeline.TimelineVisualizer()

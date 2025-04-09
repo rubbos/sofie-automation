@@ -85,25 +85,15 @@ def true_start_date(application_date: str, start_date: str) -> str:
 
 
 def end_date(true_start_date: str, months_nl: Optional[int] = None) -> str:
-    """
-    Calculates a target date based on the input date and an optional months parameter.
-    If no months are specified, adds 5 years minus 1 day to the input date.
-    If months are specified, subtracts the months from 5 years, then adds the result minus 1 day.
-    """
-    date_obj = datetime.strptime(true_start_date, "%d-%m-%Y")
-    years_to_add = 5
+    """ Calculates end date based on adding 5 years to the starting date, then subtracting the months minus 1 day"""
+    start_date = datetime.strptime(true_start_date, "%d-%m-%Y") - timedelta(days=1)
+    end_date = start_date + relativedelta(years=5)
 
-    # Subtract the months from 5 years
+    # if any months are given, subtract them from the end date
     if months_nl is not None:
-        adjusted_period = relativedelta(years=years_to_add) - relativedelta(
-            months=months_nl
-        )
-    else:
-        adjusted_period = relativedelta(years=years_to_add)
+        end_date = end_date - relativedelta(months=months_nl)
 
-    # Add the adjusted period and subtract 1 day
-    target_date = date_obj + adjusted_period - timedelta(days=1)
-    return target_date.strftime("%d-%m-%Y")
+    return end_date.strftime("%d-%m-%Y")
 
 
 def get_most_recent_date(date1: str, date2: str) -> str:
