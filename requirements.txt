@@ -6,3 +6,4 @@ pdf2image==1.17.0
 pytesseract==0.3.13
 python_dateutil==2.9.0.post0
 matplotlib==3.10.0
+folium==0.19.5

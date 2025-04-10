@@ -41,16 +41,17 @@
 
               <!-- type aanvraag-->
               {% if loop.index0 == 0 %}
-              <select class="border border-gray-300 text-xl p-3 mr-2 w-full rounded-lg focus:outline-none"
-                id="" name="data_tax_{{ loop.index0 }}_VALUE">
-                <option class="text-black" value="Reguliere aanvraag" {% if row[1]['VALUE']=='Reguliere aanvraag' %} selected {% endif %}>
+              <select class="border border-gray-300 text-xl p-3 mr-2 w-full rounded-lg focus:outline-none" id=""
+                name="data_tax_{{ loop.index0 }}_VALUE">
+                <option class="text-black" value="Reguliere aanvraag" {% if row[1]['VALUE']=='Reguliere aanvraag' %}
+                  selected {% endif %}>
                   Reguliere aanvraag</option>
-                <option class="text-black"value="Uitzondering Wisseling Werkgever" {% if
+                <option class="text-black" value="Uitzondering Wisseling Werkgever" {% if
                   row[1]['VALUE']=='Uitzondering Wisseling Werkgever' %} selected {% endif %}>Uitzondering Wisseling
                   Werkgever</option>
-                <option class="text-black"value="Uitzondering Promovendus" {% if row[1]['VALUE']=='Uitzondering Promovendus' %} selected
-                  {% endif %}>Uitzondering Promovendus</option>
-                <option class="text-black"value="Uitzondering Terugkerende Expats" {% if
+                <option class="text-black" value="Uitzondering Promovendus" {% if
+                  row[1]['VALUE']=='Uitzondering Promovendus' %} selected {% endif %}>Uitzondering Promovendus</option>
+                <option class="text-black" value="Uitzondering Terugkerende Expats" {% if
                   row[1]['VALUE']=='Uitzondering Terugkerende Expats' %} selected {% endif %}>Uitzondering
                   Terugkerende
                   Expats</option>
@@ -70,40 +71,36 @@
                 <div id="location-container">
                   {% for location in row[1]["VALUE"] %}
                   <div class="flex justify-evenly items-center border-b" id="row_{{ loop.index }}">
-                      <label data-label="tax_{{ loop.index }}"
-                        class="p-3 w-full font-semibold break-words text-xl">
-                        {{ location[0] }}
-                      </label>
-                      <input data-input="tax_{{ loop.index }}"
-                        class="border border-gray-300 text-xl p-3 w-full rounded-lg focus:outline-none hidden"
-                        type="text" name="data_tax_4_start_date_{{ loop.index }}" value="{{ location[0] }}">
+                    <label data-label="tax_{{ loop.index }}" class="p-3 w-full font-semibold break-words text-xl">
+                      {{ location[0] }}
+                    </label>
+                    <input data-input="tax_{{ loop.index }}"
+                      class="border border-gray-300 text-xl p-3 w-full rounded-lg focus:outline-none hidden" type="text"
+                      name="data_tax_4_start_date_{{ loop.index }}" value="{{ location[0] }}">
 
-                      <label data-label="tax_{{ loop.index }}"
-                        class="p-3 w-full font-semibold break-words text-xl">
-                        {{ location[1] }}
-                      </label>
-                      <input data-input="tax_{{ loop.index }}"
-                        class="border border-gray-300 text-xl p-3 w-full rounded-lg focus:outline-none hidden"
-                        type="text" name="data_tax_4_end_date_{{ loop.index }}" value="{{ location[1] }}">
+                    <label data-label="tax_{{ loop.index }}" class="p-3 w-full font-semibold break-words text-xl">
+                      {{ location[1] }}
+                    </label>
+                    <input data-input="tax_{{ loop.index }}"
+                      class="border border-gray-300 text-xl p-3 w-full rounded-lg focus:outline-none hidden" type="text"
+                      name="data_tax_4_end_date_{{ loop.index }}" value="{{ location[1] }}">
 
-                      <label data-label="tax_{{ loop.index }}"
-                        class="p-3 w-full font-semibold break-words text-xl">
-                        {{ location[2] }}
-                      </label>
-                      <input data-input="tax_{{ loop.index }}"
-                        class="border border-gray-300 text-xl p-3 w-full rounded-lg focus:outline-none hidden"
-                        type="text" name="data_tax_4_city_{{ loop.index }}" value="{{ location[2] }}">
+                    <label data-label="tax_{{ loop.index }}" class="p-3 w-full font-semibold break-words text-xl">
+                      {{ location[2] }}
+                    </label>
+                    <input data-input="tax_{{ loop.index }}"
+                      class="border border-gray-300 text-xl p-3 w-full rounded-lg focus:outline-none hidden" type="text"
+                      name="data_tax_4_city_{{ loop.index }}" value="{{ location[2] }}">
 
-                      <label data-label="tax_{{ loop.index }}"
-                        class="p-3 w-full font-semibold break-words text-xl">
-                        {{ location[3] }}
-                      </label>
-                      
-                      <input data-input="tax_{{ loop.index }}"
-                        class="border border-gray-300 text-xl p-3 w-full rounded-lg focus:outline-none hidden"
-                        type="text" name="data_tax_4_country_{{ loop.index }}" value="{{ location[3] }}">
-                   
-                      <div class="flex justify-end w-full">
+                    <label data-label="tax_{{ loop.index }}" class="p-3 w-full font-semibold break-words text-xl">
+                      {{ location[3] }}
+                    </label>
+
+                    <input data-input="tax_{{ loop.index }}"
+                      class="border border-gray-300 text-xl p-3 w-full rounded-lg focus:outline-none hidden" type="text"
+                      name="data_tax_4_country_{{ loop.index }}" value="{{ location[3] }}">
+
+                    <div class="flex justify-end w-full">
                       <!-- Edit Button -->
                       <button type="button"
                         class="bg-blue-600 hover:bg-blue-700 text-white text-xl font-semibold py-3 px-4 m-2 rounded-lg shadow-md transition-all duration-300"
@@ -117,7 +114,7 @@
                         onclick="removeRow('row_{{ loop.index }}')">
                         x
                       </button>
-                      </div>
+                    </div>
                   </div>
                   {% endfor %}
                 </div>
@@ -213,7 +210,7 @@
   </div>
   <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
   <script>
-    </script>
+  </script>
 </body>
 
 </html>
