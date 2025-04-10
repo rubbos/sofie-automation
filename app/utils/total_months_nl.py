@@ -1,6 +1,8 @@
 import pandas as pd
 import ast
+from utils import calculations
 from collections import defaultdict
+
 
 def parse_date(date_str):
     """Parses a date string in the format 'dd-mm-yyyy' and returns a datetime object"""
@@ -32,6 +34,14 @@ def combine_periods(nl_lived: list, nl_worked: list, nl_visited: list, nl_arriva
 
     all_periods = nl_lived + nl_worked + nl_visited + nl_arrival_till_start
     return sorted(all_periods)  
+
+def show_date_ranges_table(nl_list: list[tuple]) -> str:
+    """Shows the date ranges in a table"""
+    lst = []
+    for start, end, _ in nl_list:
+        lst_item = (f"{start.strftime('%d-%m-%Y')} t/m {end.strftime('%d-%m-%Y')} ({calculations.calculate_time_of_stay(start, end)})")
+        lst.append(lst_item)
+    return "<br>".join(lst)
 
 def calc(nl_list: list[tuple]) -> int:
     """

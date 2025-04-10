@@ -15,7 +15,7 @@ class WorkerData:
     first_work_date: str
     arrival_date: str
     recent_locations: str
-    nl_combined: Optional[str] = None
+    nl_combined_table: Optional[str] = None
     nl_reason: Optional[str] = None
     nl_reason_doc: Optional[str] = None
     explain_nl: Optional[str] = None
@@ -99,6 +99,7 @@ def extracted_data(
     signed_location = calc.signed_location(ao_signed_date, place_of_residence, arrival_date)
     nl_arrival_till_start = calc.get_arrival_date_to_start_date_range(arrival_date, start_date)
     nl_combined = total_months_nl.combine_periods(nl_all_dates, nl_worked_dates, nl_private_dates, nl_arrival_till_start) 
+    nl_combined_table = total_months_nl.show_date_ranges_table(nl_combined)
     cut_months = total_months_nl.calc(nl_combined)
     end_date = calc.end_date(true_start_date, cut_months)
 
@@ -123,7 +124,7 @@ def extracted_data(
         first_work_date=first_work_date,
         arrival_date=arrival_date,
         recent_locations=recent_locations,
-        nl_combined=nl_combined,
+        nl_combined_table=nl_combined_table,
         explain_nl=explain_nl,
         cv_data=cv_data,
     )
@@ -208,7 +209,7 @@ def regular_application(
     looptijd = verslag_looptijd(
         contract_info.application_date,
         contract_info.ao_start_date,
-        worker_info.nl_combined,
+        worker_info.nl_combined_table,
         worker_info.explain_nl,
         calculation_info.start_date,
         calculation_info.true_start_date,
@@ -308,7 +309,7 @@ def verslag_deskundigheid(job_name, ufo_code, employer, income):
 def verslag_looptijd(
     application_date,
     ao_start_date,
-    nl_combined,
+    nl_combined_table,
     explain_nl,
     start_date,
     true_start_date,
@@ -328,7 +329,7 @@ def verslag_looptijd(
     if cut_months == 0:
         text += "Betrokkene geeft aan niet eerder in Nederland verblijf te hebben gehad wat in aanmerking genomen moet worden voor een korting. De regeling kan voor de maximale duur worden toegekend (5 jaar). De inhoud van het bijgevoegde cv en het aanvraagformulier, geven geen aanleiding om anders te concluderen.<br><br>"
     else:
-        text += f"Er is eerder verblijf in NL wat gekort wordt op de looptijd. Betrokkene heeft in Nederland gewoond van {nl_combined} ({cut_months} maanden totaal). Dit verblijf was in het kader van {explain_nl}.<br><br>"
+        text += f"Er is eerder verblijf in NL wat gekort wordt op de looptijd. Betrokkene heeft in Nederland gewoond van:<br>{nl_combined_table}<br>({cut_months} maanden totaal (exclusief overlappingen)).<br> Dit verblijf was in het kader van {explain_nl}.<br><br>"
 
     text += f"- De einddatum van de looptijd is daarmee {end_date}."
     return formatting_text(title, text)
