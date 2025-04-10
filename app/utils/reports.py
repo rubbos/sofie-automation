@@ -97,7 +97,8 @@ def extracted_data(
     start_date = calc.start_date(ao_start_date, first_work_date, employer_type)
     true_start_date = calc.true_start_date(application_date, start_date)
     signed_location = calc.signed_location(ao_signed_date, place_of_residence, arrival_date)
-    nl_combined = total_months_nl.combine_periods(nl_all_dates, nl_worked_dates, nl_private_dates) 
+    nl_arrival_till_start = calc.get_arrival_date_to_start_date_range(arrival_date, start_date)
+    nl_combined = total_months_nl.combine_periods(nl_all_dates, nl_worked_dates, nl_private_dates, nl_arrival_till_start) 
     cut_months = total_months_nl.calc(nl_combined)
     end_date = calc.end_date(true_start_date, cut_months)
 

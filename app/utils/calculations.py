@@ -97,16 +97,7 @@ def end_date(true_start_date: str, months_nl: Optional[int] = None) -> str:
 
 
 def get_most_recent_date(date1: str, date2: str) -> str:
-    """
-    Returns the most recent date from two given dates.
-
-    Args:
-        date1 (str): First date in the format dd-mm-yyyy.
-        date2 (str): Second date in the format dd-mm-yyyy.
-
-    Returns:
-        str: The most recent date.
-    """
+    """Returns the most recent date from two given dates."""
     date_format = "%d-%m-%Y"
     date1_parsed = datetime.strptime(date1, date_format)
     date2_parsed = datetime.strptime(date2, date_format)
@@ -114,6 +105,7 @@ def get_most_recent_date(date1: str, date2: str) -> str:
     return date1 if date1_parsed > date2_parsed else date2
 
 def calculate_time_of_stay(start: pd.DataFrame, end: pd.DataFrame) -> str:
+    """Calculates time between 2 dates"""
     delta = relativedelta(end, start)
     months = delta.years * 12 + delta.months
     days = delta.days
@@ -128,3 +120,12 @@ def calculate_time_of_stay(start: pd.DataFrame, end: pd.DataFrame) -> str:
         parts.append(f"{days} {day_text}")
 
     return " + ".join(parts) if parts else "0 dagen"
+
+def get_arrival_date_to_start_date_range(arrival_date: str, start_work_date: str) -> list:
+    """Gets the dates of the 2 variables in a list if the arrival date is before the start date"""
+    arrival_date = pd.to_datetime(arrival_date, dayfirst=True)
+    last_day_before_work = pd.to_datetime(start_work_date, dayfirst=True) - pd.DateOffset(days=1)
+
+    if arrival_date >= last_day_before_work:
+        return []
+    return [arrival_date, last_day_before_work]

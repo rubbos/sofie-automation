@@ -22,18 +22,17 @@ def string_to_literal_list(lst: list) -> bool:
         return []
     return ast.literal_eval(lst)
 
-#NOTE Does not check the period from the arrival date to start of work. 
-def combine_periods(nl_lived: list, nl_worked: list, nl_visited: list) -> list:
+def combine_periods(nl_lived: list, nl_worked: list, nl_visited: list, nl_arrival_till_start: list) -> list:
     """Combines the periods into a single sorted list"""
     #FIXME this string to list isnt good but works for now
-    nl_lived = string_to_literal_list(nl_lived)
-    nl_worked = string_to_literal_list(nl_worked)
-    nl_visited = string_to_literal_list(nl_visited)
+    nl_lived = pair_dates(string_to_literal_list(nl_lived), "private")
+    nl_worked = pair_dates(string_to_literal_list(nl_worked), "work")
+    nl_visited = pair_dates(string_to_literal_list(nl_visited), "private")
+    nl_arrival_till_start = pair_dates(nl_arrival_till_start, "private")
 
-    all_periods = pair_dates((nl_lived), "private") + pair_dates(nl_worked, "work") + pair_dates(nl_visited, "private")
+    all_periods = nl_lived + nl_worked + nl_visited + nl_arrival_till_start
     return sorted(all_periods)  
 
-#NOTE This still needs refinement for the period between arrival date and start of work. 
 def calc(nl_list: list[tuple]) -> int:
     """
     Calculates the total months in the Netherlands in the last 25 years,
