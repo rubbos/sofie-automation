@@ -5,7 +5,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title> </title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 </head>
 
 <body id="results" class="bg-gray-900 text-white flex flex-col min-h-screen p-6">
@@ -41,16 +41,16 @@
 
               <!-- type aanvraag-->
               {% if loop.index0 == 0 %}
-              <select class="border border-gray-300 text-black text-xl p-3 mr-2 w-full rounded-lg focus:outline-none"
+              <select class="border border-gray-300 text-xl p-3 mr-2 w-full rounded-lg focus:outline-none"
                 id="" name="data_tax_{{ loop.index0 }}_VALUE">
-                <option value="Reguliere aanvraag" {% if row[1]['VALUE']=='Reguliere aanvraag' %} selected {% endif %}>
+                <option class="text-black" value="Reguliere aanvraag" {% if row[1]['VALUE']=='Reguliere aanvraag' %} selected {% endif %}>
                   Reguliere aanvraag</option>
-                <option value="Uitzondering Wisseling Werkgever" {% if
+                <option class="text-black"value="Uitzondering Wisseling Werkgever" {% if
                   row[1]['VALUE']=='Uitzondering Wisseling Werkgever' %} selected {% endif %}>Uitzondering Wisseling
                   Werkgever</option>
-                <option value="Uitzondering Promovendus" {% if row[1]['VALUE']=='Uitzondering Promovendus' %} selected
+                <option class="text-black"value="Uitzondering Promovendus" {% if row[1]['VALUE']=='Uitzondering Promovendus' %} selected
                   {% endif %}>Uitzondering Promovendus</option>
-                <option value="Uitzondering Terugkerende Expats" {% if
+                <option class="text-black"value="Uitzondering Terugkerende Expats" {% if
                   row[1]['VALUE']=='Uitzondering Terugkerende Expats' %} selected {% endif %}>Uitzondering
                   Terugkerende
                   Expats</option>
@@ -75,7 +75,7 @@
                         {{ location[0] }}
                       </label>
                       <input data-input="tax_{{ loop.index }}"
-                        class="border border-gray-300 text-black text-xl p-3 w-full rounded-lg focus:outline-none hidden"
+                        class="border border-gray-300 text-xl p-3 w-full rounded-lg focus:outline-none hidden"
                         type="text" name="data_tax_4_start_date_{{ loop.index }}" value="{{ location[0] }}">
 
                       <label data-label="tax_{{ loop.index }}"
@@ -83,7 +83,7 @@
                         {{ location[1] }}
                       </label>
                       <input data-input="tax_{{ loop.index }}"
-                        class="border border-gray-300 text-black text-xl p-3 w-full rounded-lg focus:outline-none hidden"
+                        class="border border-gray-300 text-xl p-3 w-full rounded-lg focus:outline-none hidden"
                         type="text" name="data_tax_4_end_date_{{ loop.index }}" value="{{ location[1] }}">
 
                       <label data-label="tax_{{ loop.index }}"
@@ -91,7 +91,7 @@
                         {{ location[2] }}
                       </label>
                       <input data-input="tax_{{ loop.index }}"
-                        class="border border-gray-300 text-black text-xl p-3 w-full rounded-lg focus:outline-none hidden"
+                        class="border border-gray-300 text-xl p-3 w-full rounded-lg focus:outline-none hidden"
                         type="text" name="data_tax_4_city_{{ loop.index }}" value="{{ location[2] }}">
 
                       <label data-label="tax_{{ loop.index }}"
@@ -100,7 +100,7 @@
                       </label>
                       
                       <input data-input="tax_{{ loop.index }}"
-                        class="border border-gray-300 text-black text-xl p-3 w-full rounded-lg focus:outline-none hidden"
+                        class="border border-gray-300 text-xl p-3 w-full rounded-lg focus:outline-none hidden"
                         type="text" name="data_tax_4_country_{{ loop.index }}" value="{{ location[3] }}">
                    
                       <div class="flex justify-end w-full">
@@ -139,7 +139,7 @@
                   {% else %} {% endif %}
                 </label>
                 <input
-                  class="border border-gray-300 text-black text-xl p-3 mr-2 w-full rounded-lg focus:outline-none hidden {% if row[1]['VAR'] in ['application_type', 'full_name', 'arrival_date', 'first_work_date', 'place_of_residence'] %} validate-required {% endif %}"
+                  class="border border-gray-300 text-xl p-3 mr-2 w-full rounded-lg focus:outline-none hidden {% if row[1]['VAR'] in ['application_type', 'full_name', 'arrival_date', 'first_work_date', 'place_of_residence'] %} validate-required {% endif %}"
                   type="text" id="input_tax_{{ loop.index0 }}" name="data_tax_{{ loop.index0 }}_VALUE"
                   value="{{ row[1]['VALUE'] }}" autocomplete="off" />
                 <button type="button"
@@ -166,7 +166,7 @@
                 else %} {% endif %}
               </label>
               <input
-                class="border border-gray-300 text-black p-3 w-full rounded-lg focus:outline-none hidden text-xl {% if row[1]['VAR'] in ['employer', 'lhn', 'employer_type', 'date_of_birth', 'bsn', 'job_title', 'ao_start_date', 'ufo_code', 'application_date'] %} validate-required {% endif %}"
+                class="border border-gray-300 p-3 w-full rounded-lg focus:outline-none hidden text-xl {% if row[1]['VAR'] in ['employer', 'lhn', 'employer_type', 'date_of_birth', 'bsn', 'job_title', 'ao_start_date', 'ufo_code', 'application_date'] %} validate-required {% endif %}"
                 type="text" id="input_app_{{ loop.index0 }}" name="data_app_{{ loop.index0 }}_VALUE"
                 value="{{ row[1]['VALUE']}}" autocomplete="off" />
             </div>
@@ -190,7 +190,7 @@
                 else %} {% endif %}
               </label>
               <input
-                class="border border-gray-300 text-black p-3 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 hidden text-xl {% if row[1]['VAR'] in ['ao_signed_date', 'previous_jobs'] %} validate-required {% endif %}"
+                class="border border-gray-300 p-3 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 hidden text-xl {% if row[1]['VAR'] in ['ao_signed_date', 'previous_jobs'] %} validate-required {% endif %}"
                 type="text" id="input_extra_{{ loop.index0 }}" name="data_extra_{{ loop.index0 }}_VALUE"
                 value="{{ row[1]['VALUE']}}" autocomplete="off" />
             </div>
