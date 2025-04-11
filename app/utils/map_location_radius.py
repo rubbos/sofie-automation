@@ -8,6 +8,7 @@ import matplotlib.patches as mpatches
 import time
 from shapely.geometry import Polygon
 import numpy as np
+from PIL import Image
 
 def generate_coordinates_from_locations(locations: list) -> dict[tuple]:
     """Gets the coordinates of a city, country"""
@@ -21,6 +22,7 @@ def generate_coordinates_from_locations(locations: list) -> dict[tuple]:
             location = geolocator.geocode(f"{city}, {country}")
 
             if location:
+                print(f"location found!")
                 coordinates.append((f"{city}, {country}", (location.longitude, location.latitude)))
             else:
                 print(f"Location not found: {city}, {country}")
@@ -29,9 +31,10 @@ def generate_coordinates_from_locations(locations: list) -> dict[tuple]:
             print(f"Error retrieving location {city}, {country}: {e}")
             coordinates.append((f"{city}, {country}", (None, None)))
 
+    print("returning coordinates")
     return coordinates
 
-#FIXME This is wayyyy too slow...
+#FIXME This is wayyyy too slow, seems to be something with the saving of the image.
 #BUG Locations get showed even if out of the map bounds
 def plot_locations_on_map(locations: list):
     # Getting world map to plot
@@ -60,7 +63,7 @@ def plot_locations_on_map(locations: list):
     ax.add_feature(cfeature.BORDERS.with_scale('10m'), linewidth=0.5)
     
     # Plot Netherlands outline
-    netherlands.plot(ax=ax, color='pink')
+    netherlands.plot(ax=ax, color='pink', transform=plate_carree)
        
     # Locations to coordinates
     coordinates = generate_coordinates_from_locations(locations)
@@ -88,14 +91,22 @@ def plot_locations_on_map(locations: list):
         )
         ax.plot(lon, lat, marker='o', color='red', transform=plate_carree)
         ax.text(lon + 0.3, lat + 0.3, name, transform=plate_carree)
+        print("plotted circle!")
     
     # Add a legend
     circle_legend = mpatches.Patch(color='blue', alpha=0.3, label='150km Radius')
     point_legend = plt.Line2D([0], [0], marker='o', color='w', markerfacecolor='red', markersize=1, label='Location')
     ax.legend(handles=[circle_legend, point_legend], loc='lower right') 
     ax.set_aspect('equal')  # Forces the x and y axes to be scaled equally
-    plt.savefig("../temp_files/geojson_map.png", bbox_inches='tight')
+    
+    print("ready to save")
+    # Save the map
+    tic = time.perf_counter()
+    plt.savefig('../temp_files/geojson_map.png', dpi=100)
+    toc = time.perf_counter()
+    print(f"{toc - tic:0.4f} seconds")
     plt.close()
+
 
 
 locations = [['London', 'UK'], ['Amsterdam', 'Netherlands'], ['Brussels', 'Belgium'], ['Berlin', 'Germany']]
