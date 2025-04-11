@@ -27,7 +27,7 @@ def generate_coordinates_from_locations(locations: list) -> dict[tuple]:
 
         except Exception as e:
             print(f"Error retrieving location {city}, {country}: {e}")
-            coordinates.append(f"{city}, {country}", (None, None))
+            coordinates.append((f"{city}, {country}", (None, None)))
 
     return coordinates
 
@@ -65,13 +65,20 @@ def plot_locations_on_map(locations: list):
     # Locations to coordinates
     coordinates = generate_coordinates_from_locations(locations)
     
-    def create_circle(lon, lat, radius_m=150000, n_points=100):
-        """Return a shapely Polygon approximating a circle with geodesic buffering"""
-        azimuths = np.linspace(0, 360, n_points)
-        circle_lons, circle_lats = geod.fwd(
-            [lon] * n_points, [lat] * n_points, azimuths, [radius_m] * n_points
-        )[:2]
-        return Polygon(zip(circle_lons, circle_lats))
+    def create_circle(lon, lat, radius_km=150):
+        """Create a circle as a polygon"""
+        
+        # Convert radius to degrees based on latitude
+        radius_lat = radius_km / 111.0
+        radius_lon = radius_km / (111.0 * np.cos(np.radians(lat)))
+        
+        # Create a circle using numpy
+        theta = np.linspace(0, 2*np.pi, 100)
+        circle_x = lon + radius_lon * np.cos(theta)
+        circle_y = lat + radius_lat * np.sin(theta)
+        
+        # Create polygon from coordinates
+        return Polygon(zip(circle_x, circle_y))
 
     # Draw cities and circles
     for name, (lon, lat) in coordinates:
@@ -88,6 +95,7 @@ def plot_locations_on_map(locations: list):
     ax.legend(handles=[circle_legend, point_legend], loc='lower right') 
     ax.set_aspect('equal')  # Forces the x and y axes to be scaled equally
     plt.savefig("../temp_files/geojson_map.png", bbox_inches='tight')
+    plt.close()
 
 
 locations = [['London', 'UK'], ['Amsterdam', 'Netherlands'], ['Brussels', 'Belgium'], ['Berlin', 'Germany']]
