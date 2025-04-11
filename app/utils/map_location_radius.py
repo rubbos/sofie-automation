@@ -1,34 +1,94 @@
-import folium
+import geopandas as gpd
+import matplotlib.pyplot as plt
+import cartopy.crs as ccrs
+import cartopy.feature as cfeature
+from geopy.geocoders import Nominatim
+from pyproj import Geod
+import matplotlib.patches as mpatches
+import time
+from shapely.geometry import Polygon
+import numpy as np
 
-def generate_map_with_radius(locations: list, radius=150) -> folium.Map:
-    """
-    Generate a map with locations and a radius around each location.
+def generate_coordinates_from_locations(locations: list) -> dict[tuple]:
+    """Gets the coordinates of a city, country"""
+    geolocator = Nominatim(user_agent="geolocator", timeout=10)
+    
+    coordinates = []
+    for city, country in locations:
+        try:
+            # Need delay between requests
+            time.sleep(1)
+            location = geolocator.geocode(f"{city}, {country}")
 
-    Args:
-        locations (list): A list of tuples containing latitude and longitude of locations.
-        radius (int): The radius in kilometers to draw around each location.
+            if location:
+                coordinates.append((f"{city}, {country}", (location.longitude, location.latitude)))
+            else:
+                print(f"Location not found: {city}, {country}")
 
-    Returns:
-        folium.Map: A folium map object with the locations and radius.
-    """
+        except Exception as e:
+            print(f"Error retrieving location {city}, {country}: {e}")
+            coordinates.append(f"{city}, {country}", (None, None))
 
-    # Make the map of the Netherlands
-    base_map = folium.Map(location=(51.972, 5.710), zoom_start=6)
-    folium.GeoJson("netherlands.geojson", name="Netherlands").add_to(base_map)
-    folium.LayerControl().add_to(base_map)
+    return coordinates
 
-    # Add markers for each location with a circle representing the radius
-    for lat, lon in locations:
-        folium.Marker(location=[lat, lon], popup=f"Location: {lat}, {lon}").add_to(base_map)
-        folium.Circle(
-            location=[lat, lon],
-            radius=radius * 1000,  
-            color='blue',
-            fill=True,
-            fill_opacity=0.2,
-        ).add_to(base_map)
+#FIXME This is wayyyy too slow...
+#BUG Locations get showed even if out of the map bounds
+def plot_locations_on_map(locations: list):
+    # Getting world map to plot
+    world = gpd.read_file("../data/map/world_map.shp")
+    
+    # Filter for Netherlands
+    netherlands = world[world['NAME'] == 'Netherlands']
+    
+    # Set up geodesic and projection
+    geod = Geod(ellps="WGS84")
+    mercator = ccrs.Mercator()
+    plate_carree = ccrs.PlateCarree()
+    
+    # Plot
+    fig, ax = plt.subplots(figsize=(12, 8), subplot_kw={'projection': mercator})
 
-    base_map.save("map.html")
-    return base_map
+    # Map bounds (xmin, xmax, ymin, ymax)
+    ax.set_extent([-2, 12, 48, 57], crs=plate_carree)  
+    
+    # Add features to the map
+    ax.add_feature(cfeature.LAND)
+    ax.add_feature(cfeature.OCEAN)
+    ax.add_feature(cfeature.RIVERS)
+    ax.add_feature(cfeature.LAKES)
+    ax.add_feature(cfeature.COASTLINE.with_scale('10m'), linewidth=0.5)
+    ax.add_feature(cfeature.BORDERS.with_scale('10m'), linewidth=0.5)
+    
+    # Plot Netherlands outline
+    netherlands.plot(ax=ax, color='pink')
+       
+    # Locations to coordinates
+    coordinates = generate_coordinates_from_locations(locations)
+    
+    def create_circle(lon, lat, radius_m=150000, n_points=100):
+        """Return a shapely Polygon approximating a circle with geodesic buffering"""
+        azimuths = np.linspace(0, 360, n_points)
+        circle_lons, circle_lats = geod.fwd(
+            [lon] * n_points, [lat] * n_points, azimuths, [radius_m] * n_points
+        )[:2]
+        return Polygon(zip(circle_lons, circle_lats))
 
-generate_map_with_radius([])
+    # Draw cities and circles
+    for name, (lon, lat) in coordinates:
+        circle = create_circle(lon, lat)
+        gpd.GeoSeries([circle], crs="EPSG:4326").to_crs(epsg=3395).plot(
+            ax=ax, color="blue", alpha=0.3, edgecolor="black"
+        )
+        ax.plot(lon, lat, marker='o', color='red', transform=plate_carree)
+        ax.text(lon + 0.3, lat + 0.3, name, transform=plate_carree)
+    
+    # Add a legend
+    circle_legend = mpatches.Patch(color='blue', alpha=0.3, label='150km Radius')
+    point_legend = plt.Line2D([0], [0], marker='o', color='w', markerfacecolor='red', markersize=1, label='Location')
+    ax.legend(handles=[circle_legend, point_legend], loc='lower right') 
+    ax.set_aspect('equal')  # Forces the x and y axes to be scaled equally
+    plt.savefig("../temp_files/geojson_map.png", bbox_inches='tight')
+
+
+locations = [['London', 'UK'], ['Amsterdam', 'Netherlands'], ['Brussels', 'Belgium'], ['Berlin', 'Germany']]
+plot_locations_on_map(locations)

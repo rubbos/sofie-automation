@@ -4,6 +4,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libgl1 \
     libglib2.0-0 \
     git \
+    unzip \
     poppler-utils \
     tesseract-ocr=5.3.0-2 \
     && rm -rf /var/lib/apt/lists/*  
