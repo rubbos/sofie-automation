@@ -99,9 +99,8 @@ def extracted_data(
     signed_location = calc.signed_location(ao_signed_date, place_of_residence, arrival_date)
     nl_arrival_till_start = calc.get_arrival_date_to_start_date_range(arrival_date, start_date)
     nl_combined = total_months_nl.combine_periods(nl_all_dates, nl_worked_dates, nl_private_dates, nl_arrival_till_start) 
-    print(nl_combined)
     nl_combined_table = total_months_nl.show_date_ranges_table(nl_combined)
-    cut_months = total_months_nl.calc_new(nl_combined)
+    cut_months = total_months_nl.calc(nl_combined)
     end_date = calc.end_date(true_start_date, cut_months)
 
     # Creating locations table (same as timeline image, but in a table)
