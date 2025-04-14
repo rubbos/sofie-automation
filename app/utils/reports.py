@@ -1,7 +1,7 @@
 import pandas as pd
 from dataclasses import dataclass
 from typing import Optional
-from utils import locations_timeline, total_months_nl
+from utils import locations_timeline, total_months_nl, map_location_radius
 from utils import calculations as calc
 
 
@@ -109,13 +109,16 @@ def extracted_data(
     timeline_start = timeline_end - pd.DateOffset(years=2)
     recent_locations = timeline.location_table_24_months(place_of_residence, timeline_start, timeline_end, arrival_date)
     
-    # creating timeline_image
+    # Create timeline_image
     timeline.create_timeline(
         data=place_of_residence,
         ao_start_date_str=ao_start_date,
         arrival_date_str=arrival_date,
         output_file="static/images/timeline_image.png",
     )
+
+    # Create map with locations near the Netherlands
+    map_location_radius.create_map(place_of_residence)
 
     worker_info = WorkerData(
         full_name=full_name,
@@ -280,10 +283,9 @@ def verslag_buitenland(recent_locations, cv_data):
     return formatting_text(title, text)
 
 
-# NOTE: need to make something that makes a picture of the location on a map with a radius
 def verslag_woonplaats_radius():
     title = "Foto woonplaats radius 150km"
-    text = "Enter picture"
+    text = '<img src="/static/images/geojson_map.png" alt="Map Image">'
     return formatting_text(title, text)
 
 

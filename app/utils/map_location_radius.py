@@ -8,7 +8,8 @@ import cartopy.feature as cfeature
 from geopy.geocoders import Nominatim
 from shapely.geometry import Polygon
 from functools import lru_cache
-    
+from pathlib import Path   
+
 def create_circle(lon, lat, radius_km=150):
     """Create a circle as a polygon"""
     
@@ -42,7 +43,7 @@ def generate_coordinates_from_locations(locations) -> list[str, tuple[float, flo
     coordinates = []
     
     # Process locations in batch
-    for i, (city, country) in enumerate(locations):
+    for i, (_, _, city, country) in enumerate(locations):
         location_str = f"{city}, {country}"
         # Add small delay to avoid rate limiting, but only between calls
         if i > 0:
@@ -54,7 +55,7 @@ def generate_coordinates_from_locations(locations) -> list[str, tuple[float, flo
     
     return coordinates
 
-def plot_locations_on_map(locations: list):
+def create_map(locations: list):
     """Plot the user locations on the map with a focus on the dutch border"""
     mercator = ccrs.Mercator()
     plate_carree = ccrs.PlateCarree()
@@ -63,7 +64,7 @@ def plot_locations_on_map(locations: list):
     fig, ax = plt.subplots(figsize=(7, 7), subplot_kw={'projection': mercator})
 
     # Map bounds (xmin, xmax, ymin, ymax)
-    bounds = [-2, 12, 48, 57]
+    bounds = [-4, 15, 46, 59]
     ax.set_extent(bounds, crs=plate_carree)  
 
     # Add borders to the countries
@@ -71,7 +72,9 @@ def plot_locations_on_map(locations: list):
     ax.add_feature(cfeature.BORDERS.with_scale('10m'), linewidth=0.5)
     
     # Plot Netherlands as a color for clarity
-    world = gpd.read_file("../data/map/world_map.shp")
+    base_dir = Path(__file__).resolve().parent.parent
+    file_path = base_dir / 'data' / 'map' / 'world_map.shp'
+    world = gpd.read_file(file_path)
     netherlands = world[world['NAME'] == 'Netherlands']
     netherlands.plot(ax=ax, color='pink', transform=plate_carree)
     
@@ -103,9 +106,6 @@ def plot_locations_on_map(locations: list):
     ax.legend(handles=[circle_legend], loc='lower right') 
     
     # Save the map and close after to free memory
-    plt.savefig('../temp_files/geojson_map.png', dpi=100)
+    save_file_location = base_dir / 'static' / 'images' /'geojson_map.png'
+    plt.savefig(save_file_location, dpi=100)
     plt.close()
-
-# Example
-locations = [['London', 'UK'], ['Amsterdam', 'Netherlands'], ['Brussels', 'Belgium'], ['Berlin', 'Germany']]
-plot_locations_on_map(locations)
