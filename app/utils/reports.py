@@ -331,7 +331,8 @@ def verslag_looptijd(
     if cut_months == 0:
         text += "Betrokkene geeft aan niet eerder in Nederland verblijf te hebben gehad wat in aanmerking genomen moet worden voor een korting. De regeling kan voor de maximale duur worden toegekend (5 jaar). De inhoud van het bijgevoegde cv en het aanvraagformulier, geven geen aanleiding om anders te concluderen.<br><br>"
     else:
-        text += f"Er is eerder verblijf in NL wat gekort wordt op de looptijd. Betrokkene heeft in Nederland gewoond van:<br>{nl_combined_table}<br>({cut_months} maanden totaal (exclusief overlappingen)).<br> Dit verblijf was in het kader van {explain_nl}.<br><br>"
+        text += f"Er is eerder verblijf in NL wat gekort wordt op de looptijd. Betrokkene heeft in Nederland gewoond van:<br>{nl_combined_table}<br>({cut_months} maand(en) totaal).<br>" 
+        text += f"Dit verblijf was in het kader van {explain_nl}.<br><br>"
 
     text += f"- De einddatum van de looptijd is daarmee {end_date}."
     return formatting_text(title, text)

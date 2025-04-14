@@ -3,6 +3,7 @@ import ast
 from utils import calculations
 from collections import defaultdict
 from dateutil.relativedelta import relativedelta
+from datetime import timedelta
 
 def parse_date(date_str):
     """Parses a date string in the format 'dd-mm-yyyy' and returns a datetime object"""
@@ -38,10 +39,61 @@ def combine_periods(nl_lived: list, nl_worked: list, nl_visited: list, nl_arriva
     all_periods = nl_lived + nl_worked + nl_visited + nl_arrival_till_start
     return sorted(all_periods)  
 
+def filter_unique_dates(date_list: list[tuple]) -> list[tuple]:
+    """
+    Filter out unique dates for a list of possible overlapping dates
+    
+    Parameters:
+    date_list (list): List of tuples (start_timestamp, end_timestamp, label)
+
+    Returns:
+    list: List of unique dates as datetime objects
+    """
+    # Extract all unique dates
+    unique_dates = set()
+    
+    for start_timestamp, end_timestamp, _ in date_list:
+        start_date = start_timestamp.date()
+        end_date = end_timestamp.date()
+        
+        current_date = start_date
+        while current_date <= end_date:
+            unique_dates.add(current_date)
+            current_date += timedelta(days=1)
+    
+    # If no dates, return empty list
+    if not unique_dates:
+        return []
+    
+    # Sort the unique dates
+    sorted_dates = sorted(unique_dates)
+    
+    # Consolidate into continuous ranges
+    consolidated_ranges = []
+    range_start = sorted_dates[0]
+    range_end = range_start
+    
+    for i in range(1, len(sorted_dates)):
+        current_date = sorted_dates[i]
+        
+        # If there's a gap (more than 1 day difference), start a new range
+        if (current_date - range_end).days > 1:
+            consolidated_ranges.append((range_start, range_end))
+            range_start = current_date
+        
+        range_end = current_date
+    
+    # Add the last range
+    consolidated_ranges.append((range_start, range_end))
+    
+    return consolidated_ranges
+
 def show_date_ranges_table(nl_list: list[tuple]) -> str:
-    """Shows the date ranges in a table"""
+    """Shows the date ranges in a fancy way for the user"""
     lst = []
-    for start, end, _ in nl_list:
+    filtered_list = filter_unique_dates(nl_list)
+
+    for start, end in filtered_list:
         lst_item = (f"{start.strftime('%d-%m-%Y')} t/m {end.strftime('%d-%m-%Y')} ({calculations.calculate_time_of_stay(start, end)})")
         lst.append(lst_item)
     return "<br>".join(lst)
