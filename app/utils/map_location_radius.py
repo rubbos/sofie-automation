@@ -61,7 +61,7 @@ def create_map(locations: list):
     plate_carree = ccrs.PlateCarree()
     
     # Plot the map
-    fig, ax = plt.subplots(figsize=(7, 7), subplot_kw={'projection': mercator})
+    fig, ax = plt.subplots(figsize=(6, 6), subplot_kw={'projection': mercator})
 
     # Map bounds (xmin, xmax, ymin, ymax)
     bounds = [-4, 15, 46, 59]
