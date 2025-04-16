@@ -104,7 +104,7 @@ def get_edited_values(data: pd.DataFrame, key_name: str):
                         f"{base_key}_location_start_date_{index}", "").strip(),
                     request.form.get(
                         f"{base_key}_location_end_date_{index}", "").strip(),
-                    request.form.get(f"{base_key}_city_{index}", "").strip(),
+                    request.form.get(f"{base_key}_location_city_{index}", "").strip(),
                     request.form.get(
                         f"{base_key}_location_country_{index}", "").strip(),
                 ]

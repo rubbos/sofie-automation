@@ -46,7 +46,7 @@ function toggleEditLocation(type, index) {
 
 // code for adding location rows
 document.getElementById("addRowButton").addEventListener("click", function () {
-    const container = document.getElementById("location-container");
+    const container = document.getElementById("location_container");
     const newIndex = container.children.length + 1; // Unique index for the new row
 
     const newRow = document.createElement("div");
@@ -60,7 +60,7 @@ document.getElementById("addRowButton").addEventListener("click", function () {
                       </label>
                       <input data-input="tax_${newIndex}"
                         class="border border-gray-300 text-black text-xl p-3 w-full rounded-lg focus:outline-none hidden"
-                        type="text" name="data_tax_4_start_date_${newIndex}" value="">
+                        type="text" name="data_tax_4_location_start_date_${newIndex}" value="">
 
                       <label data-label="tax_${newIndex}"
                         class="p-3 w-full font-semibold break-words text-xl">
@@ -68,7 +68,7 @@ document.getElementById("addRowButton").addEventListener("click", function () {
                       </label>
                       <input data-input="tax_${newIndex}"
                         class="border border-gray-300 text-black text-xl p-3 w-full rounded-lg focus:outline-none hidden"
-                        type="text" name="data_tax_4_end_date_${newIndex}" value="">
+                        type="text" name="data_tax_4_location_end_date_${newIndex}" value="">
 
                       <label data-label="tax_${newIndex}"
                         class="p-3 w-full font-semibold break-words text-xl">
@@ -76,7 +76,7 @@ document.getElementById("addRowButton").addEventListener("click", function () {
                       </label>
                       <input data-input="tax_${newIndex}"
                         class="border border-gray-300 text-black text-xl p-3 w-full rounded-lg focus:outline-none hidden"
-                        type="text" name="data_tax_4_city_${newIndex}" value="">
+                        type="text" name="data_tax_4_location_city_${newIndex}" value="">
 
                       <label data-label="tax_${newIndex}"
                         class="p-3 w-full font-semibold break-words text-xl">
@@ -85,7 +85,7 @@ document.getElementById("addRowButton").addEventListener("click", function () {
                       
                       <input data-input="tax_${newIndex}"
                         class="border border-gray-300 text-black text-xl p-3 w-full rounded-lg focus:outline-none hidden"
-                        type="text" name="data_tax_4_country_${newIndex}" value="">
+                        type="text" name="data_tax_4_location_country_${newIndex}" value="">
                    
                       <div class="flex justify-end w-full">
                       <!-- Edit Button -->
