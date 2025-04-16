@@ -3,7 +3,6 @@ from extractors.methods import transform_methods as tm
 
 
 def empty_info():
-    type_data = ["str", "list[str]", "date", "list[date]"]
     type_string = "str"
     type_date = "date"
 
