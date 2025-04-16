@@ -9,32 +9,35 @@ def parse_date(date_str):
     """Parses a date string in the format 'dd-mm-yyyy' and returns a datetime object"""
     return pd.to_datetime(date_str, format="%d-%m-%Y")
 
-def pair_dates(flat_list: list, stay_type: str) -> list[tuple]:
-    """Pairs the dates in the list and gives them a type"""
+def period_type(dates_list: list[str], stay_type: str) -> list[tuple]:
+    """Gives pairs in the list a type"""
+    dates_list = string_to_literal_list(dates_list)
+    if dates_list == []:
+        return []
     pairs = []    
-    if flat_list == None:
-        return pairs
 
-    for i in range(0, len(flat_list), 2):
-        start_date = parse_date(flat_list[i])
-        end_date = parse_date(flat_list[i + 1])
+    for date in dates_list:
+        start_date = parse_date(date[0])
+        end_date = parse_date(date[1])
         pairs.append((start_date, end_date, stay_type))
     return pairs
 
-def string_to_literal_list(lst: list) -> bool:
+def string_to_literal_list(lst: list):
     """Converts a string representation of a list to an actual list"""
-    #FIXME need to fix these variable on submit of form, happens in more places
+    #FIXME i need to fix the string to list mess with dates and other types of data
+    print(lst, type(lst))
     if lst == "" or lst == None:
         return []
+    elif type(lst) == list:
+        return lst
     return ast.literal_eval(lst)
 
 def combine_periods(nl_lived: list, nl_worked: list, nl_visited: list, nl_arrival_till_start: list) -> list:
     """Combines the periods into a single sorted list"""
-    #FIXME this string to list isnt good but works for now
-    nl_lived = pair_dates(string_to_literal_list(nl_lived), "private")
-    nl_worked = pair_dates(string_to_literal_list(nl_worked), "work")
-    nl_visited = pair_dates(string_to_literal_list(nl_visited), "private")
-    nl_arrival_till_start = pair_dates(nl_arrival_till_start, "private")
+    nl_lived = period_type(nl_lived, "private")
+    nl_worked = period_type(nl_worked, "work")
+    nl_visited = period_type(nl_visited, "private")    
+    nl_arrival_till_start = period_type([nl_arrival_till_start], "private")
 
     all_periods = nl_lived + nl_worked + nl_visited + nl_arrival_till_start
     return sorted(all_periods)  

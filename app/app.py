@@ -95,18 +95,18 @@ def get_edited_values(data: pd.DataFrame, key_name: str):
         base_key = f"{key_name}_{i}"
 
         # Check if row has multiple related values
-        if f"{base_key}_start_date_1" in request.form:
+        if f"{base_key}_location_start_date_1" in request.form:
             locations = []
             index = 1
-            while f"{base_key}_start_date_{index}" in request.form:
+            while f"{base_key}_location_start_date_{index}" in request.form:
                 location_entry = [
                     request.form.get(
-                        f"{base_key}_start_date_{index}", "").strip(),
+                        f"{base_key}_location_start_date_{index}", "").strip(),
                     request.form.get(
-                        f"{base_key}_end_date_{index}", "").strip(),
+                        f"{base_key}_location_end_date_{index}", "").strip(),
                     request.form.get(f"{base_key}_city_{index}", "").strip(),
                     request.form.get(
-                        f"{base_key}_country_{index}", "").strip(),
+                        f"{base_key}_location_country_{index}", "").strip(),
                 ]
                 locations.append(location_entry)
                 index += 1

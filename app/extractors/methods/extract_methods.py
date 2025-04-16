@@ -104,7 +104,6 @@ def extract_multiple_between_keywords(
     strings = [extract_after_keyword(item, multiple_keyword) for item in strings]
     return strings
 
-
 def find_all_dates(text: str) -> list[str]:
     """Find any kind of date format in string"""
     date_pattern = r"(?i)\b\d{1,2}[-/.]\d{1,2}[-/.]\d{2,4}\b|\b\d{1,2}(?:[-\s])?(?:Jan|Feb|Mar|Mrt|Apr|May|Mei|Jun|Jul|Aug|Sep|Oct|Okt|Nov|Dec|January|February|March|Maart|April|May|Mei|June|Juni|July|Juli|August|Augustus|September|October|Oktober|November|December)(?:[-\s])?\d{2,4}\b"
@@ -112,10 +111,7 @@ def find_all_dates(text: str) -> list[str]:
     matches = pattern.findall(text)
     return matches
 
-
-def extract_dates(
-    string: str, start_keyword: str, end_keyword: str
-) -> list[str] | None:
+def extract_dates(string: str, start_keyword: str, end_keyword: str) -> list[str] | None:
     """Extract all dates in string and transform to dd-mm-yyyy"""
     text = extract_between_keywords(string, start_keyword, end_keyword)
     if not text:
@@ -124,6 +120,19 @@ def extract_dates(
     cleaned_dates = [tm.transform_date(date) for date in dates]
     return cleaned_dates
 
+def extract_multiple_dates(string: str, start_keyword: str, end_keyword: str) -> list[str]:
+    """Extract all dates and transform to dd-mm-yyyy and pair them together"""
+    extracted_dates = extract_dates(string, start_keyword, end_keyword)
+    
+    pairs = []    
+    if extracted_dates == [[]]:
+        return pairs
+
+    for i in range(0, len(extracted_dates), 2):
+        start_date = extracted_dates[i]
+        end_date = extracted_dates[i + 1]
+        pairs.append([start_date, end_date])
+    return pairs
 
 def extract_place_of_residences(text: str):
     """Extract the complete data of places and dates from user and return it in a list"""

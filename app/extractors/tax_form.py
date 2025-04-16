@@ -34,7 +34,7 @@ def extract(text: str) -> dict:
         ],
         "Alle periodes in Nederland": [
             type_data[3],
-            em.extract_dates(text, "Have you previously", "Were you registered"),
+            em.extract_multiple_dates(text, "Have you previously", "Were you registered"),
             "nl_residence_dates",
         ],
         "Uitschrijvingsdatum Nederland": [
@@ -44,17 +44,17 @@ def extract(text: str) -> dict:
         ],
         "Periodes gewerkt in Nederland": [
             type_data[3],
-            em.extract_dates(text, "Have you previously worked", "private"),
+            em.extract_multiple_dates(text, "Have you previously worked", "private"),
             "nl_worked_dates",
         ],
         "Periodes privezaken in Nederland": [
             type_data[3],
-            em.extract_dates(text, "holiday", "outside"),
+            em.extract_multiple_dates(text, "holiday", "outside"),
             "nl_private_visit_dates",
         ],
         "Periodes gewerkt voor een Nederlandse werkgever": [
             type_data[3],
-            em.extract_dates(text, "outside", "undersigned"),
+            em.extract_multiple_dates(text, "outside", "undersigned"),
             "nl_worked_dutch_employer_dates",
         ],
     }
@@ -74,16 +74,6 @@ def transform(extracted_data: dict) -> pd.DataFrame:
     df.loc[df["TYPE"] == "date", "VALUE"] = df.loc[df["TYPE"] == "date", "VALUE"].apply(
         lambda x: x[0] if x else None
     )
-
-    # Clean locations and group
-    try:
-        df.at[5, "VALUE"] = [item.replace("Country:", "") for item in df.at[5, "VALUE"]]
-        df.at[5, "VALUE"] = [item.replace("  ", " ") for item in df.at[5, "VALUE"]]
-        df.at[5, "VALUE"] = [item.replace(":", "") for item in df.at[5, "VALUE"]]
-        df.at[5, "VALUE"] = [item.lstrip() for item in df.at[5, "VALUE"]]
-        df.at[5, "VALUE"] = [item for item in df.at[5, "VALUE"] if item]
-    except TypeError:
-        pass
 
     return df
 

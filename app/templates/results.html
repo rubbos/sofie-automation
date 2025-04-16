@@ -76,21 +76,21 @@
                     </label>
                     <input data-input="tax_{{ loop.index }}"
                       class="border border-gray-300 text-xl p-3 w-full rounded-lg focus:outline-none hidden" type="text"
-                      name="data_tax_4_start_date_{{ loop.index }}" value="{{ location[0] }}">
+                      name="data_tax_4_location_start_date_{{ loop.index }}" value="{{ location[0] }}">
 
                     <label data-label="tax_{{ loop.index }}" class="p-3 w-full font-semibold break-words text-xl">
                       {{ location[1] }}
                     </label>
                     <input data-input="tax_{{ loop.index }}"
                       class="border border-gray-300 text-xl p-3 w-full rounded-lg focus:outline-none hidden" type="text"
-                      name="data_tax_4_end_date_{{ loop.index }}" value="{{ location[1] }}">
+                      name="data_tax_4_location_end_date_{{ loop.index }}" value="{{ location[1] }}">
 
                     <label data-label="tax_{{ loop.index }}" class="p-3 w-full font-semibold break-words text-xl">
                       {{ location[2] }}
                     </label>
                     <input data-input="tax_{{ loop.index }}"
                       class="border border-gray-300 text-xl p-3 w-full rounded-lg focus:outline-none hidden" type="text"
-                      name="data_tax_4_city_{{ loop.index }}" value="{{ location[2] }}">
+                      name="data_tax_4_location_city_{{ loop.index }}" value="{{ location[2] }}">
 
                     <label data-label="tax_{{ loop.index }}" class="p-3 w-full font-semibold break-words text-xl">
                       {{ location[3] }}
@@ -98,7 +98,7 @@
 
                     <input data-input="tax_{{ loop.index }}"
                       class="border border-gray-300 text-xl p-3 w-full rounded-lg focus:outline-none hidden" type="text"
-                      name="data_tax_4_country_{{ loop.index }}" value="{{ location[3] }}">
+                      name="data_tax_4_location_country_{{ loop.index }}" value="{{ location[3] }}">
 
                     <div class="flex justify-end w-full">
                       <!-- Edit Button -->
@@ -125,7 +125,6 @@
                   +
                 </button>
               </div>
-
 
               <!-- de rest -->
               {% else %}
