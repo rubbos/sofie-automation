@@ -9,48 +9,48 @@ def get_raw_data(pdf_path) -> str:
 
 
 def extract(text: str) -> dict:
-    type_data = ["str", "list[str]", "date", "list[date]"]
-    yes_no = ["Yes", "No"]
-
+    type_string = "str"
+    type_date = "date"
+    
     extracted_data = {
         "Naam werkgever": [
-            type_data[0],
+            type_string,
             em.extract_between_keywords(text, "Name of employer", "\n"),
             "employer",
         ],
         "Loonheffingsnummer": [
-            type_data[0],
+            type_string,
             em.extract_between_keywords(text, "LH number", "\n"),
             "lhn",
         ],
-        "Publiek/Privaat universiteit": [type_data[0], "None", "employer_type"],
+        "Publiek/Privaat universiteit": [type_string, "None", "employer_type"],
         "Geboortedatum": [
-            type_data[2],
+            type_date,
             em.extract_dates(text, "Birth", "\n"),
             "date_of_birth",
         ],
         "BSN": [
-            type_data[0],
+            type_string,
             em.extract_between_keywords(text, "BSN Number", "\n"),
             "bsn",
         ],
         "Functietitel": [
-            type_data[0],
+            type_string,
             em.extract_between_keywords(text, "Title", "\n"),
             "job_title",
         ],
         "Startdatum arbeidsovereenkomst": [
-            type_data[2],
+            type_date,
             em.extract_dates(text, "into service", "\n"),
             "ao_start_date",
         ],
         "UFO code": [
-            type_data[0],
+            type_string,
             em.extract_between_keywords(text, "UFO code", "\n"),
             "ufo_code",
         ],
         "SOFIE Aanvraagdatum": [
-            type_data[2],
+            type_date,
             em.extract_dates(text, "Created at", "by"),
             "application_date",
         ],

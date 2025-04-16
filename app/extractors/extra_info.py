@@ -4,26 +4,28 @@ from extractors.methods import transform_methods as tm
 
 def empty_info():
     type_data = ["str", "list[str]", "date", "list[date]"]
+    type_string = "str"
+    type_date = "date"
 
     extracted_data = {
         "Arbeidsovereenkomst datum getekend": [
-            type_data[2],
+            type_string,
             "",
             "ao_signed_date",
         ],
-        "Wilsovereenkomst datum getekend": [type_data[2], "", "wo_signed_date"],
+        "Wilsovereenkomst datum getekend": [type_date, "", "wo_signed_date"],
         "De wilsovereenkomst blijkt uit: ": [
-            type_data[0],
+            type_string,
             "",
             "explain_wo",
         ],
         "Volgens het cv werkte/studeerde werknemer als ...": [
-            type_data[0],
+            type_string,
             "",
             "previous_jobs",
         ],
         "Het verblijf in Nederland was in het kader van ... Dit blijkt o.a. uit Contract ...": [
-            type_data[0],
+            type_string,
             "",
             "explain_nl",
         ],
