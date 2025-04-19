@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dynamic Form</title>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 p-6">
+    <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-md p-6">
+        <h1 class="text-2xl font-bold mb-6">Dynamic Form</h1>
+        
+        <form method="POST" action="{{ url_for('index') }}">
+            {{ form.csrf_token }}
+            
+            <!-- Date Range Section -->
+            <div class="mb-8" x-data="{ dateRanges: {{ date_ranges|default([])|tojson }} }">
+                <h2 class="text-xl font-semibold mb-4">Residence Dates</h2>
+                
+                <div id="date-ranges-container">
+                    <template x-for="(range, index) in dateRanges" :key="index">
+                        <div class="flex flex-wrap items-center mb-4 pb-4 border-b">
+                            <div class="w-full md:w-1/2 px-2 mb-4">
+                                <label class="block text-gray-700 mb-2" x-text="'Start Date ' + (index + 1)"></label>
+                                <input type="text" 
+                                       x-bind:name="'date_ranges-' + index + '-start_date'"
+                                       x-model="range.start_date"
+                                       class="w-full p-2 border rounded">
+                            </div>
+                            
+                            <div class="w-full md:w-1/2 px-2 mb-4">
+                                <label class="block text-gray-700 mb-2" x-text="'End Date ' + (index + 1)"></label>
+                                <input type="text"
+                                       x-bind:name="'date_ranges-' + index + '-end_date'"
+                                       x-model="range.end_date"
+                                       class="w-full p-2 border rounded">
+                            </div>
+                            
+                            <div class="w-full flex justify-end px-2">
+                                <button type="button" 
+                                        @click="dateRanges.splice(index, 1)"
+                                        class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                                    Remove
+                                </button>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+                
+                <button type="button" 
+                        @click="dateRanges.push({start_date: '', end_date: ''})"
+                        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                    Add Date Range
+                </button>
+            </div>
+            
+            <!-- Contact Info Section -->
+            <div class="mb-8" x-data="{ contacts: {{ contacts|default([])|tojson }} }">
+                <h2 class="text-xl font-semibold mb-4">Contact Information</h2>
+                
+                <div id="contacts-container">
+                    <template x-for="(contact, index) in contacts" :key="index">
+                        <div class="flex flex-wrap items-center mb-4 pb-4 border-b">
+                            <div class="w-full md:w-1/4 px-2 mb-4">
+                                <label class="block text-gray-700 mb-2">Name</label>
+                                <input type="text" 
+                                       x-bind:name="'contacts-' + index + '-name'"
+                                       x-model="contact.name"
+                                       class="w-full p-2 border rounded">
+                            </div>
+                            
+                            <div class="w-full md:w-1/4 px-2 mb-4">
+                                <label class="block text-gray-700 mb-2">Email</label>
+                                <input type="email"
+                                       x-bind:name="'contacts-' + index + '-email'"
+                                       x-model="contact.email"
+                                       class="w-full p-2 border rounded">
+                            </div>
+                            
+                            <div class="w-full md:w-1/4 px-2 mb-4">
+                                <label class="block text-gray-700 mb-2">Phone</label>
+                                <input type="text"
+                                       x-bind:name="'contacts-' + index + '-phone'"
+                                       x-model="contact.phone"
+                                       class="w-full p-2 border rounded">
+                            </div>
+                            
+                            <div class="w-full md:w-1/4 px-2 mb-4">
+                                <label class="block text-gray-700 mb-2">Address</label>
+                                <input type="text"
+                                       x-bind:name="'contacts-' + index + '-address'"
+                                       x-model="contact.address"
+                                       class="w-full p-2 border rounded">
+                            </div>
+                            
+                            <div class="w-full flex justify-end px-2">
+                                <button type="button" 
+                                        @click="contacts.splice(index, 1)"
+                                        class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                                    Remove
+                                </button>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+                
+                <button type="button" 
+                        @click="contacts.push({name: '', email: '', phone: '', address: ''})"
+                        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                    Add Contact Info
+                </button>
+            </div>
+            
+            <div class="mt-6">
+                <button type="submit" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                    Submit
+                </button>
+            </div>
+        </form>
+    </div>
+    
+    <script>
+        // You can add additional Alpine.js initializations here if needed
+        document.addEventListener('alpine:init', () => {
+            // Initialize with any existing data from server (for edit forms)
+            // This would be populated from Flask in a real implementation
+        })
+    </script>
+</body>
+</html>

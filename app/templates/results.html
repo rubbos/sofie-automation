@@ -119,8 +119,60 @@
                   {% endfor %}
                 </div>
 
-                <!-- Add new row button at the end -->
+                <!-- New row button -->
                 <button type="button" id="addRowButton"
+                  class="bg-green-600 hover:bg-green-700 text-white text-xl font-semibold py-3 px-6 rounded-lg shadow-md transition-all duration-300 mt-2">
+                  +
+                </button>
+              </div>
+              
+              <!-- Alle periodes in NL -->
+              {% elif loop.index0 == 5 %}
+              <div>
+                <div class="flex justify-evenly">
+                  <label class="w-full">Start Date</label>
+                  <label class="w-full">End Date</label>
+                  <label class="w-full"></label>
+                </div>
+
+                <div id="nl_residence_dates_container">
+                  {% for date in row[1]["VALUE"] %}
+                  <div class="flex justify-evenly items-center border-b" id="row_{{ loop.index }}">
+                    <label data-label="tax_{{ loop.index }}" class="p-3 w-full font-semibold break-words text-xl">
+                      {{ date[0] }}
+                    </label>
+                    <input data-input="tax_{{ loop.index }}"
+                      class="border border-gray-300 text-xl p-3 w-full rounded-lg focus:outline-none hidden" type="text"
+                      name="data_tax_4_location_start_date_{{ loop.index }}" value="{{ date[0] }}">
+
+                    <label data-label="tax_{{ loop.index }}" class="p-3 w-full font-semibold break-words text-xl">
+                      {{ date[1] }}
+                    </label>
+                    <input data-input="tax_{{ loop.index }}"
+                      class="border border-gray-300 text-xl p-3 w-full rounded-lg focus:outline-none hidden" type="text"
+                      name="data_tax_4_location_end_date_{{ loop.index }}" value="{{ date[1] }}">
+
+                    <div class="flex justify-end w-full">
+                      <!-- Edit Button -->
+                      <button type="button"
+                        class="bg-blue-600 hover:bg-blue-700 text-white text-xl font-semibold py-3 px-4 m-2 rounded-lg shadow-md transition-all duration-300"
+                        onclick="toggleEditLocation('tax', {{ loop.index }})">
+                        wijzig
+                      </button>
+
+                      <!-- Remove Button -->
+                      <button type="button"
+                        class="bg-red-600 hover:bg-red-700 text-white text-xl font-semibold py-3 px-4 m-2 rounded-lg shadow-md transition-all duration-300"
+                        onclick="removeRow('row_{{ loop.index }}')">
+                        x
+                      </button>
+                    </div>
+                  </div>
+                  {% endfor %}
+                </div>
+
+                <!-- New row button -->
+                <button type="button" id="addTwoInputRowButton"
                   class="bg-green-600 hover:bg-green-700 text-white text-xl font-semibold py-3 px-6 rounded-lg shadow-md transition-all duration-300 mt-2">
                   +
                 </button>
