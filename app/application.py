@@ -18,7 +18,7 @@ import logging
 from flask import session, redirect, url_for
 import json
 from forms import UploadForm, MainForm
-from extract_data import extract
+from extract_data import main as extract
 
 # Load environment variables from .env file (in development)
 load_dotenv()
@@ -58,7 +58,6 @@ def upload_files():
             data = extract(sofie_data, topdesk_data, dev_mode=True)
 
     elif form.validate_on_submit():
-        # Decode from bytes to string
         sofie_data = form.sofie_file.data.read()
         topdesk_data = form.topdesk_file.data.read()
         data = extract(sofie_data, topdesk_data)
@@ -66,6 +65,7 @@ def upload_files():
     else:
         return render_template("upload2.html", form=form)
 
+    # FIXME from here (upload seems to work)
     # Store the extracted data in session
     session["date_ranges"] = json.dumps(data.get("date_ranges", []))
     session["contacts"] = json.dumps(data.get("contacts", []))

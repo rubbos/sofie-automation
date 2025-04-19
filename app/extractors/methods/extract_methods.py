@@ -1,41 +1,6 @@
 import re
-import pandas as pd
-from pytesseract import image_to_string
-from pdf2image import convert_from_bytes
 from extractors.methods import transform_methods as tm
-import cv2
-import numpy as np
-import os
 from datetime import datetime
-
-
-def save_text(text: str, name: str) -> None:
-    """Save text from tesseract to a temporary file."""
-    folder_path = "temp_files"
-    os.makedirs(folder_path, exist_ok=True)
-    file_path = os.path.join(folder_path, f"{name}.txt")
-    with open(file_path, "w") as text_file:
-        text_file.write(text)
-
-
-def preprocess_image(image, margin=50):
-    """Preprocess the image for pytesseract by resizing and cropping fixed margins."""
-    img = np.array(image)
-    resized_img = cv2.resize(img, None, fx=1.5, fy=1.5, interpolation=cv2.INTER_CUBIC)
-    height, width = resized_img.shape[:2]
-    cropped_img = resized_img[margin : height - margin, margin : width - margin]
-    return cropped_img
-
-
-def file_to_raw_data(pdf_bytes, config_psm: int) -> str:
-    """Convert uploaded file to string"""
-    doc = convert_from_bytes(pdf_bytes)
-    text = ""
-    for page_data in doc:
-        processed_data = preprocess_image(page_data)
-        text += image_to_string(processed_data, config=f"--psm {config_psm}")
-    return text
-
 
 def extract_after_keyword(text: str, start_keyword: str) -> str | None:
     """Extract string after keyword till end of text"""
