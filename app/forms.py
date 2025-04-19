@@ -5,8 +5,8 @@ from flask_wtf.file import FileField, FileAllowed
 from wtforms import SubmitField
 
 class UploadForm(FlaskForm):
-    sofie_file = FileField('Tax Form', validators=[FileAllowed(['pdf'])])
-    topdesk_file = FileField('Application Form', validators=[FileAllowed(['pdf'])])
+    sofie_file = FileField('Sofie form', validators=[FileAllowed(['pdf'])])
+    topdesk_file = FileField('Topdesk form', validators=[FileAllowed(['pdf'])])
     submit = SubmitField('Upload')
 
 class DateRangeForm(FlaskForm):

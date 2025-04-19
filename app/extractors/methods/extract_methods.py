@@ -10,11 +10,9 @@ from datetime import datetime
 
 
 def save_text(text: str, name: str) -> None:
-    """Save the extracted text from pytesseract in a folder"""
+    """Save text from tesseract to a temporary file."""
     folder_path = "temp_files"
-    if not os.path.exists(folder_path):
-        os.makedirs(folder_path)
-
+    os.makedirs(folder_path, exist_ok=True)
     file_path = os.path.join(folder_path, f"{name}.txt")
     with open(file_path, "w") as text_file:
         text_file.write(text)
@@ -32,7 +30,6 @@ def preprocess_image(image, margin=50):
 def file_to_raw_data(pdf_bytes, config_psm: int) -> str:
     """Convert uploaded file to string"""
     doc = convert_from_bytes(pdf_bytes)
-
     text = ""
     for page_data in doc:
         processed_data = preprocess_image(page_data)

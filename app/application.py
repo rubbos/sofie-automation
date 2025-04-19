@@ -25,12 +25,6 @@ load_dotenv()
 
 app = Flask(__name__)
 
-data = pd.DataFrame()
-
-# Skip the upload with DEV_MODE
-DEV_MODE = False
-LOCAL_FILE = "temp_files/data.txt"
-
 # Get secret key from environment variable
 app.config['SECRET_KEY'] = os.environ.get('FLASK_SECRET_KEY')
 
@@ -47,20 +41,37 @@ if not app.config['SECRET_KEY']:
 # Initialize CSRF protection
 csrf = CSRFProtect(app)
 
+# Skip the upload with DEV_MODE
+DEV_MODE = False
+LOCAL_FILE1 = "temp_files/sofie_data.txt"
+LOCAL_FILE2 = "temp_files/topdesk_data.txt"
+
 @app.route("/", methods=["GET", "POST"])
 def upload_files():
     form = UploadForm()
 
-    if form.validate_on_submit():
+    if DEV_MODE:
+        with open(LOCAL_FILE1, "r", encoding="utf-8") as file1, \
+             open(LOCAL_FILE2, "r", encoding="utf-8") as file2:
+            sofie_data = file1.read()
+            topdesk_data = file2.read()
+
+    elif form.validate_on_submit():
+        # Decode from bytes to string
         sofie_data = form.sofie_file.data.read()
         topdesk_data = form.topdesk_file.data.read()
-        data = extract(sofie_data, topdesk_data)
 
-        session["date_ranges"] = json.dumps(data.get("date_ranges", []))
+    else:
+        return render_template("upload2.html", form=form)
 
-        return redirect(url_for('index'))  
+    # Common processing after file loading
+    data = extract(sofie_data, topdesk_data)
 
-    return render_template("upload2.html", form=form)
+    # Store the extracted data in session
+    session["date_ranges"] = json.dumps(data.get("date_ranges", []))
+    session["contacts"] = json.dumps(data.get("contacts", []))
+
+    return redirect(url_for('index'))
 
 @app.route('/form', methods=['GET', 'POST'])
 def index():
