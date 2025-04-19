@@ -42,7 +42,7 @@ if not app.config['SECRET_KEY']:
 csrf = CSRFProtect(app)
 
 # Skip the upload with DEV_MODE
-DEV_MODE = False
+DEV_MODE = True
 LOCAL_FILE1 = "temp_files/sofie_data.txt"
 LOCAL_FILE2 = "temp_files/topdesk_data.txt"
 
@@ -55,17 +55,16 @@ def upload_files():
              open(LOCAL_FILE2, "r", encoding="utf-8") as file2:
             sofie_data = file1.read()
             topdesk_data = file2.read()
+            data = extract(sofie_data, topdesk_data, dev_mode=True)
 
     elif form.validate_on_submit():
         # Decode from bytes to string
         sofie_data = form.sofie_file.data.read()
         topdesk_data = form.topdesk_file.data.read()
+        data = extract(sofie_data, topdesk_data)
 
     else:
         return render_template("upload2.html", form=form)
-
-    # Common processing after file loading
-    data = extract(sofie_data, topdesk_data)
 
     # Store the extracted data in session
     session["date_ranges"] = json.dumps(data.get("date_ranges", []))

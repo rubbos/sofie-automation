@@ -29,10 +29,10 @@ def extract_specific_data(sofie_raw_data, topdesk_raw_data) -> dict:
 
 def extract(sofie_data, topdesk_data, dev_mode=False) -> dict:
     if not dev_mode:
-        sofie_raw_data = get_raw_data(sofie_data)
-        topdesk_raw_data = get_raw_data(topdesk_data)
-        em.save_text(sofie_raw_data, "sofie_data")
-        em.save_text(topdesk_raw_data, "topdesk_data")
-    extracted_data = extract_specific_data(sofie_raw_data, topdesk_raw_data)
+        sofie_data = get_raw_data(sofie_data)
+        topdesk_data = get_raw_data(topdesk_data)
+        em.save_text(sofie_data, "sofie_data")
+        em.save_text(topdesk_data, "topdesk_data")
+    extracted_data = extract_specific_data(sofie_data, topdesk_data)
     return extracted_data
 
