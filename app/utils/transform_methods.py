@@ -1,7 +1,7 @@
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import pandas as pd
-
+import re
 
 def dict_to_table(data: dict):
     df = pd.DataFrame(
@@ -115,7 +115,7 @@ def round_months(months: int, days: int) -> int:
 
 def clean_text(text: str) -> str:
     """Removes unnessesary characters"""
-    characters_to_remove = [":", "\n"]
-    for char in characters_to_remove:
-        text = text.replace(char, "")
-    return text
+    cleaned = text.strip()
+    cleaned = re.sub(r"[^a-zA-Z0-9,.'\- ]+", "", cleaned)
+    cleaned = cleaned.title()
+    return cleaned

@@ -1,5 +1,5 @@
 import re
-from extractors.methods import transform_methods as tm
+from utils import transform_methods as tm
 from datetime import datetime
 
 def extract_after_keyword(text: str, start_keyword: str) -> str | None:
@@ -11,14 +11,22 @@ def extract_after_keyword(text: str, start_keyword: str) -> str | None:
 
 
 def extract_between_keywords(
-    text: str, start_keyword: str, end_keyword: str
-) -> str | None:
-    """Extract string between 2 keywords"""
+    text: str, start_keyword: str, end_keyword: str, clean=False) -> str | None:
+    """Extract string between 2 keywords, and clean the text if needed"""
     start_index = text.find(start_keyword)
     end_index = text.find(end_keyword, start_index + len(start_keyword))
+    
+    # Check if the keywords are found and in the correct order
     if start_index == -1 or end_index == -1 or end_index < start_index:
         return None
-    return text[start_index + len(start_keyword) : end_index]
+
+    string = text[start_index + len(start_keyword) : end_index]
+
+    # Clean the string if the clean flag is set
+    if clean:
+        string = tm.clean_text(string)
+
+    return string
 
 
 def extract_around_keywords(text: str, start_keyword: str, end_keyword: str):
@@ -73,28 +81,34 @@ def find_all_dates(text: str) -> list[str]:
     matches = pattern.findall(text)
     return matches
 
-def extract_dates(string: str, start_keyword: str, end_keyword: str) -> list[str] | None:
+def extract_date(string: str, start_keyword: str, end_keyword: str, single_date=False) -> list[str] | str | None:
     """Extract all dates in string and transform to dd-mm-yyyy"""
     text = extract_between_keywords(string, start_keyword, end_keyword)
     if not text:
         return None
     dates = find_all_dates(text)
     cleaned_dates = [tm.transform_date(date) for date in dates]
+    
+    # Return as a string if its only one date
+    if single_date: 
+        return cleaned_dates[0]
     return cleaned_dates
 
 def extract_multiple_dates(string: str, start_keyword: str, end_keyword: str) -> list[str]:
     """Extract all dates and transform to dd-mm-yyyy and pair them together"""
-    extracted_dates = extract_dates(string, start_keyword, end_keyword)
+    extracted_dates = extract_date(string, start_keyword, end_keyword)
     
-    pairs = []    
-    if extracted_dates == [[]]:
-        return pairs
+    # If no dates are found, return None
+    if not extracted_dates or extracted_dates == [[]]:
+        return None
 
+    # Only return paired dates
+    pairs = []    
     for i in range(0, len(extracted_dates), 2):
-        start_date = extracted_dates[i]
-        end_date = extracted_dates[i + 1]
-        pairs.append([start_date, end_date])
-    return pairs
+        if i + 1 < len(extracted_dates):
+            pairs.append([extracted_dates[i], extracted_dates[i + 1]])
+
+    return pairs if pairs else None
 
 def extract_place_of_residences(text: str):
     """Extract the complete data of places and dates from user and return it in a list"""
