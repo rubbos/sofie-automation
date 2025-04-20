@@ -126,7 +126,6 @@ def main(sofie_data, topdesk_data, dev_mode=False) -> dict:
     validated_data = validate(extracted_data)
     
     pprint(validated_data)
-    pprint(type(validated_data.get('arrival_date')))
     
     return validated_data
 

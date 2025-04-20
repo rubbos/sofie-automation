@@ -32,33 +32,21 @@ def normalize_date(date_str):
         date_str = date_str.replace(dutch, english)
     return date_str
 
-
-def transform_date(date: str) -> str:
-    """Convert different date formats into dd-mm-yyyy"""
+def transform_date(date: str) -> pd.Timestamp:
+    """Convert different date formats into dd-mm-yyyy pd.Timestamp"""
     date_formats = [
-        "%d-%m-%Y",
-        "%d/%m/%Y",
-        "%d.%m.%Y",
-        "%d-%b-%Y",
-        "%d %b %Y",
-        "%d-%B-%Y",
-        "%d %B %Y",
-        "%d-%b-%y",
-        "%d %b %y",
-        "%d-%m-%y",
-        "%d/%m/%y",
-        "%d.%m.%y",
+        "%d-%m-%Y","%d/%m/%Y","%d.%m.%Y","%d-%b-%Y","%d %b %Y","%d-%B-%Y",
+        "%d %B %Y","%d-%b-%y","%d %b %y","%d-%m-%y","%d/%m/%y","%d.%m.%y",
     ]
     date = normalize_date(date.lower())
 
     for date_format in date_formats:
         try:
             parsed_date = datetime.strptime(date, date_format)
-            return parsed_date.strftime("%d-%m-%Y")
+            return pd.to_datetime(parsed_date, format="%d-%m-%Y")
         except ValueError:
             pass
     return date
-
 
 def clean_locations(dates: list[str], locations: list[str]) -> list[str]:
     """
@@ -69,7 +57,6 @@ def clean_locations(dates: list[str], locations: list[str]) -> list[str]:
         if len(dates) <= 2:
             return locations[:1]
         return locations[: -len(dates) // 2]
-
 
 def months_and_days_between_dates(first_date: str, last_date: str, round=False) -> str:
     date_format = "%d-%m-%Y"
@@ -100,21 +87,18 @@ def months_and_days_between_dates(first_date: str, last_date: str, round=False) 
         return f"{months} {month_str} + {days} {day_str}"
     return f"{round_months(months, days)} {month_str}"
 
-
 def check_string_plural(string: str, amount: int) -> str:
     if amount > 1:
         return f"{string}en"
     return string
-
 
 def round_months(months: int, days: int) -> int:
     if days > 0:
         return months + 1
     return months
 
-
 def clean_text(text: str) -> str:
-    """Removes unnessesary characters"""
+    """Removes unnessesary characters from string and returns the cleaned string"""
     cleaned = text.strip()
     cleaned = re.sub(r"[^a-zA-Z0-9,.'\- ]+", "", cleaned)
     cleaned = cleaned.title()

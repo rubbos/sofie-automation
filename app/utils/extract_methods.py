@@ -88,7 +88,7 @@ def extract_date(string: str, start_keyword: str, end_keyword: str, single_date=
         return None
     dates = find_all_dates(text)
     cleaned_dates = [tm.transform_date(date) for date in dates]
-    
+
     # Return as a string if its only one date
     if single_date: 
         return cleaned_dates[0]
@@ -142,17 +142,11 @@ def extract_place_of_residences(text: str):
         cleaned_place = tm.clean_text(place)
         cleaned_location = tm.clean_text(location)
 
-        # Convert and sort dates
-        try:
-            date_objects = [
-                datetime.strptime(date, "%d-%m-%Y") for date in cleaned_dates
-            ]
-            sorted_dates = sorted(date_objects)
-        except ValueError:
-            sorted_dates = []
+        # Sort the dates
+        sorted_dates = sorted(cleaned_dates)
 
         # Add cleaned data to list for this residence section
-        data.extend(date.strftime("%d-%m-%Y") for date in sorted_dates)
+        data.extend(date for date in sorted_dates)
         data.append(cleaned_place)
         data.append(cleaned_location)
 
