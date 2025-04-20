@@ -4,6 +4,86 @@ import numpy as np
 from pytesseract import image_to_string
 from pdf2image import convert_from_bytes
 from extractors.methods import extract_methods as em
+from dataclasses import dataclass, field, asdict
+from typing import List, Optional
+from datetime import date
+from pprint import pprint
+
+@dataclass
+class Residence:
+    start_date: date
+    end_date: date
+    location: str
+    country: str
+
+@dataclass
+class DateRange:
+    start_date: date
+    end_date: date
+
+@dataclass
+class ExtractedData:
+    request_type: str = ""
+    name: str = ""
+    arrival_date: date = None
+    first_work_date: date = None
+    places_of_residence: List[Residence] = field(default_factory=list)
+    nl_residence_dates: List[DateRange] = field(default_factory=list)
+    nl_deregister_date: date = None
+    nl_private_dates: List[DateRange] = field(default_factory=list)
+    nl_dutch_employer_dates: List[DateRange] = field(default_factory=list)
+    nl_worked_dates: List[DateRange] = field(default_factory=list)
+    employer: str = ""
+    payroll_tax_number: str = ""
+    employer_type: str = ""
+    date_of_birth: date = None
+    bsn: str = ""
+    job_title: str = ""
+    contract_start_date: date = None
+    ufo_code: str = ""
+    application_date: date = None
+    contract_signed_date: date = None
+    explain_will_agreement: str = ""
+    previous_jobs: str = ""
+    nl_explain: str = ""
+
+def extract_specific_data(sofie_raw_data, topdesk_raw_data) -> dict:
+    """Extract specific data from the raw data."""
+    
+    data = ExtractedData(
+        # Extract data from Sofie form
+        request_type = "",
+        name = em.extract_between_keywords(sofie_raw_data, "Initials", "Has agreed"),
+        arrival_date = em.extract_dates(sofie_raw_data, "Date of arrival", "My address"),
+        first_work_date = em.extract_dates(sofie_raw_data, "working day", "Place"),
+        places_of_residence = em.extract_place_of_residences(sofie_raw_data),
+        nl_residence_dates = em.extract_multiple_dates(sofie_raw_data, "Have you previously", "Were you registered"),
+        nl_deregister_date = em.extract_dates(sofie_raw_data, "deregister", "Have you"),
+        nl_worked_dates = em.extract_multiple_dates(sofie_raw_data, "Have you previously worked", "private"),
+        nl_private_dates = em.extract_multiple_dates(sofie_raw_data, "holiday", "outside"),
+        nl_dutch_employer_dates= em.extract_multiple_dates(sofie_raw_data, "outside", "undersigned"),
+        
+        # Extract data from Topdesk form
+        employer = em.extract_between_keywords(topdesk_raw_data, "Name of employer", "\n"),
+        payroll_tax_number = em.extract_between_keywords(topdesk_raw_data, "LH number", "\n"),
+        employer_type = "",
+        date_of_birth = em.extract_dates(topdesk_raw_data, "Birth", "\n"),
+        bsn = em.extract_between_keywords(topdesk_raw_data, "BSN Number", "\n"),
+        job_title = em.extract_between_keywords(topdesk_raw_data, "Title", "\n"),
+        contract_start_date = em.extract_dates(topdesk_raw_data, "into service", "\n"),
+        ufo_code = em.extract_between_keywords(topdesk_raw_data, "UFO code", "\n"),
+        application_date = em.extract_dates(topdesk_raw_data, "Created at", "by"),
+
+        # Extract data from cv and work contract (not implemented yet)
+        contract_signed_date = "",
+        explain_will_agreement = "",
+        previous_jobs = "",
+        nl_explain = "",
+    )
+
+    data_dict = asdict(data)
+    pprint(data_dict)
+    return data_dict
 
 def preprocess_image(image, margin=50):
     """Preprocess the image for pytesseract by resizing and cropping fixed margins."""
@@ -29,32 +109,6 @@ def save_text(text: str, name: str) -> None:
     file_path = os.path.join(folder_path, f"{name}.txt")
     with open(file_path, "w") as text_file:
         text_file.write(text)
-
-def extract_specific_data(sofie_raw_data, topdesk_raw_data) -> dict:
-    """Extract specific data from the raw data."""
-    request_type = ""
-    name = em.extract_between_keywords(sofie_raw_data, "Initials", "Has agreed")
-    arrival_date = em.extract_dates(sofie_raw_data, "Date of arrival", "My address")
-    first_work_date = em.extract_dates(sofie_raw_data, "working day", "Place")
-    places_of_residence = em.extract_place_of_residences(sofie_raw_data)
-    nl_residence_dates = em.extract_multiple_dates(sofie_raw_data, "Have you previously", "Were you registered")
-    nl_deregister_date = em.extract_dates(sofie_raw_data, "deregister", "Have you")
-    nl_worked_dates = em.extract_multiple_dates(sofie_raw_data, "Have you previously worked", "private")
-    nl_private_dates = em.extract_multiple_dates(sofie_raw_data, "holiday", "outside")
-    nl_dutch_employer_dates= em.extract_multiple_dates(sofie_raw_data, "outside", "undersigned")
-
-    #FIXME Add more data from other files
-    print("REQUEST TYPE", request_type)
-    print("NAME", name)
-    print("ARRIVAL DATE", arrival_date) 
-    print("FIRST WORK DATE", first_work_date)
-    print("PLACES OF RESIDENCE", places_of_residence)
-    print("NL RESIDENCE DATES", nl_residence_dates)
-    print("NL DEREGISTER DATE", nl_deregister_date)
-    print("NL PRIVATE DATES", nl_private_dates)         
-    print("NL DUTCH EMPLOYER DATES", nl_dutch_employer_dates)
-    print("NL WORKED DATES", nl_worked_dates)
-    return []
 
 def main(sofie_data, topdesk_data, dev_mode=False) -> dict:
     """Extract data from the uploaded files."""
