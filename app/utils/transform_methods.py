@@ -43,7 +43,7 @@ def transform_date(date: str) -> pd.Timestamp:
     for date_format in date_formats:
         try:
             parsed_date = datetime.strptime(date, date_format)
-            return pd.to_datetime(parsed_date, format="%d-%m-%Y")
+            return parsed_date.strftime("%d-%m-%Y")
         except ValueError:
             pass
     return date
@@ -99,7 +99,7 @@ def round_months(months: int, days: int) -> int:
 
 def clean_text(text: str) -> str:
     """Removes unnessesary characters from string and returns the cleaned string"""
-    cleaned = text.strip()
-    cleaned = re.sub(r"[^a-zA-Z0-9,.'\- ]+", "", cleaned)
+    cleaned = re.sub(r"[^a-zA-Z0-9,.'\- ]+", "", text)
     cleaned = cleaned.title()
+    cleaned = cleaned.strip()
     return cleaned

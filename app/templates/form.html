@@ -11,7 +11,15 @@
         
         <form method="POST" action="{{ url_for('index') }}">
             {{ form.csrf_token }}
-            
+            {{ form.hidden_tag() }} 
+
+            <a href="/" class="inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
+                Back to Home
+              </a>
+            <input type="text" name="name" x-model="form.name"
+            value="{{ form.name.data | default('') }}"
+            class="input-class"> 
+
             <!-- Date Range Section -->
             <div class="mb-8" x-data="{ dateRanges: {{ date_ranges|default([])|tojson }} }">
                 <h2 class="text-xl font-semibold mb-4">Residence Dates</h2>

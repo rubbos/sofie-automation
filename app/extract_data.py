@@ -9,6 +9,7 @@ from dataclasses import dataclass, field, asdict
 from typing import List, Optional
 from datetime import date
 from pprint import pprint
+import json
 
 @dataclass
 class Residence:
@@ -124,7 +125,6 @@ def main(sofie_data, topdesk_data, dev_mode=False) -> dict:
         save_text(topdesk_data, "topdesk_data")
     extracted_data = extract_specific_data(sofie_data, topdesk_data)
     validated_data = validate(extracted_data)
-    
     pprint(validated_data)
     
     return validated_data

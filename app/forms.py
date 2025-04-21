@@ -20,5 +20,6 @@ class ContactInfoForm(FlaskForm):
     address = StringField('Address')
 
 class MainForm(FlaskForm):
+    name = StringField('Name', validators=[DataRequired()])
     date_ranges = FieldList(FormField(DateRangeForm), min_entries=0)
     contacts = FieldList(FormField(ContactInfoForm), min_entries=0)

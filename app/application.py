@@ -15,7 +15,8 @@ import logging
 from flask import session, redirect, url_for
 import json
 from forms import UploadForm, MainForm
-from extract_data import main as extract
+from extract_data import main as extract 
+from pprint import pprint
 
 # Load environment variables from .env file (in development)
 load_dotenv()
@@ -43,6 +44,8 @@ DEV_MODE = True
 LOCAL_FILE1 = "temp_files/sofie_data.txt"
 LOCAL_FILE2 = "temp_files/topdesk_data.txt"
 
+global data
+
 @app.route("/", methods=["GET", "POST"])
 def upload_files():
     form = UploadForm()
@@ -64,8 +67,12 @@ def upload_files():
 
     # FIXME from here (upload seems to work)
     # Store the extracted data in session
-    session["date_ranges"] = json.dumps(data.get("date_ranges", []))
+    session["date_ranges"] = json.dumps(data.get(("date_of_arrival"), []))
     session["contacts"] = json.dumps(data.get("contacts", []))
+    # session["name"] = data.get("name", None)
+
+    for key, value in data.items():
+        session[f"form_{key}"] = value
 
     return redirect(url_for('index'))
 
@@ -77,9 +84,19 @@ def index():
     if request.method == 'GET':
         date_ranges_json = session.pop("date_ranges", "[]")
         contacts_json = session.pop("contacts", "[]")
+        
+        # Load session data into the form fields
+        for key in list(session.keys()):
+            if key.startswith("form_"):
+                field_name = key[5:]
+                field = getattr(form, field_name, None)
+                if field:
+                    field.data = session.pop(key)
 
         date_ranges = json.loads(date_ranges_json)
         contacts = json.loads(contacts_json)
+
+        # form.name.data = name
 
         for item in date_ranges:
             form.date_ranges.append_entry(item)
@@ -117,10 +134,15 @@ def index():
             contacts = form.contacts.data
             
             # Do something with the data (save to database, etc.)
-            print("Date Ranges:", date_ranges)
-            print("Contacts:", contacts)
-            
-            return "Form submitted successfully!"
+            # print("Date Ranges:", date_ranges)
+            # print("Contacts:", contacts)
+           
+            # Filter out CSRF for logging to console
+            form_data = {key: value for key, value in form.data.items() if key != 'csrf_token'}
+            for key, value in form_data.items():
+                print(f"{key}: {value}")
+ 
+            return "Form submitted successfully!" 
     
     return render_template('form.html', form=form)
 
