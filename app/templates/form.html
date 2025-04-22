@@ -5,133 +5,287 @@
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body class="bg-black p-6">
-    <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-md p-6">
+<body class="p-6">
+    <div class="max-w-4xl mx-auto rounded-xl shadow-md p-6">
         <h1 class="text-2xl font-bold mb-6">Dynamic Form</h1>
         
-        <form method="POST" action="{{ url_for('index') }}">
+        <form method="POST" action="{{ url_for('index') }}" x-data="dateRangeForm()">
             {{ form.csrf_token }}
             {{ form.hidden_tag() }} 
+            <div>
+                {{ form.request_type.label }}<br>
+                {{ form.request_type }}<br>
+                {% for error in form.request_type.errors %}
+                    <span class="text-red-500">{{ error }}</span>
+                {% endfor %}
+            </div>
+        
+            <div>
+                {{ form.name.label }}<br>
+                {{ form.name(size=40) }}<br>
+                {% for error in form.name.errors %}
+                    <span class="text-red-500">{{ error }}</span>
+                {% endfor %}
+            </div>
+        
+            <div class="form-group">
+                {{ form.arrival_date.label }}
+                {{ form.arrival_date }}
+                {% if form.arrival_date.errors %}
+                    <div class="text-red-500">
+                        {% for error in form.arrival_date.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+        
+            <div>
+                {{ form.first_work_date.label }}<br>
+                {{ form.first_work_date(size=40) }}<br>
+                {% for error in form.first_work_date.errors %}
+                    <span class="text-red-500">{{ error }}</span>
+                {% endfor %}
+            </div>
+        
+            <div>
+                {{ form.places_of_residence.label }}<br>
+                {{ form.places_of_residence(size=60) }}<br>
+                {% for error in form.places_of_residence.errors %}
+                    <span class="text-red-500">{{ error }}</span>
+                {% endfor %}
+            </div>
+        
+            <div>
+                {{ form.nl_deregister_date.label }}<br>
+                {{ form.nl_deregister_date(size=40) }}<br>
+                {% for error in form.nl_deregister_date.errors %}
+                    <span class="text-red-500">{{ error }}</span>
+                {% endfor %}
+            </div>
+        
+            <div>
+                {{ form.nl_private_dates.label }}<br>
+                {{ form.nl_private_dates(size=60) }}<br>
+                {% for error in form.nl_private_dates.errors %}
+                    <span class="text-red-500">{{ error }}</span>
+                {% endfor %}
+            </div>
+        
+            <div>
+                {{ form.nl_dutch_employer_dates.label }}<br>
+                {{ form.nl_dutch_employer_dates(size=60) }}<br>
+                {% for error in form.nl_dutch_employer_dates.errors %}
+                    <span class="text-red-500">{{ error }}</span>
+                {% endfor %}
+            </div>
+        
+            <div>
+                {{ form.nl_worked_dates.label }}<br>
+                {{ form.nl_worked_dates(size=60) }}<br>
+                {% for error in form.nl_worked_dates.errors %}
+                    <span class="text-red-500">{{ error }}</span>
+                {% endfor %}
+            </div>
+        
+            <div>
+                {{ form.employer.label }}<br>
+                {{ form.employer(size=40) }}<br>
+                {% for error in form.employer.errors %}
+                    <span class="text-red-500">{{ error }}</span>
+                {% endfor %}
+            </div>
+        
+            <div>
+                {{ form.payroll_tax_number.label }}<br>
+                {{ form.payroll_tax_number(size=40) }}<br>
+                {% for error in form.payroll_tax_number.errors %}
+                    <span class="text-red-500">{{ error }}</span>
+                {% endfor %}
+            </div>
+        
+            <div>
+                {{ form.employer_type.label }}<br>
+                {{ form.employer_type(size=40) }}<br>
+                {% for error in form.employer_type.errors %}
+                    <span class="text-red-500">{{ error }}</span>
+                {% endfor %}
+            </div>
+        
+            <div>
+                {{ form.date_of_birth.label }}<br>
+                {{ form.date_of_birth(size=40) }}<br>
+                {% for error in form.date_of_birth.errors %}
+                    <span class="text-red-500">{{ error }}</span>
+                {% endfor %}
+            </div>
+        
+            <div>
+                {{ form.bsn.label }}<br>
+                {{ form.bsn(size=40) }}<br>
+                {% for error in form.bsn.errors %}
+                    <span class="text-red-500">{{ error }}</span>
+                {% endfor %}
+            </div>
+        
+            <div>
+                {{ form.job_title.label }}<br>
+                {{ form.job_title(size=40) }}<br>
+                {% for error in form.job_title.errors %}
+                    <span class="text-red-500">{{ error }}</span>
+                {% endfor %}
+            </div>
+        
+            <div>
+                {{ form.contract_start_date.label }}<br>
+                {{ form.contract_start_date(size=40) }}<br>
+                {% for error in form.contract_start_date.errors %}
+                    <span class="text-red-500">{{ error }}</span>
+                {% endfor %}
+            </div>
+        
+            <div>
+                {{ form.ufo_code.label }}<br>
+                {{ form.ufo_code(size=40) }}<br>
+                {% for error in form.ufo_code.errors %}
+                    <span class="text-red-500">{{ error }}</span>
+                {% endfor %}
+            </div>
+        
+            <div>
+                {{ form.application_date.label }}<br>
+                {{ form.application_date(size=40) }}<br>
+                {% for error in form.application_date.errors %}
+                    <span class="text-red-500">{{ error }}</span>
+                {% endfor %}
+            </div>
+        
+            <div>
+                {{ form.contract_signed_date.label }}<br>
+                {{ form.contract_signed_date(size=40) }}<br>
+                {% for error in form.contract_signed_date.errors %}
+                    <span class="text-red-500">{{ error }}</span>
+                {% endfor %}
+            </div>
+        
+            <div>
+                {{ form.explain_will_agreement.label }}<br>
+                {{ form.explain_will_agreement(size=60) }}<br>
+                {% for error in form.explain_will_agreement.errors %}
+                    <span class="text-red-500">{{ error }}</span>
+                {% endfor %}
+            </div>
+        
+            <div>
+                {{ form.previous_jobs.label }}<br>
+                {{ form.previous_jobs(size=60) }}<br>
+                {% for error in form.previous_jobs.errors %}
+                    <span class="text-red-500">{{ error }}</span>
+                {% endfor %}
+            </div>
+        
+            <div>
+                {{ form.nl_explain.label }}<br>
+                {{ form.nl_explain(size=60) }}<br>
+                {% for error in form.nl_explain.errors %}
+                    <span class="text-red-500">{{ error }}</span>
+                {% endfor %}
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-gray-700">{{ form.nl_residence_dates.label }}</label>
+                
+                <template x-for="(range, index) in dateRanges" :key="index">
+                    <div class="flex gap-4 mb-2">
+                        <div class="flex-1">
+                            <label class="block text-gray-700">Start Date</label>
+                            <input type="text" 
+                                   x-model="range.start_date" 
+                                   :name="`nl_residence_dates-${index}-start_date`"
+                                   class="w-full p-2 border rounded">
+                        </div>
+                        <div class="flex-1">
+                            <label class="block text-gray-700">End Date</label>
+                            <input type="text" 
+                                   x-model="range.end_date" 
+                                   :name="`nl_residence_dates-${index}-end_date`"
+                                   class="w-full p-2 border rounded">
+                        </div>
+                        <button type="button" 
+                                @click="removeRange(index)"
+                                class="self-end px-3 py-1 bg-red-500 text-white rounded"
+                                x-show="dateRanges.length > 1">
+                            Remove
+                        </button>
+                    </div>
+                </template>
+                
+                <button type="button" 
+                        @click="addRange()"
+                        class="mt-2 px-4 py-2 bg-blue-500 text-white rounded">
+                    Add Another Date Range
+                </button>
+            </div>
+
+            <div>
+                <button type="submit">Submit</button>
+            </div>
 
             <a href="/" class="inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
-                Back to Home
-              </a>
-            <input type="text" name="name" x-model="form.name"
-            value="{{ form.name.data | default('') }}"
-            class="input-class"> 
+                Refresh page
+            </a>
 
-            <!-- Date Range Section -->
-            <div class="mb-8" x-data="{ dateRanges: {{ date_ranges|default([])|tojson }} }">
-                <h2 class="text-xl font-semibold mb-4">Residence Dates</h2>
-                
-                <div id="date-ranges-container">
-                    <template x-for="(range, index) in dateRanges" :key="index">
-                        <div class="flex flex-wrap items-center mb-4 pb-4 border-b">
-                            <div class="w-full md:w-1/2 px-2 mb-4">
-                                <label class="block text-gray-700 mb-2" x-text="'Start Date ' + (index + 1)"></label>
-                                <input type="text" 
-                                       x-bind:name="'date_ranges-' + index + '-start_date'"
-                                       x-model="range.start_date"
-                                       class="w-full p-2 border rounded">
-                            </div>
-                            
-                            <div class="w-full md:w-1/2 px-2 mb-4">
-                                <label class="block text-gray-700 mb-2" x-text="'End Date ' + (index + 1)"></label>
-                                <input type="text"
-                                       x-bind:name="'date_ranges-' + index + '-end_date'"
-                                       x-model="range.end_date"
-                                       class="w-full p-2 border rounded">
-                            </div>
-                            
-                            <div class="w-full flex justify-end px-2">
-                                <button type="button" 
-                                        @click="dateRanges.splice(index, 1)"
-                                        class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
-                                    Remove
-                                </button>
-                            </div>
-                        </div>
-                    </template>
-                </div>
-                
-                <button type="button" 
-                        @click="dateRanges.push({start_date: '', end_date: ''})"
-                        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                    Add Date Range
-                </button>
-            </div>
             
-            <!-- Contact Info Section -->
-            <div class="mb-8" x-data="{ contacts: {{ contacts|default([])|tojson }} }">
-                <h2 class="text-xl font-semibold mb-4">Contact Information</h2>
-                
-                <div id="contacts-container">
-                    <template x-for="(contact, index) in contacts" :key="index">
-                        <div class="flex flex-wrap items-center mb-4 pb-4 border-b">
-                            <div class="w-full md:w-1/4 px-2 mb-4">
-                                <label class="block text-gray-700 mb-2">Name</label>
-                                <input type="text" 
-                                       x-bind:name="'contacts-' + index + '-name'"
-                                       x-model="contact.name"
-                                       class="w-full p-2 border rounded">
-                            </div>
-                            
-                            <div class="w-full md:w-1/4 px-2 mb-4">
-                                <label class="block text-gray-700 mb-2">Email</label>
-                                <input type="email"
-                                       x-bind:name="'contacts-' + index + '-email'"
-                                       x-model="contact.email"
-                                       class="w-full p-2 border rounded">
-                            </div>
-                            
-                            <div class="w-full md:w-1/4 px-2 mb-4">
-                                <label class="block text-gray-700 mb-2">Phone</label>
-                                <input type="text"
-                                       x-bind:name="'contacts-' + index + '-phone'"
-                                       x-model="contact.phone"
-                                       class="w-full p-2 border rounded">
-                            </div>
-                            
-                            <div class="w-full md:w-1/4 px-2 mb-4">
-                                <label class="block text-gray-700 mb-2">Address</label>
-                                <input type="text"
-                                       x-bind:name="'contacts-' + index + '-address'"
-                                       x-model="contact.address"
-                                       class="w-full p-2 border rounded">
-                            </div>
-                            
-                            <div class="w-full flex justify-end px-2">
-                                <button type="button" 
-                                        @click="contacts.splice(index, 1)"
-                                        class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
-                                    Remove
-                                </button>
-                            </div>
-                        </div>
-                    </template>
-                </div>
-                
-                <button type="button" 
-                        @click="contacts.push({name: '', email: '', phone: '', address: ''})"
-                        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                    Add Contact Info
-                </button>
-            </div>
-            
-            <div class="mt-6">
-                <button type="submit" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
-                    Submit
-                </button>
-            </div>
         </form>
     </div>
-    
     <script>
-        // You can add additional Alpine.js initializations here if needed
-        document.addEventListener('alpine:init', () => {
-            // Initialize with any existing data from server (for edit forms)
-            // This would be populated from Flask in a real implementation
-        })
-    </script>
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('dateRangeForm', () => {
+            // Initialize with safe default values
+            const initialRanges = () => {
+                try {
+                    const sessionData = {{ session.get('form_nl_residence_dates', [])|tojson|safe }};
+                    return Array.isArray(sessionData) && sessionData.length > 0
+                        ? sessionData.map(range => ({
+                            start_date: range[0] || '',
+                            end_date: range[1] || ''
+                        }))
+                        : [{ start_date: '', end_date: '' }];
+                } catch (error) {
+                    console.error('Error parsing session data:', error);
+                    return [{ start_date: '', end_date: '' }];
+                }
+            };
+
+            return {
+                // State
+                dateRanges: initialRanges(),
+
+                // Methods
+                addRange() {
+                    this.dateRanges = [
+                        ...this.dateRanges,
+                        { start_date: '', end_date: '' }
+                    ];
+                },
+
+                removeRange(index) {
+                    if (this.dateRanges.length > 1) {
+                        this.dateRanges = this.dateRanges.filter((_, i) => i !== index);
+                    }
+                },
+
+                // Computed property (if needed)
+                get hasMultipleRanges() {
+                    return this.dateRanges.length > 1;
+                }
+            };
+        });
+    });
+    </script>           
+    <script>document.querySelector('form').addEventListener('submit', function(e) {
+        console.log("Form submitted!");  // Should appear in browser console
+        // e.preventDefault();  // Don't use this during testing
+    });</script>
 </body>
 </html>

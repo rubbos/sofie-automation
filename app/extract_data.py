@@ -125,7 +125,5 @@ def main(sofie_data, topdesk_data, dev_mode=False) -> dict:
         save_text(topdesk_data, "topdesk_data")
     extracted_data = extract_specific_data(sofie_data, topdesk_data)
     validated_data = validate(extracted_data)
-    pprint(validated_data)
-    
     return validated_data
 

@@ -43,7 +43,7 @@ def transform_date(date: str) -> pd.Timestamp:
     for date_format in date_formats:
         try:
             parsed_date = datetime.strptime(date, date_format)
-            return parsed_date.strftime("%d-%m-%Y")
+            return parsed_date
         except ValueError:
             pass
     return date
