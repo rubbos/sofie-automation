@@ -37,8 +37,6 @@ DEV_MODE = True
 LOCAL_FILE1 = "temp_files/sofie_data.txt"
 LOCAL_FILE2 = "temp_files/topdesk_data.txt"
 
-global data
-
 @app.route("/", methods=["GET", "POST"])
 def upload_files():
     """Upload files, extract data and redirect to the prefilled form."""
@@ -69,28 +67,33 @@ def index():
     form = MainForm()
 
     if request.method == 'GET':
-        # Prefill regular fields from session
-        for field in form:
-            if field.name not in ['csrf_token', 'submit', 'nl_residence_dates']:
-                session_key = f"form_{field.name}"
-                if session_key in session:
-                    field.data = session.get(session_key)
-
-        # Special handling for nl_residence_dates (list of lists format)
+        # Get all session data
+        form_data = {}
+        for key in session:
+            if key.startswith("form_"):
+                field_name = key[5:]  # Remove "form_" prefix
+                form_data[field_name] = session[key]
+        
+        # Process nl_residence_dates
         nl_residence_data = session.get("form_nl_residence_dates", [])
-        form.nl_residence_dates.entries = []  # Clear existing entries
-
-        for date_range in nl_residence_data:
-            if isinstance(date_range, list) and len(date_range) == 2:
-                form.nl_residence_dates.append_entry({
-                    'start_date': date_range[0],
-                    'end_date': date_range[1]
-                })
-            elif isinstance(date_range, dict):
-                # Fallback for dict format if it ever changes
-                form.nl_residence_dates.append_entry(date_range)
-
+        processed_dates = []
+        
+        for date_pair in nl_residence_data:
+            if isinstance(date_pair, list) and len(date_pair) == 2:
+                date_dict = {
+                    'start_date': date_pair[0].date() if hasattr(date_pair[0], 'date') else date_pair[0],
+                    'end_date': date_pair[1].date() if hasattr(date_pair[1], 'date') else date_pair[1]
+                }
+                processed_dates.append(date_dict)
+        
+        # Replace the nl_residence_dates in form_data
+        form_data['nl_residence_dates'] = processed_dates
+        
+        # Create a new form with this data
+        form = MainForm(**form_data)
+        
     if request.method == 'POST':
+
         if form.validate_on_submit():
             # Print the session before updating it
             print("\n=== SESSION BEFORE UPDATE ===")
