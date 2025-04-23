@@ -12,44 +12,133 @@
 </head>
 
 <body class="bg-gray-100 antialiased text-gray-900">
-    <form method="POST" action="{{ url_for('index') }}" class="px-4 my-32 max-w-3xl mx-auto space-y-6">
+    <form method="POST" action="{{ url_for('index') }}" class="px-4 my-32 max-w-3xl mx-auto space-y-6 ">
         {{ form.csrf_token }}
         {{ form.hidden_tag() }}
         <h1 class="text-3xl font-semibold">Check prefilled values</h1>
 
-        <div class="form-group form-text">
-            {{ form.request_type.label(class="form-label") }}<br>
-            {{ form.request_type(class="form-input") }}<br>
-            {% for error in form.request_type.errors %}
-            <span class="text-red-500">{{ error }}</span>
-            {% endfor %}
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-6">
+            <div class="sm:col-span-3">
+                {{ form.request_type.label(class="form-label") }}<br>
+                {{ form.request_type(class="form-input") }}<br>
+                {% for error in form.request_type.errors %}
+                <span class="text-red-500">{{ error }}</span>
+                {% endfor %}
+            </div>
         </div>
 
         <h2 class="text-2xl font-semibold">Employee</h2>
         <h3 class="text-lg font-semibold">Personal details</h3>
-        <div class="form-group flex flex-wrap w-full">
-            <div class="form-group form-text">
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-4">
+            <div class="sm:col-span-2">
                 {{ form.name.label(class="form-label") }}<br>
                 {{ form.name(class="form-input") }}<br>
                 {% for error in form.name.errors %}
                 <span class="text-red-500">{{ error }}</span>
                 {% endfor %}
             </div>
-            <div class="form-group form-date">
+            <div class="sm:col-span-1">
                 {{ form.date_of_birth.label(class="form-label") }}<br>
                 {{ form.date_of_birth(class="form-input") }}<br>
                 {% for error in form.date_of_birth.errors %}
                 <span class="text-red-500">{{ error }}</span>
                 {% endfor %}
             </div>
-            <div class="form-group form-text">
+            <div class="sm:col-span-1">
                 {{ form.bsn.label(class="form-label") }}<br>
                 {{ form.bsn(class="form-input") }}<br>
                 {% for error in form.bsn.errors %}
                 <span class="text-red-500">{{ error }}</span>
                 {% endfor %}
             </div>
-            <div class="form-group">
+        </div>
+
+        <!-- Template for new entries (hidden) -->
+        <div id="residence-template" class="hidden">
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-4 relative">
+                <div class="sm:col-span-1">
+                    <label class="form-label">Start Date</label>
+                    <input type="date" name="places_of_residence-_-start_date" class="form-input">
+                </div>
+                <div class="sm:col-span-1">
+                    <label class="form-label">End Date</label>
+                    <input type="date" name="places_of_residence-_-end_date" class="form-input">
+                </div>
+                <div class="sm:col-span-1">
+                    <label class="form-label">City</label>
+                    <input type="text" name="places_of_residence-_-city" class="form-input">
+                </div>
+                <div class="sm:col-span-1 flex items-center">
+                    <div class="flex-grow">
+                        <label class="form-label">Country</label>
+                        <input type="text" name="places_of_residence-_-country" class="form-input">
+                    </div>
+                    <button type="button" class="remove-residence text-red-500 hover:text-red-700 ml-2 self-start mt-6">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd"
+                                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <h3 class="text-lg font-semibold">Place of residence</h3>
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-4">
+            <div id="residence-entries" class="sm:col-span-4">
+                {% for residence in form.places_of_residence %}
+                <div class="grid grid-cols-1 gap-4 sm:grid-cols-4">
+                    <div class="sm:col-span-1">
+                        {{ residence.start_date.label(class="form-label") }}
+                        {{ residence.start_date(class="form-input") }}
+                        {% for error in residence.start_date.errors %}
+                        <span class="text-red-500">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                    <div class="sm:col-span-1">
+                        {{ residence.end_date.label(class="form-label") }}
+                        {{ residence.end_date(class="form-input") }}
+                        {% for error in residence.end_date.errors %}
+                        <span class="text-red-500">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                    <div class="sm:col-span-1">
+                        {{ residence.city.label(class="form-label") }}
+                        {{ residence.city(class="form-input") }}
+                        {% for error in residence.city.errors %}
+                        <span class="text-red-500">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                    <div class="sm:col-span-1 flex items-center">
+                        <div class="flex-grow">
+                            {{ residence.country.label(class="form-label") }}
+                            {{ residence.country(class="form-input") }}
+                            {% for error in residence.country.errors %}
+                            <span class="text-red-500">{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                        <button type="button"
+                            class="remove-residence text-red-500 hover:text-red-700 ml-2 self-start mt-6">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
+                                fill="currentColor">
+                                <path fill-rule="evenodd"
+                                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                {% endfor %}
+
+            </div>
+            <div class="mt-2">
+                <button type="button" id="add-residence"
+                    class="py-2 px-4 bg-blue-500 text-white rounded hover:bg-blue-600">
+                    Add more
+                </button>
+            </div>
+            <div class="sm:col-span-4">
                 {{ form.previous_jobs.label(class="form-label") }}<br>
                 {{ form.previous_jobs(class="form-input") }}<br>
                 {% for error in form.previous_jobs.errors %}
@@ -57,65 +146,56 @@
                 {% endfor %}
             </div>
         </div>
-        <h3 class="text-lg font-semibold">Place of residence</h3>
-        <div class="form-group flex flex-wrap w-full">
-            <div class="form-group">
-                {{ form.places_of_residence.label(class="form-label") }}<br>
-                {{ form.places_of_residence(class="form-input") }}<br>
-                {% for error in form.places_of_residence.errors %}
+
+        <h3 class="text-lg font-semibold">Employee and the Netherlands</h3>
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-6">
+            <div class="sm:col-span-2">
+                {{ form.arrival_date.label(class="form-label") }}<br>
+                {{ form.arrival_date(class="form-input") }}<br>
+                {% for error in form.arrival_date.errors %}
                 <span class="text-red-500">{{ error }}</span>
                 {% endfor %}
             </div>
-        </div>
-        <h3 class="text-lg font-semibold">Employee and the Netherlands</h3>
-        <div class="form-group flex flex-wrap w-full">
-            <div class="form-group">
-                <div class="form-group form-date">
-                    {{ form.arrival_date.label(class="form-label") }}<br>
-                    {{ form.arrival_date(class="form-input") }}<br>
-                    {% for error in form.arrival_date.errors %}
-                    <span class="text-red-500">{{ error }}</span>
-                    {% endfor %}
-                </div>
-                <div class="form-group">
-                    {{ form.nl_residence_dates.label(class="form-label") }}<br>
-                    {{ form.nl_residence_dates(class="form-input") }}<br>
-                    {% for error in form.nl_residence_dates.errors %}
-                    <span class="text-red-500">{{ error }}</span>
-                    {% endfor %}
+            <div class="sm:col-span-6">
+                {{ form.nl_residence_dates.label(class="form-label") }}<br>
+                {{ form.nl_residence_dates(class="form-input") }}<br>
+                {% for error in form.nl_residence_dates.errors %}
+                <span class="text-red-500">{{ error }}</span>
+                {% endfor %}
 
-                </div>
-                <div class="form-group form-date">
-                    {{ form.nl_deregister_date.label(class="form-label") }}<br>
-                    {{ form.nl_deregister_date(class="form-input") }}<br>
-                    {% for error in form.nl_deregister_date.errors %}
-                    <span class="text-red-500">{{ error }}</span>
-                    {% endfor %}
-                </div>
+            </div>
+            <div class="sm:col-span-2">
+                {{ form.nl_deregister_date.label(class="form-label") }}<br>
+                {{ form.nl_deregister_date(class="form-input") }}<br>
+                {% for error in form.nl_deregister_date.errors %}
+                <span class="text-red-500">{{ error }}</span>
+                {% endfor %}
+            </div>
 
-                <div class="form-group">
-                    {{ form.nl_private_dates.label(class="form-label") }}<br>
-                    {{ form.nl_private_dates(class="form-input") }}<br>
-                    {% for error in form.nl_private_dates.errors %}
-                    <span class="text-red-500">{{ error }}</span>
-                    {% endfor %}
-                </div>
+            <div class="sm:col-span-6">
+                {{ form.nl_private_dates.label(class="form-label") }}<br>
+                {{ form.nl_private_dates(class="form-input") }}<br>
+                {% for error in form.nl_private_dates.errors %}
+                <span class="text-red-500">{{ error }}</span>
+                {% endfor %}
+            </div>
 
-                <div class="form-group">
-                    {{ form.nl_dutch_employer_dates.label(class="form-label") }}<br>
-                    {{ form.nl_dutch_employer_dates(class="form-input") }}<br>
-                    {% for error in form.nl_dutch_employer_dates.errors %}
-                    <span class="text-red-500">{{ error }}</span>
-                    {% endfor %}
-                </div>
+            <div class="sm:col-span-6">
+                {{ form.nl_dutch_employer_dates.label(class="form-label") }}<br>
+                {{ form.nl_dutch_employer_dates(class="form-input") }}<br>
+                {% for error in form.nl_dutch_employer_dates.errors %}
+                <span class="text-red-500">{{ error }}</span>
+                {% endfor %}
+            </div>
 
-                <div class="form-group">
-                    {{ form.nl_worked_dates.label(class="form-label") }}<br>
-                    {{ form.nl_worked_dates(class="form-input") }}<br>
-                    {% for error in form.nl_worked_dates.errors %}
-                    <span class="text-red-500">{{ error }}</span>
-                    {% endfor %}
-                </div>
+            <div class="sm:col-span-6">
+                {{ form.nl_worked_dates.label(class="form-label") }}<br>
+                {{ form.nl_worked_dates(class="form-input") }}<br>
+                {% for error in form.nl_worked_dates.errors %}
+                <span class="text-red-500">{{ error }}</span>
+                {% endfor %}
+            </div>
+            <div class="sm:col-span-6">
                 {{ form.nl_explain.label(class="form-label") }}<br>
                 {{ form.nl_explain(class="form-input") }}<br>
                 {% for error in form.nl_explain.errors %}
@@ -125,8 +205,8 @@
         </div>
 
         <h2 class="text-2xl font-semibold">Employer</h2>
-        <div class="form-group flex flex-wrap w-full">
-            <div class="form-text">
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-4">
+            <div class="sm:col-span-2">
                 {{ form.employer.label(class="form-label") }}<br>
                 {{ form.employer(class="form-input") }}<br>
                 {% for error in form.employer.errors %}
@@ -134,7 +214,7 @@
                 {% endfor %}
             </div>
 
-            <div class="form-date">
+            <div class="">
                 {{ form.payroll_tax_number.label(class="form-label") }}<br>
                 {{ form.payroll_tax_number(class="form-input") }}<br>
                 {% for error in form.payroll_tax_number.errors %}
@@ -142,7 +222,7 @@
                 {% endfor %}
             </div>
 
-            <div class="form-date">
+            <div class="">
                 {{ form.employer_type.label(class="form-label") }}<br>
                 {{ form.employer_type(class="form-input") }}<br>
                 {% for error in form.employer_type.errors %}
@@ -152,43 +232,43 @@
         </div>
 
         <h2 class="text-2xl font-semibold">Contract</h2>
-        <div class="form-group flex flex-wrap w-full">
-            <div class="form-group form-text">
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-6">
+            <div class="sm:col-span-3">
                 {{ form.job_title.label(class="form-label") }}<br>
                 {{ form.job_title(class="form-input") }}<br>
                 {% for error in form.job_title.errors %}
                 <span class="text-red-500">{{ error }}</span>
                 {% endfor %}
             </div>
-            <div class="form-group form-text">
+            <div class="sm:col-span-3">
                 {{ form.ufo_code.label(class="form-label") }}<br>
                 {{ form.ufo_code(class="form-input") }}<br>
                 {% for error in form.ufo_code.errors %}
                 <span class="text-red-500">{{ error }}</span>
                 {% endfor %}
             </div>
-            <div class="form-group form-date">
+            <div class="sm:col-span-2">
                 {{ form.contract_start_date.label(class="form-label") }}<br>
                 {{ form.contract_start_date(class="form-input") }}<br>
                 {% for error in form.contract_start_date.errors %}
                 <span class="text-red-500">{{ error }}</span>
                 {% endfor %}
             </div>
-            <div class="form-group form-date">
+            <div class="sm:col-span-2">
                 {{ form.first_work_date.label(class="form-label") }}<br>
                 {{ form.first_work_date(class="form-input") }}<br>
                 {% for error in form.first_work_date.errors %}
                 <span class="text-red-500">{{ error }}</span>
                 {% endfor %}
             </div>
-            <div class="form-group form-date">
+            <div class="sm:col-span-2">
                 {{ form.contract_signed_date.label(class="form-label") }}<br>
                 {{ form.contract_signed_date(class="form-input") }}<br>
                 {% for error in form.contract_signed_date.errors %}
                 <span class="text-red-500">{{ error }}</span>
                 {% endfor %}
             </div>
-            <div class="form-group">
+            <div class="sm:col-span-6">
                 {{ form.explain_will_agreement.label(class="form-label") }}<br>
                 {{ form.explain_will_agreement(class="form-input") }}<br>
                 {% for error in form.explain_will_agreement.errors %}
@@ -198,8 +278,8 @@
         </div>
 
         <h2 class="text-2xl font-semibold">Topdesk</h2>
-        <div class="form-group flex flex-wrap w-full">
-            <div class="form-group form-date">
+        <div class="grid grid-cols-1 sm:grid-cols-6 gap-4">
+            <div class="sm:col-span-2">
                 {{ form.application_date.label(class="form-label") }}<br>
                 {{ form.application_date(class="form-input") }}<br>
                 {% for error in form.application_date.errors %}
@@ -207,8 +287,6 @@
                 {% endfor %}
             </div>
         </div>
-
-
 
         <div class="">
             <button class="inline-block px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
@@ -219,6 +297,49 @@
             Refresh page
         </a>
     </form>
+    <script>
+        // Add residence entry
+        document.getElementById('add-residence').addEventListener('click', function () {
+            const entryCount = document.querySelectorAll('#residence-entries > div').length;
+            const template = document.getElementById('residence-template').innerHTML;
+            const newEntry = template.replace(/-_-/g, '-' + entryCount + '-');
+            const entriesContainer = document.getElementById('residence-entries');
+            entriesContainer.insertAdjacentHTML('beforeend', newEntry);
+            setupRemoveButtons();
+        });
+
+        // Function for even listener for the remove buttons
+        function setupRemoveButtons() {
+            document.querySelectorAll('.remove-residence').forEach(button => {
+                button.removeEventListener('click', removeEntry);
+                button.addEventListener('click', removeEntry);
+            });
+        }
+
+        // Remove entry function
+        function removeEntry() {
+            const entriesContainer = document.getElementById('residence-entries');
+            if (entriesContainer.children.length > 1) {
+                this.closest('#residence-entries > div').remove();
+
+                const entries = entriesContainer.children;
+                for (let i = 0; i < entries.length; i++) {
+                    const inputs = entries[i].querySelectorAll('input, select');
+                    inputs.forEach(input => {
+                        const name = input.getAttribute('name');
+                        const newName = name.replace(/places_of_residence-\d+-/, 'places_of_residence-' + i + '-');
+                        input.setAttribute('name', newName);
+                    });
+                }
+            } else {
+                const inputs = this.closest('#residence-entries > div').querySelectorAll('input, select');
+                inputs.forEach(input => {
+                    input.value = '';
+                });
+            }
+        }
+        setupRemoveButtons();
+    </script>
 </body>
 
 </html>
