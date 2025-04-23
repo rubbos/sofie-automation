@@ -6,7 +6,11 @@ module.exports = {
     "./app/**/*.py"                // Optional: useful if you use Tailwind classes in strings in Python
   ],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        sans: ['Inter', 'sans-serif'],
+      },
+    },
   },
   plugins: [],
 }
