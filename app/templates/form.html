@@ -150,6 +150,7 @@
             </div>
         </div>
 
+        <!-- FIX make it dynamic -->
         <!-- Template for extra date rows -->
         <div id="nl-residence-dates-template" class="hidden">
             <div class="grid grid-cols-1 gap-4 sm:grid-cols-4 relative">
@@ -172,7 +173,70 @@
                 </div>
             </div>
         </div>
-
+        <!-- Template for extra date rows private dates -->
+        <div id="nl-private-dates-template" class="hidden">
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-4 relative">
+                <div class="sm:col-span-2">
+                    <label class="form-label">Start Date</label>
+                    <input type="date" name="nl_private_dates-_-start_date" class="form-input">
+                </div>
+                <div class="sm:col-span-2 flex items-center">
+                    <div class="flex-grow">
+                        <label class="form-label">End Date</label>
+                        <input type="date" name="nl_private_dates-_-end_date" class="form-input">
+                    </div>
+                    <button type="button" class="remove-entry text-red-500 hover:text-red-700 ml-2 mt-9 self-start">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd"
+                                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div> <!-- Template for extra date rows worked for dutch employer dates -->
+        <div id="nl-dutch-employer-dates-template" class="hidden">
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-4 relative">
+                <div class="sm:col-span-2">
+                    <label class="form-label">Start Date</label>
+                    <input type="date" name="nl_dutch_employer_dates-_-start_date" class="form-input">
+                </div>
+                <div class="sm:col-span-2 flex items-center">
+                    <div class="flex-grow">
+                        <label class="form-label">End Date</label>
+                        <input type="date" name="nl_dutch_employer_dates-_-end_date" class="form-input">
+                    </div>
+                    <button type="button" class="remove-entry text-red-500 hover:text-red-700 ml-2 mt-9 self-start">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd"
+                                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div> <!-- Template for extra date rows worked dates -->
+        <div id="nl-worked-dates-template" class="hidden">
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-4 relative">
+                <div class="sm:col-span-2">
+                    <label class="form-label">Start Date</label>
+                    <input type="date" name="nl_worked_dates-_-start_date" class="form-input">
+                </div>
+                <div class="sm:col-span-2 flex items-center">
+                    <div class="flex-grow">
+                        <label class="form-label">End Date</label>
+                        <input type="date" name="nl_worked_dates-_-end_date" class="form-input">
+                    </div>
+                    <button type="button" class="remove-entry text-red-500 hover:text-red-700 ml-2 mt-9 self-start">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd"
+                                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
         <h3 class="text-lg font-semibold">Employee and the Netherlands</h3>
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-6">
             <div class="sm:col-span-2">
@@ -232,27 +296,124 @@
             </div>
 
             <div class="sm:col-span-6">
-                {{ form.nl_private_dates.label(class="form-label") }}<br>
-                {{ form.nl_private_dates(class="form-input") }}<br>
-                {% for error in form.nl_private_dates.errors %}
-                <span class="text-red-500">{{ error }}</span>
-                {% endfor %}
+                <div id="nl-private-dates-entries" class="space-y-4">
+                    {{ form.nl_private_dates.label(class="form-label") }}<br>
+                    {% for dates in form.nl_private_dates %}
+                    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                        <div class="sm:col-span-1">
+                            {{ dates.start_date.label(class="form-label") }}
+                            {{ dates.start_date(class="form-input") }}
+                            {% for error in dates.start_date.errors %}
+                            <span class="text-red-500">{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                        <div class="sm:col-span-1 flex items-center">
+                            <div class="flex-grow">
+                                {{ dates.end_date.label(class="form-label") }}
+                                {{ dates.end_date(class="form-input") }}
+                                {% for error in dates.end_date.errors %}
+                                <span class="text-red-500">{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                            <button type="button"
+                                class="remove-entry text-red-500 hover:text-red-700 ml-2 mt-9 self-start">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
+                                    fill="currentColor">
+                                    <path fill-rule="evenodd"
+                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                        clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="my-6">
+                    <button type="button" id="add-nl-private-dates"
+                        class="py-2 px-4 bg-blue-500 text-white rounded hover:bg-blue-600">
+                        Add more
+                    </button>
+                </div>
             </div>
-
             <div class="sm:col-span-6">
-                {{ form.nl_dutch_employer_dates.label(class="form-label") }}<br>
-                {{ form.nl_dutch_employer_dates(class="form-input") }}<br>
-                {% for error in form.nl_dutch_employer_dates.errors %}
-                <span class="text-red-500">{{ error }}</span>
-                {% endfor %}
+                <div id="nl-worked-dates-entries" class="space-y-4">
+                    {{ form.nl_worked_dates.label(class="form-label") }}<br>
+                    {% for dates in form.nl_worked_dates %}
+                    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                        <div class="sm:col-span-1">
+                            {{ dates.start_date.label(class="form-label") }}
+                            {{ dates.start_date(class="form-input") }}
+                            {% for error in dates.start_date.errors %}
+                            <span class="text-red-500">{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                        <div class="sm:col-span-1 flex items-center">
+                            <div class="flex-grow">
+                                {{ dates.end_date.label(class="form-label") }}
+                                {{ dates.end_date(class="form-input") }}
+                                {% for error in dates.end_date.errors %}
+                                <span class="text-red-500">{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                            <button type="button"
+                                class="remove-entry text-red-500 hover:text-red-700 ml-2 mt-9 self-start">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
+                                    fill="currentColor">
+                                    <path fill-rule="evenodd"
+                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                        clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="my-6">
+                    <button type="button" id="add-nl-worked-dates"
+                        class="py-2 px-4 bg-blue-500 text-white rounded hover:bg-blue-600">
+                        Add more
+                    </button>
+                </div>
             </div>
-
             <div class="sm:col-span-6">
-                {{ form.nl_worked_dates.label(class="form-label") }}<br>
-                {{ form.nl_worked_dates(class="form-input") }}<br>
-                {% for error in form.nl_worked_dates.errors %}
-                <span class="text-red-500">{{ error }}</span>
-                {% endfor %}
+                <div id="nl-dutch-employer-dates-entries" class="space-y-4">
+                    {{ form.nl_dutch_employer_dates.label(class="form-label") }}<br>
+                    {% for dates in form.nl_dutch_employer_dates %}
+                    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                        <div class="sm:col-span-1">
+                            {{ dates.start_date.label(class="form-label") }}
+                            {{ dates.start_date(class="form-input") }}
+                            {% for error in dates.start_date.errors %}
+                            <span class="text-red-500">{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                        <div class="sm:col-span-1 flex items-center">
+                            <div class="flex-grow">
+                                {{ dates.end_date.label(class="form-label") }}
+                                {{ dates.end_date(class="form-input") }}
+                                {% for error in dates.end_date.errors %}
+                                <span class="text-red-500">{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                            <button type="button"
+                                class="remove-entry text-red-500 hover:text-red-700 ml-2 mt-9 self-start">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
+                                    fill="currentColor">
+                                    <path fill-rule="evenodd"
+                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                        clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="my-6">
+                    <button type="button" id="add-nl-dutch-employer-dates"
+                        class="py-2 px-4 bg-blue-500 text-white rounded hover:bg-blue-600">
+                        Add more
+                    </button>
+                </div>
             </div>
             <div class="sm:col-span-6">
                 {{ form.nl_explain.label(class="form-label") }}<br>
@@ -357,7 +518,7 @@
         </a>
     </form>
     <script>
-        // For residences
+        // Residences
         setupEntryManager({
             addButtonId: 'add-residence',
             entriesContainerId: 'residence-entries',
@@ -366,23 +527,47 @@
             minEntries: 1
         });
 
-        // For education
+        // NL Residences dates
         setupEntryManager({
             addButtonId: 'add-nl-residence-dates',
             entriesContainerId: 'nl-residence-dates-entries',
             templateId: 'nl-residence-dates-template',
             fieldNamePrefix: 'nl_residence_dates',
-            minEntries: 1
+            minEntries: 0
         });
 
+        // NL Private dates
+        setupEntryManager({
+            addButtonId: 'add-nl-private-dates',
+            entriesContainerId: 'nl-private-dates-entries',
+            templateId: 'nl-private-dates-template',
+            fieldNamePrefix: 'nl_private_dates',
+            minEntries: 0
+        });
+        // NL Worked dates
+        setupEntryManager({
+            addButtonId: 'add-nl-worked-dates',
+            entriesContainerId: 'nl-worked-dates-entries',
+            templateId: 'nl-worked-dates-template',
+            fieldNamePrefix: 'nl_worked_dates',
+            minEntries: 0
+        });
+        // NL dutch employer dates
+        setupEntryManager({
+            addButtonId: 'add-nl-dutch-employer-dates',
+            entriesContainerId: 'nl-dutch-employer-dates-entries',
+            templateId: 'nl-dutch-employer-dates-template',
+            fieldNamePrefix: 'nl_dutch_employer_dates',
+            minEntries: 0
+        });
         // Generic function to add entries
         function setupEntryManager(options) {
             const {
-                addButtonId,      // ID of the add button
+                addButtonId,        // ID of the add button
                 entriesContainerId, // ID of the container for all entries
-                templateId,       // ID of the template
-                fieldNamePrefix,  // Prefix for the field names (e.g., 'places_of_residence')
-                minEntries = 1    // Minimum number of entries required
+                templateId,         // ID of the template
+                fieldNamePrefix,    // Prefix for the field names (e.g., 'places_of_residence')
+                minEntries = 1      // Minimum number of entries required
             } = options;
 
             // Add entry button
@@ -424,8 +609,6 @@
                     });
                 }
             }
-
-            // Initialize
             setupRemoveButtons();
         }
     </script>

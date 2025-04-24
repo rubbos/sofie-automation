@@ -59,6 +59,7 @@ def upload_files():
 
     for key, value in data.items():
         session[f"form_{key}"] = value
+        print(key, "   ", value)
 
     return redirect(url_for('index'))
 
