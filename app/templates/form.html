@@ -53,7 +53,7 @@
             </div>
         </div>
 
-        <!-- Template for new entries (hidden) -->
+        <!-- Template for extra place of residence rows -->
         <div id="residence-template" class="hidden">
             <div class="grid grid-cols-1 gap-4 sm:grid-cols-4 relative">
                 <div class="sm:col-span-1">
@@ -73,7 +73,7 @@
                         <label class="form-label">Country</label>
                         <input type="text" name="places_of_residence-_-country" class="form-input">
                     </div>
-                    <button type="button" class="remove-residence text-red-500 hover:text-red-700 ml-2 mt-9 self-start">
+                    <button type="button" class="remove-entry text-red-500 hover:text-red-700 ml-2 mt-9 self-start">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd"
                                 d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
@@ -86,64 +86,90 @@
 
         <h3 class="text-lg font-semibold">Place of residence</h3>
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-4 ">
-            <div id="residence-entries" class="sm:col-span-4 space-y-4">
-                {% for residence in form.places_of_residence %}
-                <div class="grid grid-cols-1 gap-4 sm:grid-cols-4">
-                    <div class="sm:col-span-1">
-                        {{ residence.start_date.label(class="form-label") }}
-                        {{ residence.start_date(class="form-input") }}
-                        {% for error in residence.start_date.errors %}
-                        <span class="text-red-500">{{ error }}</span>
-                        {% endfor %}
-                    </div>
-                    <div class="sm:col-span-1">
-                        {{ residence.end_date.label(class="form-label") }}
-                        {{ residence.end_date(class="form-input") }}
-                        {% for error in residence.end_date.errors %}
-                        <span class="text-red-500">{{ error }}</span>
-                        {% endfor %}
-                    </div>
-                    <div class="sm:col-span-1">
-                        {{ residence.city.label(class="form-label") }}
-                        {{ residence.city(class="form-input") }}
-                        {% for error in residence.city.errors %}
-                        <span class="text-red-500">{{ error }}</span>
-                        {% endfor %}
-                    </div>
-                    <div class="sm:col-span-1 flex items-center">
-                        <div class="flex-grow">
-                            {{ residence.country.label(class="form-label") }}
-                            {{ residence.country(class="form-input") }}
-                            {% for error in residence.country.errors %}
+            <div class="sm:col-span-4">
+                <div id="residence-entries" class="space-y-4">
+                    {% for residence in form.places_of_residence %}
+                    <div class="grid grid-cols-1 gap-4 sm:grid-cols-4">
+                        <div class="sm:col-span-1">
+                            {{ residence.start_date.label(class="form-label") }}
+                            {{ residence.start_date(class="form-input") }}
+                            {% for error in residence.start_date.errors %}
                             <span class="text-red-500">{{ error }}</span>
                             {% endfor %}
                         </div>
-                        <button type="button"
-                            class="remove-residence text-red-500 hover:text-red-700 ml-2 mt-9 self-start">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
-                                fill="currentColor">
-                                <path fill-rule="evenodd"
-                                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                    clip-rule="evenodd" />
-                            </svg>
-                        </button>
+                        <div class="sm:col-span-1">
+                            {{ residence.end_date.label(class="form-label") }}
+                            {{ residence.end_date(class="form-input") }}
+                            {% for error in residence.end_date.errors %}
+                            <span class="text-red-500">{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                        <div class="sm:col-span-1">
+                            {{ residence.city.label(class="form-label") }}
+                            {{ residence.city(class="form-input") }}
+                            {% for error in residence.city.errors %}
+                            <span class="text-red-500">{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                        <div class="sm:col-span-1 flex items-center">
+                            <div class="flex-grow">
+                                {{ residence.country.label(class="form-label") }}
+                                {{ residence.country(class="form-input") }}
+                                {% for error in residence.country.errors %}
+                                <span class="text-red-500">{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                            <button type="button"
+                                class="remove-entry text-red-500 hover:text-red-700 ml-2 mt-9 self-start">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
+                                    fill="currentColor">
+                                    <path fill-rule="evenodd"
+                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                        clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                        </div>
                     </div>
-                </div>
-                {% endfor %}
+                    {% endfor %}
 
+                </div>
+                <div class="my-6">
+                    <button type="button" id="add-residence"
+                        class="py-2 px-4 bg-blue-500 text-white rounded hover:bg-blue-600">
+                        Add more
+                    </button>
+                </div>
             </div>
-            <div class="mb-6 mt-2">
-                <button type="button" id="add-residence"
-                    class="py-2 px-4 bg-blue-500 text-white rounded hover:bg-blue-600">
-                    Add more
-                </button>
-            </div>
+
             <div class="sm:col-span-4">
                 {{ form.previous_jobs.label(class="form-label") }}<br>
                 {{ form.previous_jobs(class="form-input") }}<br>
                 {% for error in form.previous_jobs.errors %}
                 <span class="text-red-500">{{ error }}</span>
                 {% endfor %}
+            </div>
+        </div>
+
+        <!-- Template for extra date rows -->
+        <div id="nl-residence-dates-template" class="hidden">
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-4 relative">
+                <div class="sm:col-span-2">
+                    <label class="form-label">Start Date</label>
+                    <input type="date" name="nl_residence_dates-_-start_date" class="form-input">
+                </div>
+                <div class="sm:col-span-2 flex items-center">
+                    <div class="flex-grow">
+                        <label class="form-label">End Date</label>
+                        <input type="date" name="nl_residence_dates-_-end_date" class="form-input">
+                    </div>
+                    <button type="button" class="remove-entry text-red-500 hover:text-red-700 ml-2 mt-9 self-start">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd"
+                                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -157,13 +183,46 @@
                 {% endfor %}
             </div>
             <div class="sm:col-span-6">
-                {{ form.nl_residence_dates.label(class="form-label") }}<br>
-                {{ form.nl_residence_dates(class="form-input") }}<br>
-                {% for error in form.nl_residence_dates.errors %}
-                <span class="text-red-500">{{ error }}</span>
-                {% endfor %}
-
+                <div id="nl-residence-dates-entries" class="space-y-4">
+                    {{ form.nl_residence_dates.label(class="form-label") }}<br>
+                    {% for dates in form.nl_residence_dates %}
+                    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                        <div class="sm:col-span-1">
+                            {{ dates.start_date.label(class="form-label") }}
+                            {{ dates.start_date(class="form-input") }}
+                            {% for error in dates.start_date.errors %}
+                            <span class="text-red-500">{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                        <div class="sm:col-span-1 flex items-center">
+                            <div class="flex-grow">
+                                {{ dates.end_date.label(class="form-label") }}
+                                {{ dates.end_date(class="form-input") }}
+                                {% for error in dates.end_date.errors %}
+                                <span class="text-red-500">{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                            <button type="button"
+                                class="remove-entry text-red-500 hover:text-red-700 ml-2 mt-9 self-start">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
+                                    fill="currentColor">
+                                    <path fill-rule="evenodd"
+                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                        clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="my-6">
+                    <button type="button" id="add-nl-residence-dates"
+                        class="py-2 px-4 bg-blue-500 text-white rounded hover:bg-blue-600">
+                        Add more
+                    </button>
+                </div>
             </div>
+
             <div class="sm:col-span-2">
                 {{ form.nl_deregister_date.label(class="form-label") }}<br>
                 {{ form.nl_deregister_date(class="form-input") }}<br>
@@ -298,47 +357,77 @@
         </a>
     </form>
     <script>
-        // Add residence entry
-        document.getElementById('add-residence').addEventListener('click', function () {
-            const entryCount = document.querySelectorAll('#residence-entries > div').length;
-            const template = document.getElementById('residence-template').innerHTML;
-            const newEntry = template.replace(/-_-/g, '-' + entryCount + '-');
-            const entriesContainer = document.getElementById('residence-entries');
-            entriesContainer.insertAdjacentHTML('beforeend', newEntry);
-            setupRemoveButtons();
+        // For residences
+        setupEntryManager({
+            addButtonId: 'add-residence',
+            entriesContainerId: 'residence-entries',
+            templateId: 'residence-template',
+            fieldNamePrefix: 'places_of_residence',
+            minEntries: 1
         });
 
-        // Function for even listener for the remove buttons
-        function setupRemoveButtons() {
-            document.querySelectorAll('.remove-residence').forEach(button => {
-                button.removeEventListener('click', removeEntry);
-                button.addEventListener('click', removeEntry);
+        // For education
+        setupEntryManager({
+            addButtonId: 'add-nl-residence-dates',
+            entriesContainerId: 'nl-residence-dates-entries',
+            templateId: 'nl-residence-dates-template',
+            fieldNamePrefix: 'nl_residence_dates',
+            minEntries: 1
+        });
+
+        // Generic function to add entries
+        function setupEntryManager(options) {
+            const {
+                addButtonId,      // ID of the add button
+                entriesContainerId, // ID of the container for all entries
+                templateId,       // ID of the template
+                fieldNamePrefix,  // Prefix for the field names (e.g., 'places_of_residence')
+                minEntries = 1    // Minimum number of entries required
+            } = options;
+
+            // Add entry button
+            document.getElementById(addButtonId).addEventListener('click', function () {
+                const entryCount = document.querySelectorAll(`#${entriesContainerId} > div`).length;
+                const template = document.getElementById(templateId).innerHTML;
+                const newEntry = template.replace(/-_-/g, '-' + entryCount + '-');
+                const entriesContainer = document.getElementById(entriesContainerId);
+                entriesContainer.insertAdjacentHTML('beforeend', newEntry);
+                setupRemoveButtons();
             });
-        }
 
-        // Remove entry function
-        function removeEntry() {
-            const entriesContainer = document.getElementById('residence-entries');
-            if (entriesContainer.children.length > 1) {
-                this.closest('#residence-entries > div').remove();
-
-                const entries = entriesContainer.children;
-                for (let i = 0; i < entries.length; i++) {
-                    const inputs = entries[i].querySelectorAll('input, select');
-                    inputs.forEach(input => {
-                        const name = input.getAttribute('name');
-                        const newName = name.replace(/places_of_residence-\d+-/, 'places_of_residence-' + i + '-');
-                        input.setAttribute('name', newName);
-                    });
-                }
-            } else {
-                const inputs = this.closest('#residence-entries > div').querySelectorAll('input, select');
-                inputs.forEach(input => {
-                    input.value = '';
+            // Setup remove buttons
+            function setupRemoveButtons() {
+                document.querySelectorAll(`#${entriesContainerId} .remove-entry`).forEach(button => {
+                    button.removeEventListener('click', removeEntry);
+                    button.addEventListener('click', removeEntry);
                 });
             }
+
+            // Remove entry function
+            function removeEntry() {
+                const entriesContainer = document.getElementById(entriesContainerId);
+                if (entriesContainer.children.length > minEntries) {
+                    this.closest(`#${entriesContainerId} > div`).remove();
+                    const entries = entriesContainer.children;
+                    for (let i = 0; i < entries.length; i++) {
+                        const inputs = entries[i].querySelectorAll('input, select');
+                        inputs.forEach(input => {
+                            const name = input.getAttribute('name');
+                            const newName = name.replace(new RegExp(`${fieldNamePrefix}-\\d+-`), `${fieldNamePrefix}-${i}-`);
+                            input.setAttribute('name', newName);
+                        });
+                    }
+                } else {
+                    const inputs = this.closest(`#${entriesContainerId} > div`).querySelectorAll('input, select');
+                    inputs.forEach(input => {
+                        input.value = '';
+                    });
+                }
+            }
+
+            // Initialize
+            setupRemoveButtons();
         }
-        setupRemoveButtons();
     </script>
 </body>
 
