@@ -11,6 +11,11 @@ from extract_data import main as extract
 from pprint import pprint
 from datetime import datetime
 from utils import process
+from utils.reports import (
+    create_main_report,
+    create_email_report,
+    extracted_data,
+)
 
 # Load environment variables from .env file (in development)
 load_dotenv()
@@ -37,7 +42,11 @@ csrf = CSRFProtect(app)
 DEV_MODE = True
 LOCAL_FILE1 = "temp_files/sofie_data.txt"
 LOCAL_FILE2 = "temp_files/topdesk_data.txt"
-
+    
+# dynamic fields to be processed separately
+dynamic_dates_fields = ["nl_residence_dates", "nl_worked_dates",
+                "nl_private_dates", "nl_dutch_employer_dates"]
+dynamic_residence_fields = ["places_of_residence"]
 
 @app.route("/", methods=["GET", "POST"])
 def upload_files():
@@ -59,6 +68,7 @@ def upload_files():
     else:
         return render_template("upload2.html", form=form)
 
+    print(data)
     for key, value in data.items():
         session[f"form_{key}"] = value
         print(session[f"form_{key}"])
@@ -78,14 +88,10 @@ def index():
                 field_name = key[5:]  # Remove "form_" prefix
                 form_data[field_name] = session[key]
 
-        # We also need to update the dynamic values from specific fields
-        dynamic_keys = ["nl_residence_dates", "nl_worked_dates",
-                     "nl_private_dates", "nl_dutch_employer_dates", "places_of_residence"]
-
         # Process dynamic values
-        for key in dynamic_keys:
+        for key in dynamic_dates_fields + dynamic_residence_fields:
             raw_data = session.get(f"form_{key}", [])
-            if key == "places_of_residence":
+            if key in dynamic_residence_fields:
                 form_data[key] = process.residences(raw_data)
             else:
                 form_data[key] = process.date_ranges(raw_data)
@@ -96,26 +102,20 @@ def index():
     if request.method == 'POST':
 
         if form.validate_on_submit():
-            # Process form data and save to session
+            # Process form data and update session
+            data = {}
+
             for field in form:
                 if field.name not in ['csrf_token', 'submit']:
-                    session[f"form_{field.name}"] = field.data
-
-            # Save nl_residence_dates in the list of lists format
-            residence_dates = []
-            for entry in form.nl_residence_dates.entries:
-                residence_dates.append([
-                    entry.start_date.data,
-                    entry.end_date.data
-                ])
-            session["form_nl_residence_dates"] = residence_dates
-
-            # Print the updated session
-            print("\n=== SESSION AFTER UPDATE ===")
-            for key, value in session.items():
-                print(f"{key}: {value}")
-
-            return render_template('results2.html', form=form)
+                    data[field.name] = field.data
+        
+            main_report = create_main_report(
+                worker_info, employer_info, contract_info, calculation_info
+            )
+            email_report = create_email_report(
+                worker_info, employer_info, contract_info, calculation_info
+        )
+            return render_template('results2.html', data=data)
         else:
             print("Validation failed. Errors:", form.errors)
 
