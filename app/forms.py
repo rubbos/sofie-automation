@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import Form, StringField, FieldList, FormField, DateField, SelectField
-from wtforms.validators import DataRequired
+from wtforms.validators import DataRequired, Optional
 from flask_wtf.file import FileField, FileAllowed
 from wtforms import SubmitField
 
@@ -26,11 +26,11 @@ class MainForm(FlaskForm):
     arrival_date = DateField('Arrival date', format='%Y-%m-%d', render_kw={"type": "date"}, validators=[DataRequired()])
     first_work_date = DateField('First work date', format='%Y-%m-%d', render_kw={"type": "date"}, validators=[DataRequired()])
     places_of_residence = FieldList(FormField(ResidenceForm), label='Place of residence', min_entries=1)
-    nl_residence_dates = FieldList(FormField(DateRangeForm), label='NL residence dates', min_entries=0)
-    nl_deregister_date = DateField('Deregister date', format='%Y-%m-%d', render_kw={"type": "date"}, validators=[DataRequired()])
-    nl_private_dates = FieldList(FormField(DateRangeForm), label='NL private dates', min_entries=0)
-    nl_dutch_employer_dates = FieldList(FormField(DateRangeForm), label='NL dutch employer dates', min_entries=0)
-    nl_worked_dates = FieldList(FormField(DateRangeForm), label='NL worked dates', min_entries=0)
+    nl_residence_dates = FieldList(FormField(DateRangeForm), label='NL residence dates', min_entries=0, validators=[Optional()])
+    nl_deregister_date = DateField('Deregister date', format='%Y-%m-%d', render_kw={"type": "date"}, validators=[Optional()])
+    nl_private_dates = FieldList(FormField(DateRangeForm), label='NL private dates', min_entries=0, validators=[Optional()])
+    nl_dutch_employer_dates = FieldList(FormField(DateRangeForm), label='NL dutch employer dates', min_entries=0, validators=[Optional()])
+    nl_worked_dates = FieldList(FormField(DateRangeForm), label='NL worked dates', min_entries=0, validators=[Optional()])
     employer = StringField('Employer', validators=[DataRequired()])
     payroll_tax_number = StringField('Loonheffingsnummer', validators=[DataRequired()])
     employer_type = StringField('Public or Private', validators=[DataRequired()])
@@ -41,8 +41,8 @@ class MainForm(FlaskForm):
     ufo_code = StringField('UFO code', validators=[DataRequired()])
     application_date = DateField('Application submitted', format='%Y-%m-%d', render_kw={"type": "date"}, validators=[DataRequired()])
     contract_signed_date = DateField('Contract signed', format='%Y-%m-%d', render_kw={"type": "date"}, validators=[DataRequired()])
-    willagreement_info = StringField('Explain wilsovereenkomst')
-    willagreement_signed_date = DateField('Willagreement signed', format='%Y-%m-%d', render_kw={"type": "date"})
+    willagreement_info = StringField('Explain wilsovereenkomst', validators=[Optional()])
+    willagreement_signed_date = DateField('Willagreement signed', format='%Y-%m-%d', render_kw={"type": "date"}, validators=[Optional()])
     previous_jobs = StringField('Previous jobs', validators=[DataRequired()])
-    nl_info = StringField('Explain periods in NL')
+    nl_info = StringField('Explain periods in NL', validators=[Optional()])
     submit = SubmitField('Submit')  
