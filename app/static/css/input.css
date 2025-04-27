@@ -1,0 +1,19 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+    .form-group {
+    }    
+    .form-label {
+    }    
+    .form-input {
+      @apply border border-gray-400 block py-2 px-4 w-full rounded focus:outline-none focus:border-blue-500;
+    }
+    .form-date {
+      @apply w-1/4;
+    }
+    .form-text {
+      @apply w-1/2;
+    }
+  }

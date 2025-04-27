@@ -1,18 +1,19 @@
 import pandas as pd
 import difflib
 
-
 def get_universities() -> pd.DataFrame:
     with open("temp_files/universities.csv", "r") as file:
         return pd.read_csv(file)
 
-
-def find_university(df) -> list | None:
+def find_university(data: dict) -> list | None:
     universities = get_universities()
-    university = df.loc[df["VAR"] == "employer", "VALUE"].values[0]
-    if university is None:
+
+    # Check if the university is in the data
+    university = data.get("employer")
+    if not university:
         return None
 
+    # Check if the university is in the list of universities
     uni_names = universities["university"].tolist()
     closest_match = difflib.get_close_matches(university, uni_names, n=1)
     if closest_match:

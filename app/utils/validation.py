@@ -51,23 +51,18 @@ def check_standard_request(df):
     return "This request might be an exception!"
 
 
-def validate_uni(df):
-    """Validate university data and update the values in the DataFrame."""
-    uni = find_university(df)
+def university(data: dict) -> dict:
+    """Validate university data and update the values in the dict."""
+    uni = find_university(data)
 
-    def update_value(var, value):
-        """Helper function to update a row in the DataFrame."""
-        df.loc[df["VAR"] == var, "VALUE"] = value
-
+    # Helper function to update dictionary values
+    def update_value(key: str, value):
+        data[key] = value
+    
+    # Update dict with university data
     if isinstance(uni, (list, tuple)) and len(uni) >= 3:
-        # Update DataFrame with university data
         update_value("employer", uni[0])
-        update_value("lhn", uni[1])
+        update_value("payroll_tax_number", uni[1])
         update_value("employer_type", uni[2])
-    else:
-        # Log error and set default values
-        print("Error: Invalid university data")
-        for var in ["employer", "lhn", "employer_type"]:
-            update_value(var, None)
 
-    return df
+    return data
