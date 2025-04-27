@@ -416,9 +416,9 @@
                 </div>
             </div>
             <div class="sm:col-span-6">
-                {{ form.nl_explain.label(class="form-label") }}<br>
-                {{ form.nl_explain(class="form-input") }}<br>
-                {% for error in form.nl_explain.errors %}
+                {{ form.nl_info.label(class="form-label") }}<br>
+                {{ form.nl_info(class="form-input") }}<br>
+                {% for error in form.nl_info.errors %}
                 <span class="text-red-500">{{ error }}</span>
                 {% endfor %}
             </div>
@@ -489,9 +489,16 @@
                 {% endfor %}
             </div>
             <div class="sm:col-span-6">
-                {{ form.explain_will_agreement.label(class="form-label") }}<br>
-                {{ form.explain_will_agreement(class="form-input") }}<br>
-                {% for error in form.explain_will_agreement.errors %}
+                {{ form.willagreement_signed_date.label(class="form-label") }}<br>
+                {{ form.willagreement_signed_date(class="form-input") }}<br>
+                {% for error in form.willagreement_signed_date.errors %}
+                <span class="text-red-500">{{ error }}</span>
+                {% endfor %}
+            </div>
+            <div class="sm:col-span-6">
+                {{ form.willagreement_info.label(class="form-label") }}<br>
+                {{ form.willagreement_info(class="form-input") }}<br>
+                {% for error in form.willagreement_info.errors %}
                 <span class="text-red-500">{{ error }}</span>
                 {% endfor %}
             </div>

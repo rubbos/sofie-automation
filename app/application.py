@@ -11,11 +11,7 @@ from extract_data import main as extract
 from pprint import pprint
 from datetime import datetime
 from utils import process
-from utils.reports import (
-    create_main_report,
-    create_email_report,
-    extracted_data,
-)
+from utils.reports import create_report
 
 # Load environment variables from .env file (in development)
 load_dotenv()
@@ -109,13 +105,10 @@ def index():
                 if field.name not in ['csrf_token', 'submit']:
                     data[field.name] = field.data
         
-            main_report = create_main_report(
-                worker_info, employer_info, contract_info, calculation_info
-            )
-            email_report = create_email_report(
-                worker_info, employer_info, contract_info, calculation_info
-        )
-            return render_template('results2.html', data=data)
+            report = create_report(data)
+            # pprint(data)
+
+            return render_template('results2.html', report=report)
         else:
             print("Validation failed. Errors:", form.errors)
 

@@ -9,35 +9,29 @@ def parse_date(date_str):
     """Parses a date string in the format 'dd-mm-yyyy' and returns a datetime object"""
     return pd.to_datetime(date_str, format="%d-%m-%Y")
 
-def period_type(dates_list: list[str], stay_type: str) -> list[tuple]:
+def period_type(dates: dict, stay_type: str) -> list[tuple]:
     """Gives pairs in the list a type"""
-    dates_list = string_to_literal_list(dates_list)
-    if dates_list == []:
+    if not dates:
         return []
-    pairs = []    
-
-    for date in dates_list:
-        start_date = parse_date(date[0])
-        end_date = parse_date(date[1])
+    
+    # If its a single dict, make it a list of one 
+    if isinstance(dates, dict):
+        dates = [dates]  
+    
+    pairs = []
+    for date in dates:
+        start_date = date['start_date']
+        end_date = date['end_date']
         pairs.append((start_date, end_date, stay_type))
     return pairs
 
-def string_to_literal_list(lst: list):
-    """Converts a string representation of a list to an actual list"""
-    #FIXME i need to fix the string to list mess with dates and other types of data
-    print(lst, type(lst))
-    if lst == "" or lst == None:
-        return []
-    elif type(lst) == list:
-        return lst
-    return ast.literal_eval(lst)
 
-def combine_periods(nl_lived: list, nl_worked: list, nl_visited: list, nl_arrival_till_start: list) -> list:
+def combine_periods(nl_lived: dict, nl_worked: dict, nl_visited: dict, nl_arrival_till_start: dict) -> list:
     """Combines the periods into a single sorted list"""
     nl_lived = period_type(nl_lived, "private")
     nl_worked = period_type(nl_worked, "work")
     nl_visited = period_type(nl_visited, "private")    
-    nl_arrival_till_start = period_type([nl_arrival_till_start], "private")
+    nl_arrival_till_start = period_type(nl_arrival_till_start, "private")
 
     all_periods = nl_lived + nl_worked + nl_visited + nl_arrival_till_start
     return sorted(all_periods)  
@@ -55,11 +49,9 @@ def filter_unique_dates(date_list: list[tuple]) -> list[tuple]:
     # Extract all unique dates
     unique_dates = set()
     
-    for start_timestamp, end_timestamp, _ in date_list:
-        start_date = start_timestamp.date()
-        end_date = end_timestamp.date()
-        
+    for start_date, end_date, _ in date_list:
         current_date = start_date
+
         while current_date <= end_date:
             unique_dates.add(current_date)
             current_date += timedelta(days=1)
