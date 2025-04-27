@@ -1,223 +1,91 @@
 import pandas as pd
-from dataclasses import dataclass
-from typing import Optional
 from utils import locations_timeline, total_months_nl, map_location_radius
 from utils import calculations as calc
 
+class Applicant:
+    def __init__(self, **kwargs):
+        # Initialize the applicant with default values 
+        for key, value in kwargs.items():
+            setattr(self, key, value)
 
-@dataclass
-class WorkerData:
-    """Represents data related to the worker."""
+        # Do some calculations
+        self.calculate()
+        # self.timeline()
 
-    full_name: str
-    bsn: str
-    date_of_birth: str
-    first_work_date: str
-    arrival_date: str
-    recent_locations: str
-    nl_combined_table: Optional[str] = None
-    nl_reason: Optional[str] = None
-    nl_reason_doc: Optional[str] = None
-    explain_nl: Optional[str] = None
-    cv_data: Optional[str] = None
+    def calculate(self):
+        # Do calculations and set new attributes
+        self.wage_type = calc.salarynorm(self.ufo_code)
+        self.start_date = calc.start_date(self.contract_start_date, self.first_work_date, self.employer_type)
+        self.signed_location = calc.signed_location(self.contract_signed_date, self.places_of_residence, self.arrival_date)
+        
+        self.true_start_date = calc.true_start_date(self.application_date, self.start_date)
+        self.nl_arrival_till_start = calc.get_arrival_date_to_start_date_range(self.arrival_date, self.start_date)
+        print(self.nl_arrival_till_start)
+        self.nl_combined = total_months_nl.combine_periods(self.nl_residence_dates, self.nl_worked_dates, self.nl_private_dates, self.nl_arrival_till_start)
+        
+        self.nl_combined_table = total_months_nl.show_date_ranges_table(self.nl_combined)
+        self.cut_months = total_months_nl.calc(self.nl_combined)
 
+        self.end_date = calc.end_date(self.true_start_date, self.cut_months)
 
-@dataclass
-class EmployerData:
-    """Represents data related to the employer."""
+    def timeline(self):
+        # Create a timeline of the last 24 months
+        timeline = locations_timeline.TimelineVisualizer()
+        timeline_end = pd.to_datetime(self.true_start_date, format="%d-%m-%Y")
+        timeline_start = timeline_end - pd.DateOffset(years=2)
+        self.recent_locations = timeline.location_table_24_months(self.places_of_residence, timeline_start, timeline_end, self.arrival_date)
 
-    employer: str
-    employer_type: str
-    lhn: str
-
-
-@dataclass
-class ContractData:
-    """Represents contract-specific data."""
-
-    job_title: str
-    ufo_code: str
-    wage_type: str
-    ao_start_date: str
-    ao_signed_date: str
-    application_date: str
-    wo_signed_date: Optional[str] = None
-    explain_wo: Optional[str] = None
-    income: Optional[str] = None
-
-    def __post_init__(self):
-        if self.income and not self.income.isdigit():
-            raise ValueError("Income must be numeric.")
-
-
-@dataclass
-class CalculationData:
-    """Represents calculated data"""
-
-    application_type: str
-    start_date: str
-    true_start_date: str
-    end_date: str
-    signed_location: str
-    cut_months: int
-
-
-def extracted_data(
-    tax_form,
-    application_form,
-    employment_contract,
-):
-
-    # Extracted data from the forms
-    full_name = get_value(tax_form, "full_name")
-    first_work_date = get_value(tax_form, "first_work_date")
-    place_of_residence = get_value(tax_form, "place_of_residence")
-    arrival_date = get_value(tax_form, "arrival_date")
-    employer = get_value(application_form, "employer")
-    lhn = get_value(application_form, "lhn")
-    bsn = get_value(application_form, "bsn")
-    date_of_birth = get_value(application_form, "date_of_birth")
-    ao_start_date = get_value(application_form, "ao_start_date")
-    employer_type = get_value(application_form, "employer_type")
-    job_title = get_value(application_form, "job_title")
-    ufo_code = get_value(application_form, "ufo_code")
-    wage_type = calc.salarynorm(get_value(application_form, "ufo_code"))
-    application_date = get_value(application_form, "application_date")
-    wo_signed_date = get_value(employment_contract, "wo_signed_date")
-    explain_wo = get_value(employment_contract, "explain_wo")
-    ao_signed_date = get_value(employment_contract, "ao_signed_date")
-    cv_data = get_value(employment_contract, "previous_jobs")
-    explain_nl = get_value(employment_contract, "explain_nl")
-    application_type = get_value(tax_form, "application_type")
-    nl_all_dates = get_value(tax_form, "nl_residence_dates")
-    nl_worked_dates = get_value(tax_form, "nl_worked_dates")
-    nl_private_dates = get_value(tax_form, "nl_private_visit_dates")
-
-    # Calculated data from the forms
-    start_date = calc.start_date(ao_start_date, first_work_date, employer_type)
-    true_start_date = calc.true_start_date(application_date, start_date)
-    signed_location = calc.signed_location(ao_signed_date, place_of_residence, arrival_date)
-    nl_arrival_till_start = calc.get_arrival_date_to_start_date_range(arrival_date, start_date)
-    nl_combined = total_months_nl.combine_periods(nl_all_dates, nl_worked_dates, nl_private_dates, nl_arrival_till_start) 
-    nl_combined_table = total_months_nl.show_date_ranges_table(nl_combined)
-    cut_months = total_months_nl.calc(nl_combined)
-    end_date = calc.end_date(true_start_date, cut_months)
-
-    # Creating locations table (same as timeline image, but in a table)
-    timeline = locations_timeline.TimelineVisualizer()
-    timeline_end = pd.to_datetime(true_start_date, format= "%d-%m-%Y")
-    timeline_start = timeline_end - pd.DateOffset(years=2)
-    recent_locations = timeline.location_table_24_months(place_of_residence, timeline_start, timeline_end, arrival_date)
-    
-    # Create timeline_image
-    timeline.create_timeline(
-        data=place_of_residence,
-        ao_start_date_str=ao_start_date,
-        arrival_date_str=arrival_date,
-        output_file="static/images/timeline_image.png",
-    )
-
-    # Create map with locations near the Netherlands
-    map_location_radius.create_map(place_of_residence)
-
-    worker_info = WorkerData(
-        full_name=full_name,
-        bsn=bsn,
-        date_of_birth=date_of_birth,
-        first_work_date=first_work_date,
-        arrival_date=arrival_date,
-        recent_locations=recent_locations,
-        nl_combined_table=nl_combined_table,
-        explain_nl=explain_nl,
-        cv_data=cv_data,
-    )
-
-    employer_info = EmployerData(
-        employer=employer, employer_type=employer_type, lhn=lhn
-    )
-
-    contract_info = ContractData(
-        job_title=job_title,
-        ufo_code=ufo_code,
-        wage_type=wage_type,
-        ao_start_date=ao_start_date,
-        ao_signed_date=ao_signed_date,
-        application_date=application_date,
-        wo_signed_date=wo_signed_date,
-        explain_wo=explain_wo,
-    )
-
-    calculation_info = CalculationData(
-        application_type=application_type,
-        start_date=start_date,
-        true_start_date=true_start_date,
-        end_date=end_date,
-        signed_location=signed_location,
-        cut_months=cut_months,
-    )
-    return worker_info, employer_info, contract_info, calculation_info
-
-
-def check_application_type(
-    worker_info,
-    employer_info,
-    contract_info,
-    calculation_info,
-):
-    """Figure out what type of report we are dealing with. There are only 4 options: regular, change of employer, returning expat or promovendus exception"""
-    if calculation_info.application_type == "Reguliere aanvraag":
-        return regular_application(
-            worker_info,
-            employer_info,
-            contract_info,
-            calculation_info,
+        # Create timeline_image
+        timeline.create_timeline(
+            data=self.places_of_residence,
+            ao_start_date_str=self.contract_start_date,
+            arrival_date_str=self.arrival_date,
+            output_file="static/images/timeline_image.png",
         )
-    return "Oeps deze aanvraag type bestaat nog niet in SOFIEbot!"
 
+        # Create map with locations near the Netherlands
+        map_location_radius.create_map(self.places_of_residence)
 
-def regular_application(
-    worker_info,
-    employer_info,
-    contract_info,
-    calculation_info,
-):
+def regular_application(applicant: Applicant) -> str:
+    """Create the report for a regular application."""
 
     header = formatting_header("Verslag regulier")
     werknemer = verslag_werknemer(
-        employer_info.employer,
-        contract_info.ao_start_date,
-        employer_info.employer_type,
-        worker_info.first_work_date,
-        calculation_info.start_date,
+        applicant.employer,
+        applicant.contract_start_date,
+        applicant.employer_type,
+        applicant.first_work_date,
+        applicant.start_date,
     )
     aanwerving = verslag_aanwerving(
-        contract_info.ao_start_date,
-        contract_info.ao_signed_date,
-        worker_info.arrival_date,
-        contract_info.wo_signed_date,
-        contract_info.explain_wo,
-        calculation_info.signed_location,
+        applicant.contract_start_date,
+        applicant.contract_signed_date,
+        applicant.arrival_date,
+        applicant.willagreement_signed_date, 
+        applicant.willagreement_info,
+        applicant.signed_location,
     )
+
     buitenland = verslag_buitenland(
-        worker_info.recent_locations,
-        worker_info.cv_data,
+        applicant.places_of_residence,
+        applicant.previous_jobs,
     )
     woonplaats_radius = verslag_woonplaats_radius()
     deskundigheid = verslag_deskundigheid(
-        contract_info.job_title,
-        contract_info.ufo_code,
-        employer_info.employer,
-        contract_info.income,
+        applicant.job_title,
+        applicant.ufo_code,
+        applicant.employer,
+        "0" ## TODO: add income 
     )
     looptijd = verslag_looptijd(
-        contract_info.application_date,
-        contract_info.ao_start_date,
-        worker_info.nl_combined_table,
-        worker_info.explain_nl,
-        calculation_info.start_date,
-        calculation_info.true_start_date,
-        calculation_info.end_date,
-        calculation_info.cut_months,
+        applicant.application_date,
+        applicant.contract_start_date,
+        applicant.nl_combined_table,
+        applicant.nl_info,
+        applicant.start_date,
+        applicant.true_start_date,
+        applicant.end_date,
+        applicant.cut_months,
     )
 
     return (
@@ -231,13 +99,14 @@ def regular_application(
     )
 
 
-def exception_change_of_employer(): ...
+def exception_change_of_employer(): 
+    return "Oeps deze aanvraag type bestaat nog niet in SOFIEbot!"
 
+def exception_returning_expat(): 
+    return "Oeps deze aanvraag type bestaat nog niet in SOFIEbot!"
 
-def exception_returning_expat(): ...
-
-
-def exception_promovendus(): ...
+def exception_promovendus(): 
+    return "Oeps deze aanvraag type bestaat nog niet in SOFIEbot!"
 
 
 def verslag_werknemer(
@@ -338,20 +207,21 @@ def verslag_looptijd(
     return formatting_text(title, text)
 
 
-def create_main_report(
-    worker_info,
-    employer_info,
-    contract_info,
-    calculation_info,
-) -> str:
+def create_report(data: dict) -> str:
+    """Create the report based on the application type."""
+    applicant = Applicant(**data)
 
-    main_report = check_application_type(
-        worker_info,
-        employer_info,
-        contract_info,
-        calculation_info,
-    )
-    return main_report
+    """Figure out what type of report we are dealing with."""
+    if applicant.request_type == "regular":
+        return regular_application(applicant)
+    elif applicant.request_type == "change_of_employer":
+        return exception_change_of_employer()
+    elif applicant.request_type == "returning_expat":   
+        return exception_returning_expat()
+    elif applicant.request_type == "promovendus":
+        return exception_promovendus()
+    else:
+        return "Oeps deze aanvraag type bestaat nog niet in SOFIEbot!"
 
 
 def create_email_report(
@@ -376,11 +246,6 @@ def create_email_report(
     # Build the HTML using a list comprehension
     report = "<br>".join(f"{key}: {value}" for key, value in data.items())
     return report
-
-
-def get_value(df: pd.DataFrame, key: str) -> str:
-    """Retrieve a value from the DataFrame based on the given key."""
-    return df.loc[df["VAR"] == key, "VALUE"].values[0]
 
 
 def formatting_header(header: str) -> str:

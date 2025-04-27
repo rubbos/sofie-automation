@@ -44,7 +44,7 @@ function toggleEditLocation(type, index) {
     });
 }
 
-// code for adding location rows
+// Add rows with 4 inputs per row
 document.getElementById("addRowButton").addEventListener("click", function () {
     const container = document.getElementById("location_container");
     const newIndex = container.children.length + 1; // Unique index for the new row
@@ -107,6 +107,7 @@ document.getElementById("addRowButton").addEventListener("click", function () {
 
     container.appendChild(newRow);
 });
+
 
 function removeRow(rowId) {
     const row = document.getElementById(rowId);
@@ -241,4 +242,186 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
     });
+});
+
+/**
+ * Creates a reusable function to add rows with inputs to a container
+ * @param {Object} config - Configuration object with the following properties:
+ * @param {string} config.buttonId - ID of the button that triggers adding rows
+ * @param {string} config.containerId - ID of the container where rows will be added
+ * @param {string} config.prefix - Prefix for data attributes and input names (e.g., 'tax', 'personal')
+ * @param {Array} config.inputs - Array of input configurations
+ * @param {boolean} config.addRemoveButton - Whether to add a remove button (default: true)
+ * @param {boolean} config.addEditButton - Whether to add an edit button (default: true)
+ * @param {string} config.editButtonText - Text for the edit button (default: 'wijzig')
+ * @param {Function} config.onRowAdded - Callback function when a row is added (optional)
+ */
+function setupInputRowAdder(config) {
+    const {
+        buttonId, 
+        containerId, 
+        prefix,
+        inputs,
+        addRemoveButton = true,
+        addEditButton = true,
+        editButtonText = 'wijzig',
+        onRowAdded = null
+    } = config;
+    
+    document.getElementById(buttonId).addEventListener("click", function() {
+        addInputRow(config);
+    });
+}
+
+/**
+ * Adds a new row of inputs based on the provided configuration
+ * @param {Object} config - Same configuration object as setupInputRowAdder
+ * @returns {HTMLElement} - The newly created row element
+ */
+function addInputRow(config) {
+    const {
+        containerId, 
+        prefix,
+        inputs,
+        addRemoveButton = true,
+        addEditButton = true,
+        editButtonText = 'wijzig',
+        onRowAdded = null
+    } = config;
+    
+    const container = document.getElementById(containerId);
+    const newIndex = container.children.length + 1;
+    const newRow = document.createElement("div");
+    
+    newRow.classList.add("flex", "flex-wrap", "justify-evenly", "items-center", "border-b");
+    newRow.id = `row_${prefix}_${newIndex}`;
+    
+    // Create inputs based on configuration
+    let inputsHTML = '';
+    inputs.forEach(input => {
+        inputsHTML += `
+            <div class="flex flex-col w-full md:w-1/${inputs.length <= 2 ? '2' : '4'}">
+                <label data-label="${prefix}_${newIndex}"
+                    class="p-3 w-full font-semibold break-words text-xl">
+                </label>
+                <input data-input="${prefix}_${newIndex}"
+                    class="border border-gray-300 text-black text-xl p-3 w-full rounded-lg focus:outline-none hidden"
+                    type="text" name="data_${prefix}_${input.fieldName}_${newIndex}" 
+                    placeholder="${input.placeholder || ''}"
+                    value="${input.defaultValue || ''}">
+            </div>
+        `;
+    });
+    
+    // Create buttons section
+    let buttonsHTML = '';
+    if (addEditButton || addRemoveButton) {
+        buttonsHTML = '<div class="flex justify-end w-full mt-2">';
+        
+        if (addEditButton) {
+            buttonsHTML += `
+                <!-- Edit Button -->
+                <button type="button"
+                    class="bg-blue-600 hover:bg-blue-700 text-white text-xl font-semibold py-3 px-4 m-2 rounded-lg shadow-md transition-all duration-300"
+                    onclick="toggleEditInputs('${prefix}', ${newIndex})">
+                    ${editButtonText}
+                </button>
+            `;
+        }
+        
+        if (addRemoveButton) {
+            buttonsHTML += `
+                <!-- Remove Button -->
+                <button type="button"
+                    class="bg-red-600 hover:bg-red-700 text-white text-xl font-semibold py-3 px-4 m-2 rounded-lg shadow-md transition-all duration-300"
+                    onclick="removeRow('row_${prefix}_${newIndex}')">
+                    x
+                </button>
+            `;
+        }
+        
+        buttonsHTML += '</div>';
+    }
+    
+    // Combine everything
+    newRow.innerHTML = inputsHTML + buttonsHTML;
+    
+    // Add the new row to the container
+    container.appendChild(newRow);
+    
+    // Call the callback if provided
+    if (onRowAdded && typeof onRowAdded === 'function') {
+        onRowAdded(newRow, newIndex);
+    }
+    
+    return newRow;
+}
+
+// Required supporting function for the remove button
+function removeRow(rowId) {
+    const row = document.getElementById(rowId);
+    if (row) {
+        row.remove();
+    }
+}
+
+// Improved toggle function that works with any number of inputs
+function toggleEditInputs(prefix, index) {
+    const labels = document.querySelectorAll(`label[data-label^="${prefix}_${index}_"]`);
+    const inputs = document.querySelectorAll(`input[data-input^="${prefix}_${index}_"]`);
+    
+    labels.forEach(label => {
+        label.classList.toggle('hidden');
+    });
+    
+    inputs.forEach(input => {
+        input.classList.toggle('hidden');
+        
+        // Get the field name from the data-input attribute
+        const fieldName = input.getAttribute('data-input').split('_')[2];
+        
+        if (!input.classList.contains('hidden')) {
+            input.focus();
+        } else {
+            // Update corresponding label with input value when hiding input
+            const correspondingLabel = document.querySelector(`label[data-label="${prefix}_${index}_${fieldName}"]`);
+            if (correspondingLabel) {
+                correspondingLabel.textContent = input.value || '';
+            }
+        }
+    });
+}
+
+// Example usage for your specific scenarios:
+document.addEventListener('DOMContentLoaded', function() {
+    // Setup for two inputs per row
+    setupInputRowAdder({
+        buttonId: "addTwoInputRowButton",
+        containerId: "nl_residence_dates_container",
+        prefix: "tax",
+        inputs: [
+            { fieldName: "start_date", placeholder: "Start Date" },
+            { fieldName: "end_date", placeholder: "End Date" }
+        ],
+        addEditButton: true,
+        addRemoveButton: true
+    });
+    
+    // Setup for four inputs per row
+    setupInputRowAdder({
+        buttonId: "addFourInputRowButton",
+        containerId: "contact_info_container",
+        prefix: "contact",
+        inputs: [
+            { fieldName: "name", placeholder: "Name" },
+            { fieldName: "email", placeholder: "Email", defaultValue: "@example.com" },
+            { fieldName: "phone", placeholder: "Phone Number" },
+            { fieldName: "address", placeholder: "Address" }
+        ],
+        addEditButton: true,
+        addRemoveButton: true,
+        editButtonText: "Edit"
+    });
+    
+    // You can add more configurations as needed
 });

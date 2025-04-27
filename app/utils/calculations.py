@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 from dateutil.relativedelta import relativedelta
 from typing import Optional
 import pandas as pd
@@ -16,18 +16,16 @@ def signed_outside_nl(signed_date: str, arrival_date: str) -> bool:
     return True
 
 
-def signed_location(signed_date: str, place_of_residence: list, arrival_date: str):
+def signed_location(signed_date: datetime.date, places_of_residence: list, arrival_date: datetime.date):
     """Finds the location where the given signed date falls within the start and end date ranges"""
-    query_date = datetime.strptime(signed_date, "%d-%m-%Y")
-    arrival_nl = datetime.strptime(arrival_date, "%d-%m-%Y")
  
-    for entry in place_of_residence:
-        start_date = datetime.strptime(entry[0], "%d-%m-%Y")
-        end_date = datetime.strptime(entry[1], "%d-%m-%Y")
+    for entry in places_of_residence:
+        start_date = entry['start_date']
+        end_date = entry['end_date']
 
-        if start_date <= query_date <= end_date:
-            return f"{entry[2]}, {entry[3]}"
-        elif query_date >= arrival_nl:
+        if start_date <= signed_date <= end_date:
+            return f"{entry['city']}, {entry['country']}"
+        elif signed_date >= arrival_date:
             return "Nederland"
     
     return "Onbekend"
@@ -40,34 +38,19 @@ def salarynorm(ufo_code: str) -> str:
     return "Regulier"
 
 
-def is_within_4_months(date1_str, date2_str, date_format="%d-%m-%Y") -> bool:
+def is_within_4_months(date1, date2) -> bool:
     """Compare 2 dates and see if the time between is less than 4 months"""
-    date1 = datetime.strptime(date1_str, date_format)
-    date2 = datetime.strptime(date2_str, date_format)
-
-    # Calculate the exact cutoff date
     four_months_later = date1 + relativedelta(months=4)
     cutoff_date = four_months_later - relativedelta(days=1)
-
-    # Check if date2 is within the 4-month range
     return date2 <= cutoff_date
 
 
-def next_first_of_month(date: str) -> str:
+def next_first_of_month(date: datetime.date) -> datetime.date:
     """Gets the first day of the next month based of input"""
-    try:
-        # Parse the input date
-        date_obj = datetime.strptime(date, "%d-%m-%Y")
-
-        # Determine the first date of the next month
-        if date_obj.month == 12:
-            next_month = datetime(date_obj.year + 1, 1, 1)
-        else:
-            next_month = datetime(date_obj.year, date_obj.month + 1, 1)
-
-        return next_month.strftime("%d-%m-%Y")
-    except ValueError:
-        return "Invalid date format. Please use dd-mm-yyyy."
+    if date.month == 12:
+        next_month = datetime(date.year + 1, 1, 1)
+    next_month = datetime(date.year, date.month + 1, 1)
+    return next_month
 
 
 def start_date(ao_start_date: str, first_work_date: str, employer_type: str):
@@ -77,16 +60,16 @@ def start_date(ao_start_date: str, first_work_date: str, employer_type: str):
     return first_work_date
 
 
-def true_start_date(application_date: str, start_date: str) -> str:
+def true_start_date(application_date: datetime.date, start_date: datetime.date) -> datetime.date:
     """If the difference between dates is more than 4 months, we return the first of the next month"""
     if is_within_4_months(start_date, application_date):
         return start_date
     return next_first_of_month(application_date)
 
 
-def end_date(true_start_date: str, months_nl: Optional[int] = None) -> str:
+def end_date(true_start_date: datetime.date, months_nl: Optional[int] = None) -> str:
     """ Calculates end date based on adding 5 years to the starting date, then subtracting the months minus 1 day"""
-    start_date = datetime.strptime(true_start_date, "%d-%m-%Y") - timedelta(days=1)
+    start_date = true_start_date - timedelta(days=1)
     end_date = start_date + relativedelta(years=5)
 
     # if any months are given, subtract them from the end date
@@ -96,13 +79,9 @@ def end_date(true_start_date: str, months_nl: Optional[int] = None) -> str:
     return end_date.strftime("%d-%m-%Y")
 
 
-def get_most_recent_date(date1: str, date2: str) -> str:
+def get_most_recent_date(date1: datetime.date, date2: datetime.date) -> datetime.date:
     """Returns the most recent date from two given dates."""
-    date_format = "%d-%m-%Y"
-    date1_parsed = datetime.strptime(date1, date_format)
-    date2_parsed = datetime.strptime(date2, date_format)
-
-    return date1 if date1_parsed > date2_parsed else date2
+    return date1 if date1 > date2 else date2
 
 def calculate_time_of_stay(start: pd.DataFrame, end: pd.DataFrame) -> str:
     """Calculates time between 2 dates"""
@@ -121,11 +100,10 @@ def calculate_time_of_stay(start: pd.DataFrame, end: pd.DataFrame) -> str:
 
     return " + ".join(parts) if parts else "0 dagen"
 
-def get_arrival_date_to_start_date_range(arrival_date: str, start_work_date: str) -> list:
+def get_arrival_date_to_start_date_range(arrival_date: datetime.date, start_work_date: datetime.date) -> dict:
     """Gets the dates of the 2 variables in a list if the arrival date is before the start date"""
-    arrival_date = pd.to_datetime(arrival_date, dayfirst=True)
-    last_day_before_work = pd.to_datetime(start_work_date, dayfirst=True) - pd.DateOffset(days=1)
+    last_day_before_work = start_work_date - timedelta(days=1) 
 
     if arrival_date >= last_day_before_work:
-        return []
-    return [arrival_date, last_day_before_work]
+        return {}
+    return {'start_date': arrival_date, 'end_date': last_day_before_work}
