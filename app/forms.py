@@ -1,12 +1,11 @@
 from flask_wtf import FlaskForm
-from wtforms import Form, StringField, FieldList, FormField, DateField, SelectField
+from flask_wtf.file import FileField, FileAllowed, FileRequired
+from wtforms import Form, StringField, FieldList, FormField, DateField, SelectField, SubmitField
 from wtforms.validators import DataRequired, Optional
-from flask_wtf.file import FileField, FileAllowed
-from wtforms import SubmitField
 
 class UploadForm(FlaskForm):
-    sofie_file = FileField('Sofie form', validators=[FileAllowed(['pdf'])])
-    topdesk_file = FileField('Topdesk form', validators=[FileAllowed(['pdf'])])
+    sofie_file = FileField('Sofie form', validators=[FileAllowed(['pdf']), FileRequired()])
+    topdesk_file = FileField('Topdesk form', validators=[FileAllowed(['pdf']), FileRequired()])
     submit = SubmitField('Upload')
 
 

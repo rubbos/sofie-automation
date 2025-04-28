@@ -1,6 +1,8 @@
 import pandas as pd
 from utils import locations_timeline, total_months_nl, map_location_radius
 from utils import calculations as calc
+from pprint import pprint
+import datetime
 
 class Applicant:
     def __init__(self, **kwargs):
@@ -17,7 +19,8 @@ class Applicant:
         self.wage_type = calc.salarynorm(self.ufo_code)
         self.start_date = calc.start_date(self.contract_start_date, self.first_work_date, self.employer_type)
         self.signed_location = calc.signed_location(self.contract_signed_date, self.places_of_residence, self.arrival_date)
-        
+        self.is_within_4_months = calc.is_within_4_months(self.contract_start_date, self.application_date)
+
         self.true_start_date = calc.true_start_date(self.application_date, self.start_date)
         self.nl_arrival_till_start = calc.get_arrival_date_to_start_date_range(self.arrival_date, self.start_date)
         self.nl_combined = total_months_nl.combine_periods(self.nl_residence_dates, self.nl_worked_dates, self.nl_private_dates, self.nl_arrival_till_start)
@@ -64,16 +67,16 @@ def regular_application(applicant: Applicant) -> str:
     header = formatting_header("Verslag regulier")
     werknemer = verslag_werknemer(
         applicant.employer,
-        applicant.contract_start_date,
+        format_date(applicant.contract_start_date),
         applicant.employer_type,
-        applicant.first_work_date,
-        applicant.start_date,
+        format_date(applicant.first_work_date),
+        format_date(applicant.start_date),
     )
     aanwerving = verslag_aanwerving(
-        applicant.contract_start_date,
-        applicant.contract_signed_date,
-        applicant.arrival_date,
-        applicant.willagreement_signed_date, 
+        format_date(applicant.contract_start_date),
+        format_date(applicant.contract_signed_date),
+        format_date(applicant.arrival_date),
+        format_date(applicant.willagreement_signed_date), 
         applicant.willagreement_info,
         applicant.signed_location,
     )
@@ -90,14 +93,15 @@ def regular_application(applicant: Applicant) -> str:
         "0" ## TODO: add income 
     )
     looptijd = verslag_looptijd(
-        applicant.application_date,
-        applicant.contract_start_date,
+        format_date(applicant.application_date),
+        format_date(applicant.contract_start_date),
         applicant.nl_combined_table,
         applicant.nl_info,
-        applicant.start_date,
-        applicant.true_start_date,
-        applicant.end_date,
+        format_date(applicant.start_date),
+        format_date(applicant.true_start_date),
+        format_date(applicant.end_date),
         applicant.cut_months,
+        applicant.is_within_4_months,
     )
 
     return (
@@ -198,11 +202,12 @@ def verslag_looptijd(
     true_start_date,
     end_date,
     cut_months,
+    is_within_4_months,
 ):
     title = "Verslag looptijd"
 
     # Check if the difference between start_date and application_date is less than 4 months.
-    if calc.is_within_4_months(ao_start_date, application_date):
+    if is_within_4_months:
         text = f"Het verzoek is tijdig ingediend op {application_date}. Dat is binnen de 4 maanden na de aanvang van de tewerkstelling op {true_start_date}.<br><br>"
     else:
         text = f"Het verzoek is niet tijdig ingediend op {application_date}. Dat is 4 maanden na de aanvang van de tewerkstelling op {start_date}.<br><br>"
@@ -236,11 +241,11 @@ def create_email_report(applicant: Applicant) -> str:
     data = {
         "Naam": applicant.name,
         "BSnr": applicant.bsn,
-        "Geboortedatum": applicant.date_of_birth,
+        "Geboortedatum": format_date(applicant.date_of_birth),
         "Werkgever": applicant.employer,
         "Loonheffingsnummer": applicant.payroll_tax_number,
-        "Gewenste ingangsdatum": applicant.true_start_date,
-        "Looptijd tot en met": applicant.end_date,
+        "Gewenste ingangsdatum": format_date(applicant.true_start_date),
+        "Looptijd tot en met": format_date(applicant.end_date),
         "Functienaam": applicant.job_title,
         "Loonnorm": applicant.wage_type,
         "Sectorcode": "61",
@@ -254,10 +259,13 @@ def create_email_report(applicant: Applicant) -> str:
 def formatting_header(header: str) -> str:
     return "<b style='font-size:20px'>" + header + "</b><br><br>"
 
-
 def formatting_text(subheader: str, text: str) -> str:
     return "<b>" + subheader + "</b><br>" + text + "<br><br><br>"
 
+def format_date(date_obj):
+    if isinstance(date_obj, datetime.date):
+        return date_obj.strftime("%d-%m-%Y")
+    return date_obj
 
 def replace_values(replacements: dict, report: str):
     for key, value in replacements.items():
