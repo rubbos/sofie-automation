@@ -218,12 +218,8 @@ def verslag_looptijd(
     text += f"- De einddatum van de looptijd is daarmee {end_date}."
     return formatting_text(title, text)
 
-
-def create_report(data: dict) -> str:
+def create_main_report(applicant: Applicant) -> str:
     """Create the report based on the application type."""
-    applicant = Applicant(**data)
-
-    """Figure out what type of report we are dealing with."""
     if applicant.request_type == "regular":
         return regular_application(applicant)
     elif applicant.request_type == "change_of_employer":
@@ -236,22 +232,17 @@ def create_report(data: dict) -> str:
         return "Oeps deze aanvraag type bestaat nog niet in SOFIEbot!"
 
 
-def create_email_report(
-    worker_info,
-    employer_info,
-    contract_info,
-    calculation_info,
-) -> str:
+def create_email_report(applicant: Applicant) -> str:
     data = {
-        "Naam": worker_info.full_name,
-        "BSnr": worker_info.bsn,
-        "Geboortedatum": worker_info.date_of_birth,
-        "Werkgever": employer_info.employer,
-        "Loonheffingsnummer": employer_info.lhn,
-        "Gewenste ingangsdatum": calculation_info.true_start_date,
-        "Looptijd tot en met": calculation_info.end_date,
-        "Functienaam": contract_info.job_title,
-        "Loonnorm": contract_info.wage_type,
+        "Naam": applicant.name,
+        "BSnr": applicant.bsn,
+        "Geboortedatum": applicant.date_of_birth,
+        "Werkgever": applicant.employer,
+        "Loonheffingsnummer": applicant.payroll_tax_number,
+        "Gewenste ingangsdatum": applicant.true_start_date,
+        "Looptijd tot en met": applicant.end_date,
+        "Functienaam": applicant.job_title,
+        "Loonnorm": applicant.wage_type,
         "Sectorcode": "61",
     }
 
