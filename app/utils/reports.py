@@ -10,7 +10,7 @@ class Applicant:
 
         # Do some calculations
         self.calculate()
-        # self.timeline()
+        self.timeline()
 
     def calculate(self):
         # Do calculations and set new attributes
@@ -20,20 +20,30 @@ class Applicant:
         
         self.true_start_date = calc.true_start_date(self.application_date, self.start_date)
         self.nl_arrival_till_start = calc.get_arrival_date_to_start_date_range(self.arrival_date, self.start_date)
-        print(self.nl_arrival_till_start)
         self.nl_combined = total_months_nl.combine_periods(self.nl_residence_dates, self.nl_worked_dates, self.nl_private_dates, self.nl_arrival_till_start)
         
         self.nl_combined_table = total_months_nl.show_date_ranges_table(self.nl_combined)
         self.cut_months = total_months_nl.calc(self.nl_combined)
 
         self.end_date = calc.end_date(self.true_start_date, self.cut_months)
-
+    
+    #temp fix
+    def prepare_places_of_residence(self, data):
+        return pd.DataFrame(data).rename(columns={
+            'start_date': 'Startdatum',
+            'end_date': 'Einddatum',
+            'city': 'Stad',
+            'country': 'Land'
+        })
+    
     def timeline(self):
         # Create a timeline of the last 24 months
         timeline = locations_timeline.TimelineVisualizer()
         timeline_end = pd.to_datetime(self.true_start_date, format="%d-%m-%Y")
         timeline_start = timeline_end - pd.DateOffset(years=2)
-        self.recent_locations = timeline.location_table_24_months(self.places_of_residence, timeline_start, timeline_end, self.arrival_date)
+
+        places_df = pd.DataFrame(self.places_of_residence)
+        self.recent_locations = timeline.location_table_24_months(places_df, timeline_start, timeline_end, self.arrival_date)
 
         # Create timeline_image
         timeline.create_timeline(
@@ -67,7 +77,7 @@ def regular_application(applicant: Applicant) -> str:
     )
 
     buitenland = verslag_buitenland(
-        applicant.places_of_residence,
+        applicant.recent_locations,
         applicant.previous_jobs,
     )
     woonplaats_radius = verslag_woonplaats_radius()

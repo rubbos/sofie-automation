@@ -21,7 +21,7 @@ class TimelineConfig:
     bar_height: float = 0.3
     base_level: float = 0
     date_format: str = "%d-%m-%Y"
-    required_columns: tuple = ("Startdatum", "Einddatum", "Stad", "Land")
+    required_columns: tuple = ("start_date", "end_date", "city", "country")
 
 
 class TimelineVisualizer:
@@ -58,22 +58,22 @@ class TimelineVisualizer:
         self._validate_data(df)
 
         # Convert dates to datetime
-        for col in ["Startdatum", "Einddatum"]:
+        for col in ["start_date", "end_date"]:
             df[col] = pd.to_datetime(df[col], format=self.config.date_format)
 
         # Clip dates to timeline window
-        df["Startdatum"] = df["Startdatum"].clip(
+        df["start_date"] = df["start_date"].clip(
             lower=timeline_start, upper=timeline_end
         )
-        df["Einddatum"] = df["Einddatum"].clip(
+        df["end_date"] = df["end_date"].clip(
             lower=timeline_start, upper=timeline_end)
 
         # Filter out periods that are completely outside the window
         df = df[
-            ~((df["Startdatum"] > timeline_end) |
-              (df["Einddatum"] < timeline_start))
+            ~((df["start_date"] > timeline_end) |
+              (df["end_date"] < timeline_start))
         ]
-        return df.sort_values("Startdatum")
+        return df.sort_values("start_date")
 
     def calculate_time_of_stay(self, start, end):
         delta = relativedelta(end, start)
@@ -143,14 +143,14 @@ class TimelineVisualizer:
         if df.empty:
             return [(timeline_start, timeline_end)]
 
-        if df["Startdatum"].iloc[0] > timeline_start:
+        if df["start_date"].iloc[0] > timeline_start:
             gaps.append(
-                (timeline_start, df["Startdatum"].iloc[0] - timedelta(days=1)))
+                (timeline_start, df["start_date"].iloc[0] - timedelta(days=1)))
 
         # Check intermediate gaps
         for i in range(len(df) - 1):
-            current_end = df["Einddatum"].iloc[i]
-            next_start = df["Startdatum"].iloc[i + 1]
+            current_end = df["end_date"].iloc[i]
+            next_start = df["start_date"].iloc[i + 1]
             if (next_start - current_end).days > 1:
                 gaps.append(
                     (current_end + timedelta(days=1),
@@ -158,12 +158,12 @@ class TimelineVisualizer:
                 )
 
         # Check end gap
-        if df["Einddatum"].iloc[-1] < timeline_end:
-            gap_days = (timeline_end - df["Einddatum"].iloc[-1]).days
+        if df["end_date"].iloc[-1] < timeline_end:
+            gap_days = (timeline_end - df["end_date"].iloc[-1]).days
             if gap_days > 1:  # Changed from > 0 to > 1
                 gaps.append(
                     (
-                        df["Einddatum"].iloc[-1] + timedelta(days=1),
+                        df["end_date"].iloc[-1] + timedelta(days=1),
                         timeline_end - timedelta(days=1),
                     )
                 )
@@ -175,8 +175,8 @@ class TimelineVisualizer:
         colors = plt.cm.Pastel1(np.linspace(0, 1, len(df)))
 
         for idx, row in df.iterrows():
-            start_num = mdates.date2num(row["Startdatum"])
-            end_num = mdates.date2num(row["Einddatum"])
+            start_num = mdates.date2num(row["start_date"])
+            end_num = mdates.date2num(row["end_date"])
             width = end_num - start_num
 
             # Only plot if width is positive (end date after start date)
@@ -193,9 +193,9 @@ class TimelineVisualizer:
                 ax.add_patch(rect)
 
                 # Add location label
-                location = f"{row['Stad']}, {row['Land']}"
-                dates = f"{row['Startdatum'].strftime('%d-%m-%Y')} t/m {row['Einddatum'].strftime('%d-%m-%Y')}"
-                duration = self.calculate_time_of_stay(row["Startdatum"], row["Einddatum"])
+                location = f"{row['city']}, {row['country']}"
+                dates = f"{row['start_date'].strftime('%d-%m-%Y')} t/m {row['end_date'].strftime('%d-%m-%Y')}"
+                duration = self.calculate_time_of_stay(row["start_date"], row["end_date"])
                 self._add_text(
                     ax,
                     start_num + width / 2,
@@ -258,7 +258,7 @@ class TimelineVisualizer:
             data, timeline_start, ao_start_date, arrival_date)
 
         # Filter data to exact 2-year window
-        df = df[df["Einddatum"] >= timeline_start].copy()
+        df = df[df["end_date"] >= timeline_start].copy()
 
         # Create figure
         fig, ax = plt.subplots(figsize=self.config.figsize)
@@ -275,10 +275,10 @@ class TimelineVisualizer:
                 # Add the early arrival date to the timeline
                 df = pd.concat([df,
                     pd.DataFrame([{
-                        "Startdatum": pd.to_datetime(arrival_gap.split()[0], format=self.config.date_format),
-                        "Einddatum": pd.to_datetime(arrival_gap.split()[2], format=self.config.date_format),
-                        "Stad": "Aankomstperiode",
-                        "Land": "Nederland",
+                        "start_date": pd.to_datetime(arrival_gap.split()[0], format=self.config.date_format),
+                        "end_date": pd.to_datetime(arrival_gap.split()[2], format=self.config.date_format),
+                        "city": "Aankomstperiode",
+                        "country": "Nederland",
                     }])
                     ],
                     ignore_index=True
