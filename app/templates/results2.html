@@ -15,24 +15,35 @@
     <div class="px-4 my-32 max-w-3xl mx-auto space-y-6">
         <h1 class="text-3xl font-semibold">Completed Report</h1>
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-6">
-            <div class="sm:col-span-6">
-                {{ report | safe }}
-            </div>            
-            <div class="sm:col-span-6">
-                <!-- Placeholder for the mail stuff -->
+            <div id="main_report" class="sm:col-span-6">
+                {{ main_report | safe }}
             </div>
+            <button onclick="copyReport('main_report')">
+                Copy Report
+            </button>
+            <div id="email_report" class="sm:col-span-6">
+                {{ email_report | safe }}
+            </div>
+            <button onclick="copyReport('email_report')">
+                Copy Report
+            </button>
         </div>
 
 
-        <div class="">
-            <button class="inline-block px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
-                type="submit">Submit</button>
-        </div>
-
-        <a href="/" class="inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
-            Refresh page
-        </a>
     </div>
 </body>
+<script>
+    function copyReport(reportId) {
+        const content = document.getElementById(reportId).innerText;
+
+        navigator.clipboard.writeText(content)
+            .then(() => {
+                alert('Report copied to clipboard!');
+            })
+            .catch(err => {
+                console.error('Failed to copy: ', err);
+            });
+    }
+</script>
 
 </html>
