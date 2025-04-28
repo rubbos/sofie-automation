@@ -7,3 +7,4 @@ testeasyocr
 testeasyocr
 *.png
 .env
+node_modules
