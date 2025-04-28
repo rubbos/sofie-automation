@@ -17,15 +17,21 @@
         <div id="main_report">
             {{ main_report | safe }}
         </div>
-        <button class="form-button" onclick="copyReport('main_report')">
-            Copy Report
-        </button>
+        <div class="button-container">
+            <button class="form-button" onclick="copyFormattedReport('main_report', 'main_notification')">
+                Copy Report
+            </button>
+            <span id="main_notification" class="notification hidden mx-4">Copied to clipboard!</span>
+        </div>
         <div id="email_report">
             {{ email_report | safe }}
         </div>
-        <button class="form-button" onclick="copyReport('email_report')">
-            Copy Report
-        </button>
+        <div class="button-container">
+            <button class="form-button" onclick="copyFormattedReport('email_report', 'email_notification')">
+                Copy Report
+            </button>
+            <span id="email_notification" class="notification hidden mx-4">Copied to clipboard!</span>
+        </div>
     </div>
     </div>
     <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
