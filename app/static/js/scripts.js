@@ -1,14 +1,36 @@
-// Function to copy the text of a report to the clipboard
-function copyReport(reportId) {
-    const content = document.getElementById(reportId).innerText;
+// Function to copy formatted report text to clipboard
+function copyFormattedReport(reportId, notificationId) {
+    const reportElement = document.getElementById(reportId);
+    const notificationElement = document.getElementById(notificationId);
 
-    navigator.clipboard.writeText(content)
-        .then(() => {
-            alert('Report copied to clipboard!');
-        })
-        .catch(err => {
-            console.error('Failed to copy: ', err);
-        });
+    if (navigator.clipboard && navigator.clipboard.write) {
+        try {
+            const htmlContent = reportElement.innerHTML;
+            const textContent = reportElement.innerText;
+            const htmlBlob = new Blob([htmlContent], { type: 'text/html' });
+            const textBlob = new Blob([textContent], { type: 'text/plain' });
+            const clipboardItem = new ClipboardItem({
+                'text/html': htmlBlob,
+                'text/plain': textBlob
+            });
+
+            navigator.clipboard.write([clipboardItem])
+                .then(() => {
+                    // Show notification after successful copy using Tailwind class
+                    notificationElement.classList.remove('hidden');
+
+                    // Hide the notification after 3 seconds
+                    setTimeout(() => {
+                        notificationElement.classList.add('hidden');
+                    }, 3000);
+                })
+                .catch(err => {
+                    console.log('Clipboard API failed, falling back to selection method', err);
+                });
+        } catch (err) {
+            console.log('Error with Clipboard API, falling back', err);
+        }
+    }
 }
 
 // Residences
