@@ -42,19 +42,21 @@ class Applicant:
         timeline_end = pd.to_datetime(self.true_start_date, format="%d-%m-%Y")
         timeline_start = timeline_end - pd.DateOffset(years=2)
 
+        # temp fix or else it will break
         places_df = pd.DataFrame(self.places_of_residence)
+        
         self.recent_locations = timeline.location_table_24_months(places_df, timeline_start, timeline_end, self.arrival_date)
 
         # Create timeline_image
         timeline.create_timeline(
-            data=self.places_of_residence,
+            data=places_df,
             ao_start_date_str=self.contract_start_date,
             arrival_date_str=self.arrival_date,
             output_file="static/images/timeline_image.png",
         )
 
         # Create map with locations near the Netherlands
-        map_location_radius.create_map(self.places_of_residence)
+        map_location_radius.create_map(places_df)
 
 def regular_application(applicant: Applicant) -> str:
     """Create the report for a regular application."""

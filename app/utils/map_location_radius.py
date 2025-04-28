@@ -43,8 +43,8 @@ def generate_coordinates_from_locations(locations) -> list[str, tuple[float, flo
     coordinates = []
     
     # Process locations in batch
-    for i, (_, _, city, country) in enumerate(locations):
-        location_str = f"{city}, {country}"
+    for i, row in enumerate(locations.itertuples(index=False)):
+        location_str = f"{row.city}, {row.country}"
         # Add small delay to avoid rate limiting, but only between calls
         if i > 0:
             time.sleep(0.2) 
