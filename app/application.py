@@ -1,17 +1,19 @@
+import sys
 import os
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
 from dotenv import load_dotenv
 from flask import Flask, render_template, request, jsonify
 from flask_wtf import CSRFProtect
-from forms import MainForm
+from app.forms import MainForm, UploadForm
 from flask import Flask, render_template, request
 import pandas as pd
 from flask import session, redirect, url_for
-from forms import UploadForm, MainForm
-from extract_data import main as extract
+from app.extract_data import main as extract
 from pprint import pprint
 from datetime import datetime
-from utils import process
-from utils.reports import Applicant, create_main_report, create_email_report
+from app.utils import process
+from app.utils.reports import Applicant, create_main_report, create_email_report
 
 # Load environment variables from .env file (in development)
 load_dotenv()
