@@ -1,156 +1,48 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SOFIEbot</title>
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <style>
-      .file-upload input[type="file"] {
-        display: none;
-      }
+<!DOCTYPE html>
+<html>
 
-      @keyframes spin {
-        to {
-          transform: rotate(360deg);
-        }
-      }
+<head>
+    <title>Completed Report</title>
+    <link href="{{ url_for('static', filename='css/output.css') }}" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+        rel="stylesheet">
+</head>
 
-      .spinner {
-        animation: spin 1s linear infinite;
-        display: none;
-      }
-
-      .loading .spinner {
-        display: inline-block;
-      }
-
-      .button-text {
-        display: inline;
-      }
-
-      .loading .button-text {
-        display: none;
-      }
-    </style>
-  </head>
-  <body
-    class="bg-gray-900 text-white flex items-center justify-center h-screen"
-  >
-    <div class="bg-gray-800 p-6 rounded-lg shadow-lg w-96">
-      <h1 class="text-2xl font-bold mb-4 text-center">Upload PDF bestanden</h1>
-      <form
-        id="uploadForm"
-        action="{{ url_for('upload_files') }}"
-        method="POST"
-        enctype="multipart/form-data"
-      >
-        <div class="mb-4">
-          <label class="block mb-2" for="file1">SOFIE 30% formulier:</label>
-          <div class="file-upload">
-            <button
-              type="button"
-              id="file1Button"
-              onclick="document.getElementById('file1').click()"
-              class="block w-full text-sm text-gray-500 py-2 px-4 rounded-full bg-gray-700 hover:bg-gray-600 focus:outline-none focus:ring focus:ring-blue-500"
-            >
-              Selecteer PDF bestand
-            </button>
-            <input
-              type="file"
-              id="file1"
-              name="file1"
-              accept=".pdf"
-              class="hidden"
-              onchange="updateFileName('file1', 'file1Button')"
-            />
-          </div>
+<body class="bg-gray-100 antialiased text-gray-900">
+    <form method="POST" enctype="multipart/form-data" class="px-4 my-32 max-w-lg mx-auto space-y-6">
+        {{ form.hidden_tag() }}
+        <h1 class="text-3xl font-semibold">Upload PDF files</h1>
+        <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 sm:col-span-2" role="alert">
+            <h2 class="font-bold">Privacy</h2>
+            <div>
+                The data and files are not stored due to privacy. This means that you will lose all the data if you
+                leave the webpage.
+            </div>
         </div>
-        <div class="mb-4">
-          <label class="block mb-2" for="file2"
-            >Oorspronkelijke aanvraag:</label
-          >
-          <div class="file-upload">
-            <button
-              type="button"
-              id="file2Button"
-              onclick="document.getElementById('file2').click()"
-              class="block w-full text-sm text-gray-500 py-2 px-4 rounded-full bg-gray-700 hover:bg-gray-600 focus:outline-none focus:ring focus:ring-blue-500"
-            >
-              Selecteer PDF bestand
-            </button>
-            <input
-              type="file"
-              id="file2"
-              name="file2"
-              accept=".pdf"
-              class="hidden"
-              onchange="updateFileName('file2', 'file2Button')"
-            />
-          </div>
+        <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 sm:col-span-2" role="alert">
+            <h2 class="font-bold">Checks</h2>
+            <div>
+                Please check all the data carefully on the next page.
+            </div>
         </div>
-        <div
-          class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4"
-          role="alert"
-        >
-          <p class="font-bold">Privacy</p>
-          <p>
-            De gegevens en bestanden worden niet opgeslagen i.v.m privacy. Dit
-            zorgt dat je alle gegevens verliest als je de webpagina verlaat.
-          </p>
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div id="sofie_file" class="sm:col-span-2">
+                <div>{{ form.sofie_file.label }}</div>
+                <div>{{ form.sofie_file }}</div>
+            </div>
+            <div id="topdesk_file" class="sm:col-span-2">
+                <div>{{ form.topdesk_file.label }}</div>
+                <div>{{ form.topdesk_file }}</div>
+            </div>
         </div>
-        <div
-          class="bg-yellow-100 mt-4 border-l-4 border-yellow-500 text-yellow-700 p-4"
-          role="alert"
-        >
-          <p class="font-bold">Controle</p>
-          <p>
-            SOFIEbot is niet perfect. Controleer alle gegevens op de volgende
-            pagina zorgvuldig.
-          </p>
-        </div>
-        <button
-          type="submit"
-          id="submitButton"
-          class="w-full mt-4 bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded flex items-center justify-center"
-        >
-          <svg class="spinner w-5 h-5 mr-2" viewBox="0 0 24 24">
-            <circle
-              class="opacity-25"
-              cx="12"
-              cy="12"
-              r="10"
-              stroke="currentColor"
-              stroke-width="4"
-              fill="none"
-            ></circle>
-            <path
-              class="opacity-75"
-              fill="currentColor"
-              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-            ></path>
-          </svg>
-          <span class="button-text">Upload</span>
+        <button type="submit" class="form-button">
+            Upload
         </button>
-      </form>
-    </div>
+    </form>
+    <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+</body>
 
-    <script>
-      function updateFileName(inputId, buttonId) {
-        const input = document.getElementById(inputId);
-        const button = document.getElementById(buttonId);
-        if (input.files && input.files[0]) {
-          button.textContent = input.files[0].name;
-        }
-      }
-
-      document
-        .getElementById("uploadForm")
-        .addEventListener("submit", function (e) {
-          const submitButton = document.getElementById("submitButton");
-          submitButton.classList.add("loading");
-          submitButton.disabled = true;
-        });
-    </script>
-  </body>
 </html>

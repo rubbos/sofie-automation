@@ -38,7 +38,7 @@ def salarynorm(ufo_code: str) -> str:
     return "Regulier"
 
 
-def is_within_4_months(date1, date2) -> bool:
+def is_within_4_months(date1: datetime.date, date2: datetime.date) -> bool:
     """Compare 2 dates and see if the time between is less than 4 months"""
     four_months_later = date1 + relativedelta(months=4)
     cutoff_date = four_months_later - relativedelta(days=1)

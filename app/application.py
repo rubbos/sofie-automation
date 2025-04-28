@@ -35,7 +35,7 @@ if not app.config['SECRET_KEY']:
 csrf = CSRFProtect(app)
 
 # Skip the upload with DEV_MODE
-DEV_MODE = True
+DEV_MODE = False
 LOCAL_FILE1 = "temp_files/sofie_data.txt"
 LOCAL_FILE2 = "temp_files/topdesk_data.txt"
     
@@ -62,7 +62,7 @@ def upload_files():
         data = extract(sofie_data, topdesk_data)
 
     else:
-        return render_template("upload2.html", form=form)
+        return render_template("upload.html", form=form)
 
     print(data)
     for key, value in data.items():
@@ -110,7 +110,7 @@ def index():
             main_report = create_main_report(applicant)
             email_report = create_email_report(applicant)
 
-            return render_template('results2.html', main_report=main_report, email_report=email_report)
+            return render_template('results.html', main_report=main_report, email_report=email_report)
         else:
             print("Validation failed. Errors:", form.errors)
 
