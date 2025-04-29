@@ -27,8 +27,7 @@ Yes! This improved efficiency per report from about 20-30 minutes to less than 5
 ## Usage
 1. Run the Python file:
     ```bash
-    cd app
-    python3.12 application.py
+    python3.12 app/app.py
     ```
 2. Access the tool through your browser on 'http://localhost:5000'
 2. Upload the 2 specific PDF files.

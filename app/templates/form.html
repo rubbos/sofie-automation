@@ -19,38 +19,38 @@
 
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-6">
             <div class="sm:col-span-3">
-                {{ form.request_type.label(class="form-label") }}<br>
+                {{ form.request_type.label(class="form-label") }}<span class="text-red-500">*</span><br>
                 {{ form.request_type(class="form-input") }}<br>
                 {% for error in form.request_type.errors %}
                 <span class="text-red-500">{{ error }}</span>
                 {% endfor %}
             </div>
         </div>
-
-        <h2 class="text-2xl font-semibold">Employee</h2>
-        <h3 class="text-lg font-semibold">Personal details</h3>
+        <h2 class="text-2xl font-semibold">SOFIE Application 30% Form</h2>
+        <h3 class="text-lg font-semibold">Employee details</h3>
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-4">
-            <div class="sm:col-span-2">
-                {{ form.name.label(class="form-label") }}<br>
+            <div class="sm:col-span-4">
+                Last name, Initials<span class="text-red-500">*</span><br>
                 {{ form.name(class="form-input") }}<br>
                 {% for error in form.name.errors %}
                 <span class="text-red-500">{{ error }}</span>
                 {% endfor %}
             </div>
-            <div class="sm:col-span-1">
-                {{ form.date_of_birth.label(class="form-label") }}<br>
-                {{ form.date_of_birth(class="form-input") }}<br>
-                {% for error in form.date_of_birth.errors %}
+            <div class="sm:col-span-2">
+                {{ form.arrival_date.label(class="form-label") }}<span class="text-red-500">*</span><br>
+                {{ form.arrival_date(class="form-input") }}<br>
+                {% for error in form.arrival_date.errors %}
+                <span class="text-red-501">{{ error }}</span>
+                {% endfor %}
+            </div>
+            <div class="sm:col-span-2">
+                {{ form.first_work_date.label(class="form-label") }}<span class="text-red-500">*</span><br>
+                {{ form.first_work_date(class="form-input") }}<br>
+                {% for error in form.first_work_date.errors %}
                 <span class="text-red-500">{{ error }}</span>
                 {% endfor %}
             </div>
-            <div class="sm:col-span-1">
-                {{ form.bsn.label(class="form-label") }}<br>
-                {{ form.bsn(class="form-input") }}<br>
-                {% for error in form.bsn.errors %}
-                <span class="text-red-500">{{ error }}</span>
-                {% endfor %}
-            </div>
+
         </div>
 
         <!-- Template for extra place of residence rows -->
@@ -84,7 +84,7 @@
             </div>
         </div>
 
-        <h3 class="text-lg font-semibold">Place of residence</h3>
+        <h3 class="text-lg font-semibold">Place of residence (16/24 months)<span class="text-red-500">*</span></h3>
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-4 ">
             <div class="sm:col-span-4">
                 <div id="residence-entries" class="space-y-4">
@@ -134,20 +134,12 @@
 
                 </div>
                 <div class="my-6">
-                    <button type="button" id="add-residence"
-                        class="form-button">
+                    <button type="button" id="add-residence" class="form-button">
                         Add more
                     </button>
                 </div>
             </div>
 
-            <div class="sm:col-span-4">
-                {{ form.previous_jobs.label(class="form-label") }}<br>
-                {{ form.previous_jobs(class="form-input") }}<br>
-                {% for error in form.previous_jobs.errors %}
-                <span class="text-red-500">{{ error }}</span>
-                {% endfor %}
-            </div>
         </div>
 
         <!-- FIX make it dynamic -->
@@ -237,18 +229,10 @@
                 </div>
             </div>
         </div>
-        <h3 class="text-lg font-semibold">Employee and the Netherlands</h3>
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-6">
-            <div class="sm:col-span-2">
-                {{ form.arrival_date.label(class="form-label") }}<br>
-                {{ form.arrival_date(class="form-input") }}<br>
-                {% for error in form.arrival_date.errors %}
-                <span class="text-red-500">{{ error }}</span>
-                {% endfor %}
-            </div>
             <div class="sm:col-span-6">
                 <div id="nl-residence-dates-entries" class="space-y-4">
-                    {{ form.nl_residence_dates.label(class="form-label") }}<br>
+                    <h3 class="text-lg font-semibold">Residence Dates in the Netherlands</h3>
                     {% for dates in form.nl_residence_dates %}
                     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                         <div class="sm:col-span-1">
@@ -280,8 +264,7 @@
                     {% endfor %}
                 </div>
                 <div class="my-6">
-                    <button type="button" id="add-nl-residence-dates"
-                        class="form-button">
+                    <button type="button" id="add-nl-residence-dates" class="form-button">
                         Add more
                     </button>
                 </div>
@@ -294,50 +277,9 @@
                 <span class="text-red-500">{{ error }}</span>
                 {% endfor %}
             </div>
-
-            <div class="sm:col-span-6">
-                <div id="nl-private-dates-entries" class="space-y-4">
-                    {{ form.nl_private_dates.label(class="form-label") }}<br>
-                    {% for dates in form.nl_private_dates %}
-                    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                        <div class="sm:col-span-1">
-                            {{ dates.start_date.label(class="form-label") }}
-                            {{ dates.start_date(class="form-input") }}
-                            {% for error in dates.start_date.errors %}
-                            <span class="text-red-500">{{ error }}</span>
-                            {% endfor %}
-                        </div>
-                        <div class="sm:col-span-1 flex items-center">
-                            <div class="flex-grow">
-                                {{ dates.end_date.label(class="form-label") }}
-                                {{ dates.end_date(class="form-input") }}
-                                {% for error in dates.end_date.errors %}
-                                <span class="text-red-500">{{ error }}</span>
-                                {% endfor %}
-                            </div>
-                            <button type="button"
-                                class="remove-entry text-red-500 hover:text-red-700 ml-2 mt-9 self-start">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
-                                    fill="currentColor">
-                                    <path fill-rule="evenodd"
-                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                        clip-rule="evenodd" />
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
-                <div class="my-6">
-                    <button type="button" id="add-nl-private-dates"
-                        class="form-button">
-                        Add more
-                    </button>
-                </div>
-            </div>
             <div class="sm:col-span-6">
                 <div id="nl-worked-dates-entries" class="space-y-4">
-                    {{ form.nl_worked_dates.label(class="form-label") }}<br>
+                    <h3 class="text-lg font-semibold">Worked dates in the Netherlands</h3>
                     {% for dates in form.nl_worked_dates %}
                     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                         <div class="sm:col-span-1">
@@ -369,15 +311,54 @@
                     {% endfor %}
                 </div>
                 <div class="my-6">
-                    <button type="button" id="add-nl-worked-dates"
-                        class="form-button">
+                    <button type="button" id="add-nl-worked-dates" class="form-button">
                         Add more
                     </button>
                 </div>
             </div>
             <div class="sm:col-span-6">
+                <div id="nl-private-dates-entries" class="space-y-4">
+                    <h3 class="text-lg font-semibold">Private stays in the Netherlands</h3>
+                    {% for dates in form.nl_private_dates %}
+                    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                        <div class="sm:col-span-1">
+                            {{ dates.start_date.label(class="form-label") }}
+                            {{ dates.start_date(class="form-input") }}
+                            {% for error in dates.start_date.errors %}
+                            <span class="text-red-500">{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                        <div class="sm:col-span-1 flex items-center">
+                            <div class="flex-grow">
+                                {{ dates.end_date.label(class="form-label") }}
+                                {{ dates.end_date(class="form-input") }}
+                                {% for error in dates.end_date.errors %}
+                                <span class="text-red-500">{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                            <button type="button"
+                                class="remove-entry text-red-500 hover:text-red-700 ml-2 mt-9 self-start">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
+                                    fill="currentColor">
+                                    <path fill-rule="evenodd"
+                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                        clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="my-6">
+                    <button type="button" id="add-nl-private-dates" class="form-button">
+                        Add more
+                    </button>
+                </div>
+            </div>
+
+            <div class="sm:col-span-6">
                 <div id="nl-dutch-employer-dates-entries" class="space-y-4">
-                    {{ form.nl_dutch_employer_dates.label(class="form-label") }}<br>
+                    <h3 class="text-lg font-semibold">Worked for dutch employer abroad</h3>
                     {% for dates in form.nl_dutch_employer_dates %}
                     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                         <div class="sm:col-span-1">
@@ -409,8 +390,7 @@
                     {% endfor %}
                 </div>
                 <div class="my-6">
-                    <button type="button" id="add-nl-dutch-employer-dates"
-                        class="form-button">
+                    <button type="button" id="add-nl-dutch-employer-dates" class="form-button">
                         Add more
                     </button>
                 </div>
@@ -424,10 +404,10 @@
             </div>
         </div>
 
-        <h2 class="text-2xl font-semibold">Employer</h2>
+        <h2 class="text-2xl font-semibold">Topdesk Form</h2>
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-4">
             <div class="sm:col-span-2">
-                {{ form.employer.label(class="form-label") }}<br>
+                {{ form.employer.label(class="form-label") }}<span class="text-red-500">*</span><br>
                 {{ form.employer(class="form-input") }}<br>
                 {% for error in form.employer.errors %}
                 <span class="text-red-500">{{ error }}</span>
@@ -435,7 +415,7 @@
             </div>
 
             <div class="">
-                {{ form.payroll_tax_number.label(class="form-label") }}<br>
+                {{ form.payroll_tax_number.label(class="form-label") }}<span class="text-red-500">*</span><br>
                 {{ form.payroll_tax_number(class="form-input") }}<br>
                 {% for error in form.payroll_tax_number.errors %}
                 <span class="text-red-500">{{ error }}</span>
@@ -443,51 +423,67 @@
             </div>
 
             <div class="">
-                {{ form.employer_type.label(class="form-label") }}<br>
+                {{ form.employer_type.label(class="form-label") }}<span class="text-red-500">*</span><br>
                 {{ form.employer_type(class="form-input") }}<br>
                 {% for error in form.employer_type.errors %}
                 <span class="text-red-500">{{ error }}</span>
                 {% endfor %}
             </div>
+            <div class="sm:col-span-1">
+                {{ form.date_of_birth.label(class="form-label") }}<span class="text-red-500">*</span><br>
+                {{ form.date_of_birth(class="form-input") }}<br>
+                {% for error in form.date_of_birth.errors %}
+                <span class="text-red-500">{{ error }}</span>
+                {% endfor %}
+            </div>
+            <div class="sm:col-span-1">
+                {{ form.bsn.label(class="form-label") }}<span class="text-red-500">*</span><br>
+                {{ form.bsn(class="form-input") }}<br>
+                {% for error in form.bsn.errors %}
+                <span class="text-red-500">{{ error }}</span>
+                {% endfor %}
+            </div>
+            <div class="sm:col-span-2">
+                {{ form.application_date.label(class="form-label") }}<span class="text-red-500">*</span><br>
+                {{ form.application_date(class="form-input") }}<br>
+                {% for error in form.application_date.errors %}
+                <span class="text-red-500">{{ error }}</span>
+                {% endfor %}
+            </div>
         </div>
 
-        <h2 class="text-2xl font-semibold">Contract</h2>
+        <h2 class="text-2xl font-semibold">Work contract</h2>
         <div class="grid grid-cols-1 gap-4 md:grid-cols-6">
             <div class="sm:col-span-3">
-                {{ form.job_title.label(class="form-label") }}<br>
+                {{ form.contract_start_date.label(class="form-label") }}<span class="text-red-500">*</span><br>
+                {{ form.contract_start_date(class="form-input") }}<br>
+                {% for error in form.contract_start_date.errors %}
+                <span class="text-red-500">{{ error }}</span>
+                {% endfor %}
+            </div>
+
+            <div class="sm:col-span-3">
+                {{ form.contract_signed_date.label(class="form-label") }}<span class="text-red-500">*</span><br>
+                {{ form.contract_signed_date(class="form-input") }}<br>
+                {% for error in form.contract_signed_date.errors %}
+                <span class="text-red-500">{{ error }}</span>
+                {% endfor %}
+            </div>
+            <div class="sm:col-span-3">
+                {{ form.job_title.label(class="form-label") }}<span class="text-red-500">*</span><br>
                 {{ form.job_title(class="form-input") }}<br>
                 {% for error in form.job_title.errors %}
                 <span class="text-red-500">{{ error }}</span>
                 {% endfor %}
             </div>
             <div class="sm:col-span-3">
-                {{ form.ufo_code.label(class="form-label") }}<br>
+                {{ form.ufo_code.label(class="form-label") }}<span class="text-red-500">*</span><br>
                 {{ form.ufo_code(class="form-input") }}<br>
                 {% for error in form.ufo_code.errors %}
                 <span class="text-red-500">{{ error }}</span>
                 {% endfor %}
             </div>
-            <div class="sm:col-span-2">
-                {{ form.contract_start_date.label(class="form-label") }}<br>
-                {{ form.contract_start_date(class="form-input") }}<br>
-                {% for error in form.contract_start_date.errors %}
-                <span class="text-red-500">{{ error }}</span>
-                {% endfor %}
-            </div>
-            <div class="sm:col-span-2">
-                {{ form.first_work_date.label(class="form-label") }}<br>
-                {{ form.first_work_date(class="form-input") }}<br>
-                {% for error in form.first_work_date.errors %}
-                <span class="text-red-500">{{ error }}</span>
-                {% endfor %}
-            </div>
-            <div class="sm:col-span-2">
-                {{ form.contract_signed_date.label(class="form-label") }}<br>
-                {{ form.contract_signed_date(class="form-input") }}<br>
-                {% for error in form.contract_signed_date.errors %}
-                <span class="text-red-500">{{ error }}</span>
-                {% endfor %}
-            </div>
+
             <div class="sm:col-span-6">
                 {{ form.willagreement_signed_date.label(class="form-label") }}<br>
                 {{ form.willagreement_signed_date(class="form-input") }}<br>
@@ -502,14 +498,16 @@
                 <span class="text-red-500">{{ error }}</span>
                 {% endfor %}
             </div>
+
         </div>
 
-        <h2 class="text-2xl font-semibold">Topdesk</h2>
-        <div class="grid grid-cols-1 sm:grid-cols-6 gap-4">
-            <div class="sm:col-span-2">
-                {{ form.application_date.label(class="form-label") }}<br>
-                {{ form.application_date(class="form-input") }}<br>
-                {% for error in form.application_date.errors %}
+        <h2 class="text-2xl font-semibold">CV</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
+
+            <div class="sm:col-span-4">
+                {{ form.previous_jobs.label(class="form-label") }}<span class="text-red-500">*</span><br>
+                {{ form.previous_jobs(class="form-input") }}<br>
+                {% for error in form.previous_jobs.errors %}
                 <span class="text-red-500">{{ error }}</span>
                 {% endfor %}
             </div>
