@@ -5,7 +5,6 @@ app/temp_files
 temp_files
 .testeasyocr
 testeasyocr
-testeasyocr
 *.png
 .env
 node_modules
