@@ -25,7 +25,7 @@ Yes! This improved efficiency per report from about 20-30 minutes to less than 5
     docker compose up
     ```
 ## Usage
-1. Access the tool through your browser on 'http://127.0.0.1:5000'
+1. Access the tool on 'http://127.0.0.1:5000'
 2. Upload the 2 specific PDF files.
 3. Double-check the prefilled data in the form. 
 4. Submit the form.
