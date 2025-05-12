@@ -20,6 +20,7 @@ class Applicant:
         self.start_date = calc.start_date(self.contract_start_date, self.first_work_date, self.employer_type)
         self.signed_location = calc.signed_location(self.contract_signed_date, self.places_of_residence, self.arrival_date)
         self.is_within_4_months = calc.is_within_4_months(self.contract_start_date, self.application_date)
+        self.contract_signed_outside_nl = calc.get_most_recent_date(self.contract_signed_date, self.arrival_date) != self.arrival_date
 
         self.true_start_date = calc.true_start_date(self.application_date, self.start_date)
         self.nl_arrival_till_start = calc.get_arrival_date_to_start_date_range(self.arrival_date, self.start_date)
@@ -79,6 +80,7 @@ def regular_application(applicant: Applicant) -> str:
         format_date(applicant.willagreement_signed_date), 
         applicant.willagreement_info,
         applicant.signed_location,
+        applicant.contract_signed_outside_nl,
     )
 
     buitenland = verslag_buitenland(
@@ -148,11 +150,12 @@ def verslag_aanwerving(
     wo_signed_date,
     explain_wo,
     signed_location,
+    contract_signed_outside_nl,
 ):
     title = "Verslag aanwerving"
     text = f"Het betreft een dienstverband met een startdatum van {ao_start_date}. De arbeidsovereenkomst is door de werknemer getekend op {ao_signed_date}. "
-    # Check if its signed outside NL
-    if calc.get_most_recent_date(ao_signed_date, arrival_date) != arrival_date:
+    # Check if its signed inside the netherlands
+    if contract_signed_outside_nl:
         text += f"Eerder is er al een wilsovereenkomst tot stand gekomen op {wo_signed_date}. Dit blijkt uit: {explain_wo}."
     text += f"Op dat moment woonde de werknemer, naar omstandigheden beoordeeld, in {signed_location}. Dit is aannemelijk o.a. op basis van het cv, de adressering op de arbeidsovereenkomst en de informatie in het werknemersformulier. Werknemer is op {arrival_date} Nederland ingereisd."
     return formatting_text(title, text)
