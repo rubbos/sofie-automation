@@ -91,7 +91,9 @@ def extract_date(string: str, start_keyword: str, end_keyword: str, single_date=
 
     # Return as a string if its only one date
     if single_date: 
-        return cleaned_dates[0]
+        if cleaned_dates:
+            return cleaned_dates[0]
+        return None
     return cleaned_dates
 
 def extract_multiple_dates(string: str, start_keyword: str, end_keyword: str) -> list[str]:
