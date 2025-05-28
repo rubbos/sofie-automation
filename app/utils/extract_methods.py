@@ -139,12 +139,14 @@ def extract_place_of_residences(text: str):
         place = extract_between_keywords(section, "Place", "Country") or ""
         location = extract_after_keyword(section, "Country") or ""
 
-        # Clean and process data
+        # Clean and process data:
         cleaned_dates = [tm.transform_date(date) for date in dates if date]
         cleaned_place = tm.clean_text(place)
         cleaned_location = tm.clean_text(location)
 
-        # Sort the dates
+        # Sort dates and remove the last date if odd number of dates
+        if len(cleaned_dates) % 2 != 0:
+            cleaned_dates = cleaned_dates[:-1]  
         sorted_dates = sorted(cleaned_dates)
 
         # Add cleaned data to list for this residence section

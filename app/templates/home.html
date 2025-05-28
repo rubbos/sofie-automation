@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Home</title>
+    <link href="{{ url_for('static', filename='css/output.css') }}" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+        rel="stylesheet">
+</head>
+
+<body class="bg-gray-100 antialiased text-gray-900">
+    <div class="px-4 my-32 max-w-3xl mx-auto space-y-6 ">
+        <h1 class="text-3xl font-semibold">Home</h1>
+        <div class="">
+            {% set upload_url = url_for('upload_files') %}
+            <button type="button" class="form-button " onclick="location.href='{{ upload_url }}'">
+                SOFIE automation ->
+            </button>            
+            {% set calculate_url = url_for('calculate') %}
+            <button type="button" class="form-button" onclick="location.href='{{ calculate_url }}'">
+                Calculate salary percentage->
+            </button>
+            <button type="button" class="form-button" onclick="location.href='/'">
+                Draw location circle on map ->
+            </button>
+        </div>
+    </div>
+</body>
+
+</html>

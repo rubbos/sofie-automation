@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Calculator</title>
+    <link href="{{ url_for('static', filename='css/output.css') }}" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+        rel="stylesheet">
+</head>
+
+<body class="bg-gray-100 antialiased text-gray-900">
+    <div class="px-4 my-32 max-w-3xl mx-auto space-y-6 ">
+        <h1 class="text-3xl font-semibold">Calculate salary percentage</h1>
+        <div>
+            <p>30 and older -> €46660 in 2025</p>
+            <p>Younger than 30 -> €35468 in 2025</p>
+            <p>Estimate includes 16.3% as 13th month</p>
+            <p>Excluding 8.1% pension</p>
+        </div>
+        <form method="post">
+            <p>Monthly bruto salary</p>
+            <input type="number" name="salary" step="1" min="0" placeholder="€0" required>
+            <p>Age</p>
+            <input type="number" name="age" step="1" min="1" max="100" placeholder="30" required>
+            <button type="submit" class="form-button">
+                Calculate
+            </button>
+        </form>
+        {% if result is not none %}
+        <p>Estimated result: {{ result }}%</p>
+        {% endif %}
+    </div>
+</body>
+
+</html>

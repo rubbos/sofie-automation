@@ -10,8 +10,17 @@ from forms import UploadForm, MainForm
 from extract_data import main as extract
 from pprint import pprint
 from datetime import datetime
-from utils import process
+from utils import process, calculations
 from utils.reports import Applicant, create_main_report, create_email_report
+
+DEV_MODE = False
+LOCAL_FILE1 = "temp_files/sofie_data.txt"
+LOCAL_FILE2 = "temp_files/topdesk_data.txt"
+    
+# dynamic fields to be processed separately
+dynamic_dates_fields = ["nl_residence_dates", "nl_worked_dates",
+                "nl_private_dates", "nl_dutch_employer_dates"]
+dynamic_residence_fields = ["places_of_residence"]
 
 # Load environment variables from .env file (in development)
 load_dotenv()
@@ -34,17 +43,11 @@ if not app.config['SECRET_KEY']:
 # Initialize CSRF protection
 csrf = CSRFProtect(app)
 
-# Skip the upload with DEV_MODE
-DEV_MODE = False
-LOCAL_FILE1 = "temp_files/sofie_data.txt"
-LOCAL_FILE2 = "temp_files/topdesk_data.txt"
-    
-# dynamic fields to be processed separately
-dynamic_dates_fields = ["nl_residence_dates", "nl_worked_dates",
-                "nl_private_dates", "nl_dutch_employer_dates"]
-dynamic_residence_fields = ["places_of_residence"]
-
 @app.route("/", methods=["GET", "POST"])
+def home():
+    return render_template('home.html')
+
+@app.route("/sofie", methods=["GET", "POST"])
 def upload_files():
     """Upload files, extract data and redirect to the prefilled form."""
     form = UploadForm()
@@ -72,7 +75,7 @@ def upload_files():
     return redirect(url_for('index'))
 
 
-@app.route('/form', methods=['GET', 'POST'])
+@app.route('/sofie/form', methods=['GET', 'POST'])
 def index():
     form = MainForm()
 
@@ -116,6 +119,18 @@ def index():
 
     return render_template('form.html', form=form)
 
+@app.route("/calculate", methods=["GET", "POST"])
+@csrf.exempt
+def calculate():
+    result = None
+    if request.method == "POST":
+        try:
+            salary = float(request.form["salary"])
+            age = float(request.form["age"])
+            result = calculations.salary_percentage(salary, age)
+        except ValueError:
+            result = "Invalid input"
+    return render_template('calculate.html', result=result)
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)

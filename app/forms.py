@@ -8,7 +8,6 @@ class UploadForm(FlaskForm):
     topdesk_file = FileField('Topdesk form', validators=[FileAllowed(['pdf']), FileRequired()])
     submit = SubmitField('Upload')
 
-
 class DateRangeForm(Form):
     start_date = DateField('Start Date', format='%Y-%m-%d', render_kw={"type": "date"}, validators=[DataRequired()])
     end_date = DateField('End Date', format='%Y-%m-%d', render_kw={"type": "date"}, validators=[DataRequired()])
