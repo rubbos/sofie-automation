@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import calculations
 import numpy as np
 
-monthly_salaries = np.linspace(1000, 6000, 200)
+monthly_salaries = np.linspace(2500, 5500, 200)
 
 percentages_age_30plus = [calculations.salary_percentage(s, 30) for s in monthly_salaries]
 percentages_under_30 = [calculations.salary_percentage(s, 25) for s in monthly_salaries]
@@ -14,7 +14,6 @@ plt.xlabel("Monthly Salary (€)")
 plt.ylabel("Applicable Percentage (%)")
 plt.legend()
 plt.grid(True)
-plt.xlim(2500, 5500)  
 plt.tight_layout()
 plt.show()
 plt.savefig('salaryplot.png')
