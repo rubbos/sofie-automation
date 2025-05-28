@@ -14,24 +14,41 @@
 <body class="bg-gray-100 antialiased text-gray-900">
     <div class="px-4 my-32 max-w-3xl mx-auto space-y-6 ">
         <h1 class="text-3xl font-semibold">Calculate salary percentage</h1>
-        <div>
-            <p>30 and older -> €46660 in 2025</p>
-            <p>Younger than 30 -> €35468 in 2025</p>
-            <p>Estimate includes 16.3% as 13th month</p>
-            <p>Excluding 8.1% pension</p>
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-6">
+            <div class="sm:col-span-3">
+                <ul>
+                    <li>- 30 and older &rarr; &euro;46,660 in 2025</li>
+                    <li>- Younger than 30 &rarr; &euro;35,468 in 2025</li>
+                    <li>- Includes 16.3% vakantiegeld + extras</li>
+                    <li>- Excluding 8.1% pension</li>
+                </ul>
+            </div>
+            <div class="sm:col-span-3">
+                <form method="post">
+                    <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                        <div class="sm:col-span-3">
+                            <p>Monthly bruto salary</p>
+                            <input class="form-input" type="number" name="salary" step="1" min="0" placeholder="€4000" required>
+                        </div>
+                        <div class="sm:col-span-3">
+                            <p>Age</p>
+                            <input class="form-input" type="number" name="age" step="1" min="1" max="100" placeholder="30" required>
+                        </div>
+                        <div class="sm:col-span-3">
+                            <button type="submit" class="form-button">
+                                Calculate
+                            </button>
+                            {% if result is not none %}
+                            <p>Estimated result: {{ result }}%</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="sm:col-span-6">
+                <img src="/static/images/salaryplot.png" alt="monthly salary">
         </div>
-        <form method="post">
-            <p>Monthly bruto salary</p>
-            <input type="number" name="salary" step="1" min="0" placeholder="€0" required>
-            <p>Age</p>
-            <input type="number" name="age" step="1" min="1" max="100" placeholder="30" required>
-            <button type="submit" class="form-button">
-                Calculate
-            </button>
-        </form>
-        {% if result is not none %}
-        <p>Estimated result: {{ result }}%</p>
-        {% endif %}
+        </div>
     </div>
 </body>
 
