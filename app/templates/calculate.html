@@ -39,7 +39,10 @@
                                 Calculate
                             </button>
                             {% if result is not none %}
-                            <p>Estimated result: {{ result }}%</p>
+                            <div>
+                                <p>Estimated taxable yearly income: &euro;{{ taxable }}</p>
+                                <p>Estimated result: {{ result }}%</p>
+                            </div>
                             {% endif %}
                         </div>
                     </div>

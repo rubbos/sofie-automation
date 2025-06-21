@@ -37,13 +37,18 @@ def salarynorm(ufo_code: str) -> str:
         return "Wetenschappelijk O&O"
     return "Regulier"
 
+def salary_taxable(monthly_salary: float, age: int) -> float:
+    # Yearly salary including 13th month and excluding pension
+    adjusted_salary = monthly_salary * 12 * 1.163 * 0.919
+    taxable = adjusted_salary * 0.7
+    return round(taxable, 2)
+
 def salary_percentage(monthly_salary: float, age: int) -> float:
     """Calculate usable percentage with the 30% norm."""
     limit = 46660 if age >= 30 else 35468
 
     # Yearly salary including 13th month and excluding pension
-    adjusted_salary = monthly_salary * 12 * 1.163 * 0.919
-    taxable = adjusted_salary * 0.7
+    taxable = salary_taxable(monthly_salary, age)
 
     if taxable >= limit:
         return 30

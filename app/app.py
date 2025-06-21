@@ -123,14 +123,16 @@ def index():
 @csrf.exempt
 def calculate():
     result = None
+    taxable = None
     if request.method == "POST":
         try:
             salary = float(request.form["salary"])
             age = float(request.form["age"])
+            taxable = calculations.salary_taxable(salary, age)
             result = calculations.salary_percentage(salary, age)
         except ValueError:
-            result = "Invalid input"
-    return render_template('calculate.html', result=result)
+            result, taxable = "Invalid input"
+    return render_template('calculate.html', result=result, taxable=taxable)
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
