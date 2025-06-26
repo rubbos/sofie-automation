@@ -128,7 +128,7 @@ def calculate():
         try:
             salary = float(request.form["salary"])
             age = float(request.form["age"])
-            taxable = calculations.salary_taxable(salary, age)
+            taxable = calculations.adjusted_salary(salary)
             result = calculations.salary_percentage(salary, age)
         except ValueError:
             result, taxable = "Invalid input"

@@ -37,26 +37,28 @@ def salarynorm(ufo_code: str) -> str:
         return "Wetenschappelijk O&O"
     return "Regulier"
 
-def salary_taxable(monthly_salary: float, age: int) -> float:
-    # Yearly salary including 13th month and excluding pension
+def adjusted_salary(monthly_salary: float) -> float:
+    """Yearly salary including 13th month and excluding pension"""
     adjusted_salary = monthly_salary * 12 * 1.163 * 0.919
+    return round(adjusted_salary, 2)
+
+def salary_taxable(adjusted_salary: float) -> float:
+    """Calculate the taxable salary based on the adjusted salary"""
     taxable = adjusted_salary * 0.7
     return round(taxable, 2)
 
 def salary_percentage(monthly_salary: float, age: int) -> float:
-    """Calculate usable percentage with the 30% norm."""
-    limit = 46660 if age >= 30 else 35468
+    """Calculate usable tax-free percentage with the 30% ruling."""
+    limit = 46660 if age >= 30 else 35468 
 
-    # Yearly salary including 13th month and excluding pension
-    taxable = salary_taxable(monthly_salary, age)
-
-    if taxable >= limit:
-        return 30
+    adjusted = adjusted_salary(monthly_salary)
     
-    percentage = round((1 - (limit / adjusted_salary)) * 100, 1)
-    return max(0, percentage)
+    if adjusted * 0.7 >= limit:
+        return 30.0
 
-    return percentage 
+    # Calculate taxfree percentage
+    percentage = round((1 - (limit / adjusted)) * 100, 1)
+    return max(0, percentage)
 
 def is_within_4_months(date1: datetime.date, date2: datetime.date) -> bool:
     """Compare 2 dates and see if the time between is less than 4 months"""
