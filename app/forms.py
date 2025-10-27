@@ -4,7 +4,7 @@ from wtforms import Form, StringField, FieldList, FormField, DateField, SelectFi
 from wtforms.validators import DataRequired, Optional
 
 class UploadForm(FlaskForm):
-    sofie_file = FileField('Sofie form', validators=[FileAllowed(['pdf']), FileRequired()])
+    sofie_file = FileField('Sofie form', validators=[FileAllowed(['pdf'])])
     topdesk_file = FileField('Topdesk form', validators=[FileAllowed(['pdf']), FileRequired()])
     submit = SubmitField('Upload')
 

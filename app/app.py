@@ -60,7 +60,10 @@ def upload_files():
             data = extract(sofie_data, topdesk_data, dev_mode=True)
 
     elif form.validate_on_submit():
-        sofie_data = form.sofie_file.data.read()
+        try:
+            sofie_data = form.sofie_file.data.read()
+        except Exception:
+            sofie_data = None
         topdesk_data = form.topdesk_file.data.read()
         data = extract(sofie_data, topdesk_data)
 

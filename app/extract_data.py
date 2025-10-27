@@ -119,7 +119,10 @@ def save_text(text: str, name: str) -> None:
 def main(sofie_data, topdesk_data, dev_mode=False) -> dict:
     """Extract data from the uploaded files."""
     if not dev_mode:
-        sofie_data = file_to_raw_data(sofie_data, config_psm=11)
+        if sofie_data != None:
+            sofie_data = file_to_raw_data(sofie_data, config_psm=11)
+        else:
+            sofie_data = ""
         topdesk_data = file_to_raw_data(topdesk_data, config_psm=4)
         save_text(sofie_data, "sofie_data")
         save_text(topdesk_data, "topdesk_data")
