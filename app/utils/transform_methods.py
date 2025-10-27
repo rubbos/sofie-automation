@@ -38,7 +38,10 @@ def transform_date(date: str) -> pd.Timestamp:
         "%d-%m-%Y","%d/%m/%Y","%d.%m.%Y","%d-%b-%Y","%d %b %Y","%d-%B-%Y",
         "%d %B %Y","%d-%b-%y","%d %b %y","%d-%m-%y","%d/%m/%y","%d.%m.%y",
     ]
-    date = normalize_date(date.lower())
+    try:
+        date = normalize_date(date.lower())
+    except Exception:
+        date = pd.Timestamp("00-00-0000")
 
     for date_format in date_formats:
         try:

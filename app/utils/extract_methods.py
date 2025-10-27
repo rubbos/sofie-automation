@@ -147,7 +147,11 @@ def extract_place_of_residences(text: str):
         # Sort dates and remove the last date if odd number of dates
         if len(cleaned_dates) % 2 != 0:
             cleaned_dates = cleaned_dates[:-1]  
-        sorted_dates = sorted(cleaned_dates)
+        try:
+            sorted_dates = sorted(cleaned_dates)
+        except Exception:
+            print("Error sorting dates:", cleaned_dates)
+            sorted_dates = cleaned_dates
 
         # Add cleaned data to list for this residence section
         data.extend(date for date in sorted_dates)
